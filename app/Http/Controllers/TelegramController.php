@@ -97,6 +97,7 @@ class TelegramController extends Controller
             {
                 $this->username= $update->callbackQuery->from->first_name;
             }
+           
             switch ($this->text) {
                 case 'menucari':
                     $this->MenuCari();
@@ -152,10 +153,7 @@ class TelegramController extends Controller
     }
     public function AwalStart()
     {
-        $message = '';
-        $message .= 'Selamat datang di Teledata' .chr(10);
-        $message .= 'BPS Provinsi NTB' .chr(10) .chr(10);
-
+        
         $count = DataPengunjung::where('username','=',$this->username)->count();
         if ($count > 0) 
         {
@@ -175,7 +173,7 @@ class TelegramController extends Controller
             }
             else
             {
-                $message .= 'Anda terdaftar sebagai : <b>'.$data->nama.'</b> ';
+                $message = 'Anda terdaftar sebagai : <b>'.$data->nama.'</b> ';
                 $this->KirimPesan($message, true);
                 $this->showMenu();
             }
@@ -183,9 +181,12 @@ class TelegramController extends Controller
         }
         else
         {
+            $message = 'Selamat datang di <b>TeleDATA</b>' .chr(10);
+            $message .= '<b>BPS Provinsi Nusa Tenggara Barat</b>' .chr(10) .chr(10);
             $this->nama = $this->username;
             $data = new DataPengunjung();
             $data->username = $this->username;
+            $data->chatid = $this->chat_id;
             $data->save();
 
             $this->KirimPesan($message,true);
@@ -193,7 +194,7 @@ class TelegramController extends Controller
         }
         
     }
-    public function showMenu()
+    public function showMenu($info = false)
     { 
         $message = 'Selamat datang di <b>TeleDATA</b>' .chr(10);
         $message .= '<b>BPS Provinsi Nusa Tenggara Barat</b>' .chr(10) .chr(10);

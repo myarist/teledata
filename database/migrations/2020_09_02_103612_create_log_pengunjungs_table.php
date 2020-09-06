@@ -15,7 +15,8 @@ class CreateLogPengunjungsTable extends Migration
     {
         Schema::create('log_posisi', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('username');
+            $table->string('username')->nullable();
+            $table->string('chatid')->nullable();
             $table->string('command');
             $table->timestamps();
         });
