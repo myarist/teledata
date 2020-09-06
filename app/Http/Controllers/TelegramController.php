@@ -143,9 +143,6 @@ class TelegramController extends Controller
                 case '/start':
                     $this->AwalStart();
                     break;
-                case '/keluar':
-                    $this->Keluar();
-                    break;
                 default:
                     $this->CheckInputan();
                     break;
