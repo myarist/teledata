@@ -17,9 +17,14 @@ class CreateUsersTable extends Migration
             $table->id();
             $table->string('nama');
             $table->string('username');
+            $table->string('user_tg')->nullable();
+            $table->string('chatid_tg')->nullable();
+            $table->string('password');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('lastip',20)->nullable();
+            $table->dateTime('lastlogin')->nullable();
+            $table->boolean('aktif')->default(1);
             $table->rememberToken();
             $table->timestamps();
         });

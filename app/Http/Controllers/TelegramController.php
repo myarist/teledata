@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Telegram\Bot\Laravel\Facades\Telegram;
 use Telegram\Bot\Api;
 use Carbon\Carbon;
+use Telegram\Bot\Keyboard\Keyboard;
 
 class TelegramController extends Controller
 {
@@ -15,10 +16,52 @@ class TelegramController extends Controller
     protected $chat_id;
     protected $username;
     protected $text;
- 
+    protected $nama;
+    protected $first_name;
+    protected $keyboard;
+    protected $keyboard_default;
+    protected $keyboard_cari;
+
     public function __construct()
     {
         $this->telegram = new Api(env('TELEGRAM_BOT_TOKEN'));
+        $this->keyboard_default = [
+            'inline_keyboard' => [
+                [
+                    ['text' => 'Konsultasi Statistik', 'callback_data' => 'konsultasi']
+                ],
+                [
+                    ['text' => 'Pencarian Data','callback_data' => 'menucari']
+                ],
+                [
+                    ['text'=> 'Tentang Bot', 'callback_data'=> 'tentangbot']
+                ]
+            ]
+        ];
+        $this->keyboard_cari = [
+            'inline_keyboard' => [
+                [
+                    ['text' => 'Publikasi', 'callback_data' => 'caripublikasi']
+                ],
+                [
+                    ['text' => 'Subjek Statistik','callback_data' => 'caristatistik']
+                ],
+                [
+                    ['text'=> 'Lainnya', 'callback_data'=> 'carilainnnya']
+                ],
+                [
+                    ['text'=> 'Menu Awal', 'callback_data'=>'menuawal']
+                ]
+            ]
+        ];
+        $this->keyboard_cari_kembali = [
+            'inline_keyboard' => [
+                [
+                    ['text'=> 'Kembali ke Menu Pencarian', 'callback_data'=>'menucari']
+                ]
+            ]
+        ];
+        $this->keyboard = json_encode($this->keyboard_default);
     }
  
     public function getMe()
@@ -34,41 +77,93 @@ class TelegramController extends Controller
  
         return $response == true ? redirect()->back() : dd($response);
     }
-    public function handleRequest(Request $request)
+    public function WebHook(Request $request)
     {
-        $this->chat_id = $request['message']['chat']['id'];
-        $this->username = $request['message']['from']['username'];
-        $this->text = $request['message']['text'];
- 
-        switch ($this->text) {
-            case '/start':
-                $this->MenuAwal();
-            break;
-            case '/menu':
+        $update = $this->telegram->getWebhookUpdate();
+        if ($update->isType('callback_query')) 
+        {
+
+            /*
+            menu ini kalo tombol inline keyboard ditekan
+            */
+            $this->text = $update->callbackQuery->data;
+            $this->chat_id = $update->callbackQuery->from->id;
+            $this->nama = $update->callbackQuery->from->first_name;
+            if (array_key_exists('username',$update->callbackQuery->from))
+            {
+                $this->username = $update->callbackQuery->from->username;
+            }
+            else 
+            {
+                $this->username= $update->callbackQuery->from->first_name;
+            }
+            switch ($this->text) {
+                case 'menucari':
+                    $this->MenuCari();
+                    break;
+                case 'konsultasi':
+                    $this->Konsultasi();
+                    break;
+                case 'tentangbot':
+                    $this->TentangBot();
+                    break;
+                case 'caripublikasi':
+                    $this->CariPublikasi();
+                    break;
+                case 'caristatistik':
+                    $this->CariStatistik();
+                    break;
+                case 'carilainnnya':
+                    $this->CariLainnya();
+                    break;
+                default:
                 $this->showMenu();
-                break;
-            case '/cari':
-                $this->cariData();
-                break;
-            case '/keluar':
-                $this->Keluar();
-                break;
-            default:
-                $this->checkDatabase();
+                    break;
+            }
+            
+        } 
+        else 
+        {
+            /*
+            Pertama kali pengunjung menghubungi bot klik /start
+            */
+            $this->chat_id = $request['message']['chat']['id'];
+            $this->first_name = $request['message']['from']['first_name'];
+            $this->text = $request['message']['text'];
+            if (array_key_exists("username",$request['message']['from']))
+            {
+                $this->username = $request['message']['from']['username'];
+            }
+            else 
+            {
+                $this->username= $this->first_name;
+            }
+
+            switch ($this->text) {
+                case '/start':
+                    $this->AwalStart();
+                    break;
+                case '/keluar':
+                    $this->Keluar();
+                    break;
+                default:
+                    $this->CheckInputan();
+                    break;
+            }
         }
 
     }
-    public function MenuAwal()
+    public function AwalStart()
     {
         $message = '';
-        $message .= 'Selamat datang di BOT Teledata' .chr(10);
-        $message .= 'BPS Provinsi NTB' .chr(10);
+        $message .= 'Selamat datang di Teledata' .chr(10);
+        $message .= 'BPS Provinsi NTB' .chr(10) .chr(10);
 
-        $cek = DataPengunjung::where('username', $this->username)->count();
-        if ($cek > 0) 
+        $count = DataPengunjung::where('username','=',$this->username)->count();
+        if ($count > 0) 
         {
             //datanya sudah ada langsung suguhkan menu
-            $data = DataPengunjung::where('username', $this->username)->first();
+            $data = DataPengunjung::where('username','=',$this->username)->first();
             if ($data->nama == NULL)
             {
                 $this->InputNama();
@@ -84,54 +179,40 @@ class TelegramController extends Controller
             else
             {
                 $message .= 'Anda terdaftar sebagai : <b>'.$data->nama.'</b> ';
-                $this->sendMessage($message, true);
+                $this->KirimPesan($message, true);
                 $this->showMenu();
             }
             
         }
         else
         {
+            $this->nama = $this->username;
             $data = new DataPengunjung();
             $data->username = $this->username;
             $data->save();
 
-            $this->sendMessage($message,true);
+            $this->KirimPesan($message,true);
             $this->InputNama();
         }
         
     }
-    public function checkInputan()
-    {
-        $message = '';
-        $message .= 'BOT Teledata' . chr(10);
-        $message .= 'BPS Provinsi NTB' . chr(10) .chr(10);
-        $message .= '/menu untuk menampilkan menu' .chr(10);
-        $this->sendMessage($message);
-    }
-    public function showMenu($info = null)
-    {
-        $message = '';
-        if ($info) {
-            $message .= $info . chr(10);
-        }
-        $message .= '/menu - menampilkan menu' . chr(10);
-        $message .= '/cari - mencari informasi' . chr(10);
-        $message .= '/operator - chat dengan operator' . chr(10) .chr(10);
-
-        $message .= '/keluar - untuk mengakhiri' .chr(10);
- 
-        $this->sendMessage($message);
+    public function showMenu()
+    { 
+        $message = 'Selamat datang di <b>TeleDATA</b>' .chr(10);
+        $message .= '<b>BPS Provinsi Nusa Tenggara Barat</b>' .chr(10) .chr(10);
+        $message .= 'Silakan pilih layanan kami : ' .chr(10) .chr(10);
+        $this->KirimPesan($message,true,true);
     }
     //nama lengkap, email, nomor hp
     public function InputEmail()
     {
         $message = "Masukkan Email anda : ";
-        $this->sendMessage($message);
+        $this->KirimPesan($message);
     }
     public function InputHP()
     {
         $message = "Masukkan Nomor HP anda : ";
-        $this->sendMessage($message);
+        $this->KirimPesan($message);
     }
     public function InputNama()
     {
@@ -142,7 +223,68 @@ class TelegramController extends Controller
             'command' => __FUNCTION__
         ]);
  
-        $this->sendMessage($message);
+        $this->KirimPesan($message);
+    }
+    public function MenuCari()
+    {
+        $message = '';
+        $message = 'Silakan pilih menu <b>Pencarian Data</b> dibawah ini ' .chr(10);
+        $this->keyboard = json_encode($this->keyboard_cari);
+        $this->KirimPesan($message,true,true);
+    }
+    public function CariPublikasi()
+    {
+        $message = "Masukkan Kata Kunci untuk Pencarian Publikasi : ";
+ 
+        LogPengunjung::create([
+            'username' => $this->username,
+            'command' => __FUNCTION__
+        ]);
+        $this->keyboard = json_encode($this->keyboard_cari_kembali);
+        $this->KirimPesan($message,true,true);
+        
+    }
+
+    public function Konsultasi()
+    {
+        $message ='';
+        $message = 'Tidak ada Operator Online' .chr(10);
+        $message .= 'Pesan anda akan terbaca saat operator Online' .chr(10);
+        $message .= 'Masukkan pertanyaan untuk operator : ' .chr(10);
+
+ 
+        LogPengunjung::create([
+            'username' => $this->username,
+            'command' => __FUNCTION__
+        ]);
+        //$this->keyboard = json_encode($this->keyboard_cari_kembali);
+        $this->KirimPesan($message,true);
+        
+    }
+    public function CariStatistik()
+    {
+        $message = "Masukkan Kata Kunci untuk Pencarian Statistik : ";
+ 
+        LogPengunjung::create([
+            'username' => $this->username,
+            'command' => __FUNCTION__
+        ]);
+        $this->keyboard = json_encode($this->keyboard_cari_kembali);
+        $this->KirimPesan($message,true,true);
+        
+    }
+
+    public function CariLainnya()
+    {
+        $message = "Masukkan Kata Kunci untuk Pencarian Lainnya : ";
+ 
+        LogPengunjung::create([
+            'username' => $this->username,
+            'command' => __FUNCTION__
+        ]);
+        $this->keyboard = json_encode($this->keyboard_cari_kembali);
+        $this->KirimPesan($message,true,true);
+        
     }
     public function cariData()
     {
@@ -153,7 +295,16 @@ class TelegramController extends Controller
             'command' => __FUNCTION__
         ]);
  
-        $this->sendMessage($message);
+        $this->KirimPesan($message);
+    }
+    public function TentangBot()
+    {
+        $message ='';
+        $message = '<b>TENTANG BOT TeleDATA</b>' .chr(10) .chr(10);
+        $message .= 'Bot TeleData ini merupakan invoasi dari BPS Provinsi NTB.' .chr(10);
+        $message .= 'memudahkan pengguna data melakukan pencarian data melalui Telegram.' .chr(10);
+        $this->KirimPesan($message,true);
+        $this->showMenu();
     }
     public function Keluar()
     {
@@ -163,88 +314,111 @@ class TelegramController extends Controller
             LogPengunjung::where('username', $this->username)->delete();
         }
         $message ='';
-        $message .= "Anda sudah keluar dari <b>TeleDATA</b>\n\n";
-        $message .= "Terimakasih sudah menghubungi kami";
-        $this->sendMessage($message,true);
+        $message = 'Anda sudah keluar dari <b>TeleDATA</b' .chr(10);
+        $message .= 'Terimakasih sudah menghubungi kami' .chr(10);
+        $this->KirimPesan($message,true);
     }
-    public function checkDatabase()
+    public function CheckInputan()
     {
-        try {
-            $telegram = LogPengunjung::where('username', $this->username)->latest()->firstOrFail();
+            $tg = LogPengunjung::where('username', $this->username)->latest()->first();
  
-            if ($telegram->command == 'InputNama') {
+            if ($tg->command == 'InputNama') {
                 $message ='';
-                $message .='Nama '.$this->text.' berhasil disimpan' . chr(10);
+                $message .='Nama <b>'.$this->text.'</b> berhasil disimpan' . chr(10);
                 $message .='Masukkan email anda :' . chr(10);
                 $data = DataPengunjung::where('username', $this->username)->first();
                 $data->nama = $this->text;
                 $data->update();
 
-                $telegram->command = 'InputEmail';
-                $telegram->update();
+                $tg->command = 'InputEmail';
+                $tg->update();
  
-                $this->sendMessage($message);
+                $this->KirimPesan($message,true);
             }
-            elseif ($telegram->command == 'InputEmail')
+            elseif ($tg->command == 'InputEmail')
             {
                 $message ='';
-                $message .='Email '.$this->text.' berhasil disimpan' . chr(10) .chr(10);
+                $message .='Email <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
                 $message .='Masukkan nomor hp anda :' . chr(10);
                 $data = DataPengunjung::where('username', $this->username)->first();
                 $data->email = $this->text;
                 $data->update();
 
-                $telegram->command = 'InputHP';
-                $telegram->update();
+                $tg->command = 'InputHP';
+                $tg->update();
  
-                $this->sendMessage($message);
+                $this->KirimPesan($message,true);
             }
-            elseif ($telegram->command == 'InputHP')
+            elseif ($tg->command == 'InputHP')
             {
                 $message ='';
-                $message .='Nomor HP '.$this->text.' berhasil disimpan' . chr(10) .chr(10);
+                $message .='Nomor HP <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
                 $data = DataPengunjung::where('username', $this->username)->first();
                 $data->nohp = $this->text;
                 $data->update();
 
-                $telegram->command = 'showMenu';
-                $telegram->update();
+                $tg->command = 'showMenu';
+                $tg->update();
  
-                $this->sendMessage($message);
+                $this->KirimPesan($message,true);
                 $this->showMenu();
             }
-            elseif ($telegram->command == 'cariData')
+            elseif ($tg->command == 'CariPublikasi')
             {
                 $message ='';
-                $message .='Hasil Pencarian' . chr(10) .chr(10);
+                $message .='Hasil Pencarian Publikasi : ' . chr(10) .chr(10);
 
-                $telegram->command = 'showMenu';
-                $telegram->update();
+                $tg->command = 'showMenu';
+                $tg->update();
  
-                $this->sendMessage($message);
+                $this->KirimPesan($message);
                 $this->showMenu();
             }
-        } catch (Exception $exception) {
-            $error = "Error.\n";
-            $this->showMenu($error);
-        }
-    }
+            elseif ($tg->command == 'CariStatistik')
+            {
+                $message ='';
+                $message .='Hasil Pencarian Statistik : ' . chr(10) .chr(10);
+
+                $tg->command = 'showMenu';
+                $tg->update();
  
-    protected function formatArray($data)
-    {
-        $formatted_data = "";
-        foreach ($data as $item => $value) {
-            $item = str_replace("_", " ", $item);
-            if ($item == 'last updated') {
-                $value = Carbon::createFromTimestampUTC($value)->diffForHumans();
+                $this->KirimPesan($message);
+                $this->showMenu();
             }
-            $formatted_data .= "<b>{$item}</b>\n";
-            $formatted_data .= "\t{$value}\n";
-        }
-        return $formatted_data;
-    }
+            elseif ($tg->command == 'CariLainnya')
+            {
+                $message ='';
+                $message .='Hasil Pencarian Lainnya : ' . chr(10) .chr(10);
+
+                $tg->command = 'showMenu';
+                $tg->update();
  
-    protected function sendMessage($message, $parse_html = false)
+                $this->KirimPesan($message);
+                $this->showMenu();
+            }
+            elseif ($tg->command == 'Konsultasi')
+            {
+                $message ='';
+                $message .='Pesan anda <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
+                
+                $tg->command = 'showMenu';
+                $tg->update();
+ 
+                $this->KirimPesan($message,true);
+                $this->showMenu();
+            }
+            else 
+            {
+                $message ='';
+                $message .='Perintah tidak dikenali. silakan pilih menu' . chr(10) .chr(10);
+                $tg->command = 'showMenu';
+                $tg->update();
+                $this->KirimPesan($message);
+                $this->showMenu();
+            }
+    }
+  
+    protected function KirimPesan($message, $parse_html = false, $keyboard = false)
     {
         $data = [
             'chat_id' => $this->chat_id,
@@ -252,6 +426,7 @@ class TelegramController extends Controller
         ];
  
         if ($parse_html) $data['parse_mode'] = 'HTML';
+        if ($keyboard) $data['reply_markup'] = $this->keyboard;
  
         $this->telegram->sendMessage($data);
     }

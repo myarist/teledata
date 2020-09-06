@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDataPengunjungsTable extends Migration
+class CreateLogPesansTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,12 @@ class CreateDataPengunjungsTable extends Migration
      */
     public function up()
     {
-        Schema::create('data_pengunjung', function (Blueprint $table) {
+        Schema::create('log_pesan', function (Blueprint $table) {
             $table->id();
-            $table->string('username');
+            $table->string('username')->nullable();
             $table->string('chatid');
-            $table->string('nama')->nullable();
-            $table->string('email')->nullable();
-            $table->string('nohp')->nullable();
+            $table->text('isi_pesan');
+            $table->integer('msg_id');
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ class CreateDataPengunjungsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('data_pengunjung');
+        Schema::dropIfExists('log_pesans');
     }
 }
