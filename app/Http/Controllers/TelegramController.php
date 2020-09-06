@@ -89,7 +89,7 @@ class TelegramController extends Controller
             $this->text = $update->callbackQuery->data;
             $this->chat_id = $update->callbackQuery->from->id;
             $this->nama = $update->callbackQuery->from->first_name;
-            if (array_key_exists('username',$update->callbackQuery->from))
+            if (array_key_exists("username",$update->callbackQuery->from))
             {
                 $this->username = $update->callbackQuery->from->username;
             }
@@ -245,7 +245,8 @@ class TelegramController extends Controller
     public function Konsultasi()
     {
         $message ='';
-        $message = 'Tidak ada Operator Online' .chr(10);
+        $message = '<b>Layanan Konsultasi Online</b>' .chr(10) .chr(10);
+        $message .= '<b>Tidak ada Operator Online</b>' .chr(10);
         $message .= 'Pesan anda akan terbaca saat operator Online' .chr(10);
         $message .= 'Masukkan pertanyaan untuk operator : ' .chr(10);
 
@@ -303,21 +304,9 @@ class TelegramController extends Controller
         $this->KirimPesan($message,true);
         $this->showMenu();
     }
-    public function Keluar()
-    {
-        $data = LogPengunjung::where('username', $this->username)->count();
-        if ($data > 0)
-        {
-            LogPengunjung::where('username', $this->username)->delete();
-        }
-        $message ='';
-        $message = 'Anda sudah keluar dari <b>TeleDATA</b' .chr(10);
-        $message .= 'Terimakasih sudah menghubungi kami' .chr(10);
-        $this->KirimPesan($message,true);
-    }
     public function CheckInputan()
     {
-            $tg = LogPengunjung::where('username', $this->username)->latest()->first();
+            $tg = LogPengunjung::where('username', $this->username)->latest("updated_at")->first();
  
             if ($tg->command == 'InputNama') {
                 $message ='';
