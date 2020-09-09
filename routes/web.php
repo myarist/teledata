@@ -26,3 +26,4 @@ Route::post('/3Nb71akPKQTM3jSK2BdLxT1VGq1FHfRquaGKJMTP/webhook', function () {
 Route::get('set-hook', 'TelegramController@setWebHook');
 Route::post(env('TELEGRAM_HASH_URL') . '/webhook', 'TelegramController@WebHook')->name('webhook');
 Route::get('get-me', 'TelegramController@getMe');
+Route::get('caripub/{keyword}', 'TelegramController@CariPub')->name('cari.pub');

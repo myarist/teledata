@@ -18,7 +18,7 @@ class CreateLogPesansTable extends Migration
             $table->string('username')->nullable();
             $table->string('chatid');
             $table->text('isi_pesan');
-            $table->integer('msg_id');
+            $table->integer('msg_id')->nullable();;
             $table->timestamps();
         });
     }

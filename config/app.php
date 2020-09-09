@@ -174,7 +174,9 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-		Telegram\Bot\Laravel\TelegramServiceProvider::class,
+        Telegram\Bot\Laravel\TelegramServiceProvider::class,
+        /* helper tambahan */
+        App\Providers\UmumProvider::class,
 
     ],
 
@@ -227,7 +229,8 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-		'Telegram'  => Telegram\Bot\Laravel\Facades\Telegram::class,
+        'Telegram'  => Telegram\Bot\Laravel\Facades\Telegram::class,
+        'WebApiBps' => App\Helpers\WebApiBps::class,
 
     ],
 

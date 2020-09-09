@@ -8,6 +8,11 @@ use Telegram\Bot\Laravel\Facades\Telegram;
 use Telegram\Bot\Api;
 use Carbon\Carbon;
 use Telegram\Bot\Keyboard\Keyboard;
+use App\LogPesan;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use Illuminate\Support\Facades\Http;
+use App\Helpers\WebApiBps;
 
 class TelegramController extends Controller
 {
@@ -103,7 +108,7 @@ class TelegramController extends Controller
                     $this->MenuCari();
                     break;
                 case 'konsultasi':
-                    $this->Konsultasi();
+                    $this->MenuKonsultasi();
                     break;
                 case 'tentangbot':
                     $this->TentangBot();
@@ -173,7 +178,9 @@ class TelegramController extends Controller
             }
             else
             {
-                $message = 'Anda terdaftar sebagai : <b>'.$data->nama.'</b> ';
+                $message = 'Anda terdaftar sebagai : <b>'.$data->nama.'</b>' .chr(10);
+                $message .= 'Email : <b>'.$data->email.'</b>' .chr(10);
+                $message .= 'No HP : <b>'.$data->nohp.'</b>' .chr(10);
                 $this->KirimPesan($message, true);
                 $this->showMenu();
             }
@@ -243,12 +250,13 @@ class TelegramController extends Controller
         
     }
 
-    public function Konsultasi()
+    public function MenuKonsultasi()
     {
-        $message ='';
         $message = '<b>Layanan Konsultasi Online</b>' .chr(10) .chr(10);
-        $message .= '<b>Tidak ada Operator Online</b>' .chr(10);
-        $message .= 'Pesan anda akan terbaca saat operator Online' .chr(10);
+        $message .= '<b>Tidak ada Operator Online</b>' .chr(10) .chr(10);
+        $message .= 'Hari Layanan :  Senin - Jumat' .chr(10);
+        $message .= 'Jam Layanan : 08.00 - 15.00 WITA' .chr(10);
+        $message .= 'Pesan anda akan terbaca saat operator Online' .chr(10) .chr(10);
         $message .= 'Masukkan pertanyaan untuk operator : ' .chr(10);
 
  
@@ -308,7 +316,6 @@ class TelegramController extends Controller
     public function CheckInputan()
     {
             $tg = LogPengunjung::where('username', $this->username)->latest("updated_at")->first();
- 
             if ($tg->command == 'InputNama') {
                 $message ='';
                 $message .='Nama <b>'.$this->text.'</b> berhasil disimpan' . chr(10);
@@ -352,14 +359,29 @@ class TelegramController extends Controller
             }
             elseif ($tg->command == 'CariPublikasi')
             {
-                $message ='';
-                $message .='Hasil Pencarian Publikasi : ' . chr(10) .chr(10);
-
+                
+                $h = new WebApiBps();
+                $response = $h->caripublikasi($this->text);
+                if ($response['data-availability']=='available')
+                {
+                    $message ='Hasil Pencarian Publikasi : ' . chr(10) .chr(10);
+                    $i=1;
+                    foreach ($response['data'][1] as $item)
+                    {
+                        $message .= $i.'. '. $item["title"] .' | <a href="'.$item["pdf"].'">Download PDF</a>' .chr(10);
+                        $i++;
+                    }
+                }
+                else 
+                {
+                    $message ='Publikasi yang anda cari tidak tersedia' .chr(10);
+                    $message .= 'Ulangi pencarian publikasi' .chr(10);
+                }
+                
                 $tg->command = 'showMenu';
                 $tg->update();
- 
-                $this->KirimPesan($message);
-                $this->showMenu();
+                $this->keyboard = json_encode($this->keyboard_cari_kembali);
+                $this->KirimPesan($message,true,true);
             }
             elseif ($tg->command == 'CariStatistik')
             {
@@ -383,11 +405,17 @@ class TelegramController extends Controller
                 $this->KirimPesan($message);
                 $this->showMenu();
             }
-            elseif ($tg->command == 'Konsultasi')
+            elseif ($tg->command == 'MenuKonsultasi')
             {
                 $message ='';
                 $message .='Pesan anda <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
                 
+                $dt = new LogPesan();
+                $dt->username = $this->username;
+                $dt->chatid = $this->chat_id;
+                $dt->isi_pesan = $this->text;
+                $dt->save();
+
                 $tg->command = 'showMenu';
                 $tg->update();
  
@@ -401,10 +429,10 @@ class TelegramController extends Controller
                 $tg->command = 'showMenu';
                 $tg->update();
                 $this->KirimPesan($message);
-                $this->showMenu();
+                $this->AwalStart();
             }
     }
-  
+    
     protected function KirimPesan($message, $parse_html = false, $keyboard = false)
     {
         $data = [
@@ -416,5 +444,32 @@ class TelegramController extends Controller
         if ($keyboard) $data['reply_markup'] = $this->keyboard;
  
         $this->telegram->sendMessage($data);
+    }
+    public function CariPub($keyword)
+    {
+        $h = new WebApiBps();
+        $response = $h->caripublikasi($keyword);
+        //dd($response['data'][1]);
+        /*
+        if ($response['status']=="OK")
+        {
+            $hasil = array();
+            foreach ($response['data'][1] as $item)
+            {
+                $hasil[]=array(
+                    'pub_id' => $item["pub_id"],
+                    'judul' => $item["title"],
+                    'cover_url' => $item["cover"],
+                    'pdf' => $item["pdf"]
+                );
+            }
+            //$dd($response['data']);
+        }
+        else 
+        {
+            $hasil ='ERROR';
+        }
+        */
+        return $response;
     }
 }
