@@ -33,10 +33,17 @@ class WebApiBps
 		
 		return $ch;
     }
-    public function caripublikasi($keyword)
+    public function caripublikasi($keyword,$page)
     {
-        $getdata = "?model=publication&domain=5200&key=".$this->webapi."&keyword=".trim($keyword); 
-		$url="https://webapi.bps.go.id/v1/api/list/".$getdata; 
+        //$getdata = "?model=publication&domain=5200&key=".$this->webapi."&keyword=".$keyword; 
+        if ($page>1)
+        {
+            $url="https://webapi.bps.go.id/v1/api/list/?model=publication&domain=5200&key=".$this->webapi."&keyword=".$keyword."&page=".$page;
+        }
+        else {
+            $url="https://webapi.bps.go.id/v1/api/list/?model=publication&domain=5200&key=".$this->webapi."&keyword=".$keyword;
+        }
+		 
 		$ch = $this->connectcurl($this->ch, $url);
         $result = curl_exec ($ch); 
         $result = json_decode($result, TRUE);

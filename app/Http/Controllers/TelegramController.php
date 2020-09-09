@@ -211,17 +211,17 @@ class TelegramController extends Controller
     //nama lengkap, email, nomor hp
     public function InputEmail()
     {
-        $message = "Masukkan Email anda : ";
+        $message = "Silakan Masukkan Email anda : ";
         $this->KirimPesan($message);
     }
     public function InputHP()
     {
-        $message = "Masukkan Nomor HP anda : ";
+        $message = "Silakan Masukkan Nomor HP anda : ";
         $this->KirimPesan($message);
     }
     public function InputNama()
     {
-        $message = "Masukkan Nama Lengkap";
+        $message = "Silakan Masukkan Nama Lengkap";
  
         LogPengunjung::create([
             'username' => $this->username,
@@ -319,7 +319,7 @@ class TelegramController extends Controller
             if ($tg->command == 'InputNama') {
                 $message ='';
                 $message .='Nama <b>'.$this->text.'</b> berhasil disimpan' . chr(10);
-                $message .='Masukkan email anda :' . chr(10);
+                $message .='<i>Silakan masukkan email anda</i> :' . chr(10);
                 $data = DataPengunjung::where('username', $this->username)->first();
                 $data->nama = $this->text;
                 $data->update();
@@ -333,7 +333,7 @@ class TelegramController extends Controller
             {
                 $message ='';
                 $message .='Email <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
-                $message .='Masukkan nomor hp anda :' . chr(10);
+                $message .='<i>Silakan Masukkan nomor HP anda</i> :' . chr(10);
                 $data = DataPengunjung::where('username', $this->username)->first();
                 $data->email = $this->text;
                 $data->update();
@@ -361,27 +361,54 @@ class TelegramController extends Controller
             {
                 
                 $h = new WebApiBps();
-                $response = $h->caripublikasi($this->text);
+                $keyword = rawurlencode($this->text);
+                $response = $h->caripublikasi($keyword,1);
                 if ($response['data-availability']=='available')
                 {
-                    $message ='Hasil Pencarian Publikasi : ' . chr(10) .chr(10);
-                    $i=1;
-                    foreach ($response['data'][1] as $item)
+                    if ($response['data'][0]['pages'] > 1) 
                     {
-                        $message .= $i.'. '. $item["title"] .' | <a href="'.$item["pdf"].'">Download PDF</a>' .chr(10);
-                        $i++;
+                        //ada lebih 1 pages
+                        $message ='';
+                        $message ='Hasil Pencarian Publikasi : ' . chr(10) .chr(10);
+                        for ($i = 1; $i <= 2; $i++)
+                        {
+                            $respon = $h->caripublikasi($keyword,$i);
+                            foreach ($respon['data'][1] as $item)
+                            {
+                                $message .= 'Judul Publikasi : <b>'.$item["title"].'</b>' .chr(10);
+                                $message .= 'Rilis : <b>'.\Carbon\Carbon::parse($item["rl_date"])->format('d M Y').'</b> | <a href="'.$item["pdf"].'">Download PDF</a> ('.$item["size"].')' .chr(10) .chr(10);
+                            }
+                           
+                        }
+                        $this->keyboard = json_encode($this->keyboard_cari_kembali);
+                        $this->KirimPesan($message,true,true);
                     }
+                    else
+                    {
+                        $message ='Hasil Pencarian Publikasi : ' . chr(10) .chr(10);
+                    
+                        foreach ($response['data'][1] as $item)
+                        {
+                            
+                            $message .= 'Judul Publikasi : <b>'.$item["title"].'</b>' .chr(10);
+                            $message .= 'Rilis : <b>'.\Carbon\Carbon::parse($item["rl_date"])->format('d M Y').'</b> | <a href="'.$item["pdf"].'">Download PDF</a> ('.$item["size"].')' .chr(10) .chr(10);
+                        }
+                        $this->keyboard = json_encode($this->keyboard_cari_kembali);
+                        $this->KirimPesan($message,true,true);
+                    }
+                    
                 }
                 else 
                 {
                     $message ='Publikasi yang anda cari tidak tersedia' .chr(10);
                     $message .= 'Ulangi pencarian publikasi' .chr(10);
+                    $this->keyboard = json_encode($this->keyboard_cari_kembali);
+                    $this->KirimPesan($message,true,true);
                 }
                 
                 $tg->command = 'showMenu';
                 $tg->update();
-                $this->keyboard = json_encode($this->keyboard_cari_kembali);
-                $this->KirimPesan($message,true,true);
+                
             }
             elseif ($tg->command == 'CariStatistik')
             {
@@ -448,11 +475,13 @@ class TelegramController extends Controller
     public function CariPub($keyword)
     {
         $h = new WebApiBps();
-        $response = $h->caripublikasi($keyword);
-        //dd($response['data'][1]);
-        /*
-        if ($response['status']=="OK")
+        $keyword = rawurlencode($keyword);
+        $response = $h->caripublikasi($keyword,1);
+        
+        
+        if ($response['data-availability']=='available')
         {
+            dd($response['data'][0]);
             $hasil = array();
             foreach ($response['data'][1] as $item)
             {
@@ -469,7 +498,7 @@ class TelegramController extends Controller
         {
             $hasil ='ERROR';
         }
-        */
+        
         return $response;
     }
 }
