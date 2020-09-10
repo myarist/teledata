@@ -28,3 +28,4 @@ Route::post(env('TELEGRAM_HASH_URL') . '/webhook', 'TelegramController@WebHook')
 Route::get('get-me', 'TelegramController@getMe');
 Route::get('caripub/{keyword}', 'TelegramController@CariPub')->name('cari.pub');
 Route::get('carilain/{keyword}', 'TelegramController@cariLain')->name('cari.lain');
+Route::get('caribrs/{keyword}', 'TelegramController@cariBrsSaja')->name('cari.brs');

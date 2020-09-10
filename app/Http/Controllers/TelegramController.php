@@ -43,6 +43,9 @@ class TelegramController extends Controller
                 ],
                 [
                     ['text'=> 'Tentang Bot', 'callback_data'=> 'tentangbot']
+                ],
+                [
+                    ['text'=> 'Selesai', 'callback_data'=> 'selesai']
                 ]
             ]
         ];
@@ -69,6 +72,21 @@ class TelegramController extends Controller
             'inline_keyboard' => [
                 [
                     ['text'=> 'Kembali ke Menu Pencarian', 'callback_data'=>'menucari']
+                ]
+            ]
+        ];
+        $this->keyboard_edit_profil = [
+            'inline_keyboard' => [
+                [
+                    ['text' => 'Edit Nama', 'callback_data' => 'editnama'],
+                    ['text' => 'Edit Email', 'callback_data' => 'editemail'],
+                    ['text' => 'Edit No HP', 'callback_data' => 'editnohp']
+                ],
+                [
+                    ['text'=> 'Edit Profil', 'callback_data'=>'editprofil']
+                ],
+                [
+                    ['text'=> 'Menu Awal', 'callback_data'=>'menuawal']
                 ]
             ]
         ];
@@ -134,6 +152,21 @@ class TelegramController extends Controller
                 case 'myprofil':
                     $this->MyProfil();
                     break;
+                case 'editnama':
+                    $this->EditNama();
+                    break;
+                case 'editemail':
+                    $this->EditEmail();
+                    break;
+                case 'editnohp':
+                    $this->EditNoHp();
+                    break;
+                case 'editprofil':
+                    $this->InputNama();
+                    break;
+                case 'selesai':
+                    $this->Selesai();
+                    break;
                 default:
                 $this->showMenu();
                     break;
@@ -190,7 +223,8 @@ class TelegramController extends Controller
             }
             else
             {
-                $message = 'Anda terdaftar sebagai : <b>'.$data->nama.'</b>' .chr(10);
+                $message = 'Anda terdaftar sebagai : ' .chr(10);
+                $message .= 'Nama : <b>'.$data->nama.'</b>' .chr(10);
                 $message .= 'Email : <b>'.$data->email.'</b>' .chr(10);
                 $message .= 'No HP : <b>'.$data->nohp.'</b>' .chr(10);
                 $this->KirimPesan($message, true);
@@ -200,7 +234,7 @@ class TelegramController extends Controller
         }
         else
         {
-            $message = 'Selamat datang di <b>TeleDATA</b>' .chr(10);
+            $message = 'Selamat datang di <b>TeleDATA (Telegram Data BPSNTB)</b>' .chr(10);
             $message .= '<b>BPS Provinsi Nusa Tenggara Barat</b>' .chr(10) .chr(10);
             $this->nama = $this->username;
             $data = new DataPengunjung();
@@ -215,9 +249,9 @@ class TelegramController extends Controller
     }
     public function showMenu($info = false)
     { 
-        $message = 'Selamat datang di <b>TeleDATA</b>' .chr(10);
+        $message = 'Selamat datang di <b>TeleDATA (Telegram Data BPSNTB)</b>' .chr(10);
         $message .= '<b>BPS Provinsi Nusa Tenggara Barat</b>' .chr(10) .chr(10);
-        $message .= 'Silakan pilih layanan kami : ' .chr(10) .chr(10);
+        $message .= 'Silakan <b>Pilih Layanan</b> yang tersedia : ' .chr(10) .chr(10);
         $this->KirimPesan($message,true,true);
     }
     //nama lengkap, email, nomor hp
@@ -226,28 +260,68 @@ class TelegramController extends Controller
         $message = "Silakan Masukkan Email anda : ";
         $this->KirimPesan($message);
     }
+    public function EditEmail()
+    {
+        LogPengunjung::create([
+            'username' => $this->username,
+            'chatid' => $this->chat_id,
+            'command' => __FUNCTION__
+        ]);
+        $message = "Silakan Masukkan Email anda : ";
+        $this->KirimPesan($message);
+    }
     public function InputHP()
     {
-        $message = "Silakan Masukkan Nomor HP anda : ";
-        $this->KirimPesan($message);
+        $message = "<i>Silakan Masukkan Nomor HP anda</i> : ";
+        $this->KirimPesan($message,true);
+    }
+    public function Selesai()
+    {
+        $count = LogPengunjung::where('username', $this->username)->count();
+        if ($count > 0)
+        {
+            LogPengunjung::where('username', $this->username)->delete();
+        }
+        $message = "<b>Terimakasih Telah Menggunakan Layanan Kami</b> : ";
+        
+        $this->KirimPesan($message,true);
+    }
+    public function EditNoHp()
+    {
+        LogPengunjung::create([
+            'username' => $this->username,
+            'chatid' => $this->chat_id,
+            'command' => __FUNCTION__
+        ]);
+        $message = "<i>Silakan Masukkan Nomor HP anda</i> : ";
+        $this->KirimPesan($message,true);
     }
     public function InputNama()
     {
-        $message = "Silakan Masukkan Nama Lengkap";
+        $message = "<i>Silakan Masukkan Nama Lengkap</i> :";
  
         LogPengunjung::create([
             'username' => $this->username,
+            'chatid' => $this->chat_id,
             'command' => __FUNCTION__
         ]);
  
-        $this->KirimPesan($message);
+        $this->KirimPesan($message,true);
+    }
+    public function EditNama()
+    {
+        $message = "<i>Silakan Masukkan Nama Lengkap</i> :";
+ 
+        LogPengunjung::create([
+            'username' => $this->username,
+            'chatid' => $this->chat_id,
+            'command' => __FUNCTION__
+        ]);
+ 
+        $this->KirimPesan($message,true);
     }
     public function MyProfil()
     {
-        LogPengunjung::create([
-            'username' => $this->username,
-            'command' => __FUNCTION__
-        ]);
         $count = DataPengunjung::where('username','=',$this->username)->count();
         if ($count > 0) 
         {
@@ -267,11 +341,12 @@ class TelegramController extends Controller
             }
             else
             {
-                $message = 'Anda terdaftar sebagai : <b>'.$data->nama.'</b>' .chr(10);
+                $message = 'Anda terdaftar sebagai : ' .chr(10);
+                $message .= 'Nama : <b>'.$data->nama.'</b>' .chr(10);
                 $message .= 'Email : <b>'.$data->email.'</b>' .chr(10);
                 $message .= 'No HP : <b>'.$data->nohp.'</b>' .chr(10);
-                $this->KirimPesan($message, true);
-                $this->showMenu();
+                $this->keyboard = json_encode($this->keyboard_edit_profil);
+                $this->KirimPesan($message,true,true);
             }
         }
         else 
@@ -292,6 +367,7 @@ class TelegramController extends Controller
  
         LogPengunjung::create([
             'username' => $this->username,
+            'chatid' => $this->chat_id,
             'command' => __FUNCTION__
         ]);
         $this->keyboard = json_encode($this->keyboard_cari_kembali);
@@ -305,6 +381,7 @@ class TelegramController extends Controller
  
         LogPengunjung::create([
             'username' => $this->username,
+            'chatid' => $this->chat_id,
             'command' => __FUNCTION__
         ]);
         $this->keyboard = json_encode($this->keyboard_cari_kembali);
@@ -316,14 +393,15 @@ class TelegramController extends Controller
     {
         $message = '<b>Layanan Konsultasi Online</b>' .chr(10) .chr(10);
         $message .= '<b>Tidak ada Operator Online</b>' .chr(10) .chr(10);
-        $message .= 'Hari Layanan :  Senin - Jumat' .chr(10);
+        $message .= 'Hari Layanan :  Senin - Jumat (Kecuali hari libur)' .chr(10);
         $message .= 'Jam Layanan : 08.00 - 15.00 WITA' .chr(10);
         $message .= 'Pesan anda akan terbaca saat operator Online' .chr(10) .chr(10);
-        $message .= 'Masukkan pertanyaan untuk operator : ' .chr(10);
+        $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
 
  
         LogPengunjung::create([
             'username' => $this->username,
+            'chatid' => $this->chat_id,
             'command' => __FUNCTION__
         ]);
         //$this->keyboard = json_encode($this->keyboard_cari_kembali);
@@ -336,6 +414,7 @@ class TelegramController extends Controller
  
         LogPengunjung::create([
             'username' => $this->username,
+            'chatid' => $this->chat_id,
             'command' => __FUNCTION__
         ]);
         $this->keyboard = json_encode($this->keyboard_cari_kembali);
@@ -349,28 +428,19 @@ class TelegramController extends Controller
  
         LogPengunjung::create([
             'username' => $this->username,
+            'chatid' => $this->chat_id,
             'command' => __FUNCTION__
         ]);
         $this->keyboard = json_encode($this->keyboard_cari_kembali);
         $this->KirimPesan($message,true,true);
         
     }
-    public function cariData()
-    {
-        $message = "Masukkan Kata Kunci";
- 
-        LogPengunjung::create([
-            'username' => $this->username,
-            'command' => __FUNCTION__
-        ]);
- 
-        $this->KirimPesan($message);
-    }
+    
     public function TentangBot()
     {
         $message ='';
-        $message = '<b>TENTANG BOT TeleDATA</b>' .chr(10) .chr(10);
-        $message .= 'Bot TeleData ini merupakan invoasi dari BPS Provinsi NTB.' .chr(10);
+        $message = '<b>TENTANG BOT TeleDATA (Telegram Data BPSNTB)</b>' .chr(10) .chr(10);
+        $message .= 'Bot TeleData ini merupakan invoasi dari BPS Provinsi Nusa Tenggara Barat.' .chr(10);
         $message .= 'memudahkan pengguna data melakukan pencarian data melalui Telegram.' .chr(10);
         $this->KirimPesan($message,true);
         $this->showMenu();
@@ -380,7 +450,7 @@ class TelegramController extends Controller
             $tg = LogPengunjung::where('username', $this->username)->latest("updated_at")->first();
             if ($tg->command == 'InputNama') {
                 $message ='';
-                $message .='Nama <b>'.$this->text.'</b> berhasil disimpan' . chr(10);
+                $message .='Nama <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
                 $message .='<i>Silakan masukkan email anda</i> :' . chr(10);
                 $data = DataPengunjung::where('username', $this->username)->first();
                 $data->nama = $this->text;
@@ -390,6 +460,19 @@ class TelegramController extends Controller
                 $tg->update();
  
                 $this->KirimPesan($message,true);
+            }
+            elseif ($tg->command == 'EditNama') {
+                $message ='';
+                $message .='Nama <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
+                $data = DataPengunjung::where('username', $this->username)->first();
+                $data->nama = $this->text;
+                $data->update();
+
+                $tg->command = 'showMenu';
+                $tg->update();
+ 
+                $this->KirimPesan($message,true);
+                $this->MyProfil();
             }
             elseif ($tg->command == 'InputEmail')
             {
@@ -404,6 +487,34 @@ class TelegramController extends Controller
                 $tg->update();
  
                 $this->KirimPesan($message,true);
+            }
+            elseif ($tg->command == 'EditEmail')
+            {
+                $message ='';
+                $message .='Email <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
+                $data = DataPengunjung::where('username', $this->username)->first();
+                $data->email = $this->text;
+                $data->update();
+
+                $tg->command = 'showMenu';
+                $tg->update();
+ 
+                $this->KirimPesan($message,true);
+                $this->MyProfil();
+            }
+            elseif ($tg->command == 'EditNoHp')
+            {
+                $message ='';
+                $message .='Nomor HP <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
+                $data = DataPengunjung::where('username', $this->username)->first();
+                $data->nohp = $this->text;
+                $data->update();
+
+                $tg->command = 'showMenu';
+                $tg->update();
+ 
+                $this->KirimPesan($message,true);
+                $this->MyProfil();
             }
             elseif ($tg->command == 'InputHP')
             {
@@ -425,20 +536,25 @@ class TelegramController extends Controller
                 $h = new WebApiBps();
                 $keyword = rawurlencode($this->text);
                 $response = $h->caripublikasi($keyword,1);
-                if ($response["data-availability"]=="available")
+                if ($response['data-availability']=='available')
                 {
                     if ($response['data'][0]['pages'] > 1) 
                     {
                         //ada lebih 1 pages
+                        $total_tabel = $response['data'][0]['pages'];
+                        if ($total_tabel > 3) 
+                        {
+                            $total_tabel = 3;
+                        }
                         $message ='';
                         $message ='Hasil Pencarian Publikasi : ' . chr(10) .chr(10);
-                        for ($i = 1; $i <= 2; $i++)
+                        for ($i = 1; $i <= $total_tabel; $i++)
                         {
                             $respon = $h->caripublikasi($keyword,$i);
                             foreach ($respon['data'][1] as $item)
                             {
-                                $message .= 'Judul Publikasi : <b>'.$item["title"].'</b>' .chr(10);
-                                $message .= 'Rilis : <b>'.\Carbon\Carbon::parse($item["rl_date"])->format('d M Y').'</b> | <a href="'.$item["pdf"].'">Download PDF</a> ('.$item["size"].')' .chr(10) .chr(10);
+                                $message .= 'Judul Publikasi : <b>'.$item['title'].'</b>' .chr(10);
+                                $message .= 'Rilis : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> | <a href="'.$item['pdf'].'">Download PDF</a> ('.$item['size'].')' .chr(10) .chr(10);
                             }
                            
                         }
@@ -452,8 +568,8 @@ class TelegramController extends Controller
                         foreach ($response['data'][1] as $item)
                         {
                             
-                            $message .= 'Judul Publikasi : <b>'.$item["title"].'</b>' .chr(10);
-                            $message .= 'Rilis : <b>'.\Carbon\Carbon::parse($item["rl_date"])->format('d M Y').'</b> | <a href="'.$item["pdf"].'">Download PDF</a> ('.$item["size"].')' .chr(10) .chr(10);
+                            $message .= 'Judul Publikasi : <b>'.$item['title'].'</b>' .chr(10);
+                            $message .= 'Rilis : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> | <a href="'.$item['pdf'].'">Download PDF</a> ('.$item['size'].')' .chr(10) .chr(10);
                         }
                         $this->keyboard = json_encode($this->keyboard_cari_kembali);
                         $this->KirimPesan($message,true,true);
@@ -478,12 +594,16 @@ class TelegramController extends Controller
                 $keyword = rawurlencode($this->text);
                 $response = $h->caristatistik($keyword,1);
                 
-                if ($response["data-availability"]=="available")
+                if ($response['data-availability']=='available')
                 {
                     if ($response['data'][0]['pages'] > 1) 
                     {
                         //ada lebih 1 pages
                         $total_tabel = $response['data'][0]['pages'];
+                        if ($total_tabel > 3) 
+                        {
+                            $total_tabel = 3;
+                        }
                         $message ='';
                         $message ='Hasil Pencarian <b>Tabel Statistik</b> : ' . chr(10) .chr(10);
                         for ($i = 1; $i <= $total_tabel; $i++)
@@ -491,8 +611,8 @@ class TelegramController extends Controller
                             $respon = $h->caristatistik($keyword,$i);
                             foreach ($respon['data'][1] as $item)
                             {
-                                $message .= 'Judul Tabel : <b>'.$item["title"].'</b>' .chr(10);
-                                $message .= 'Update : <b>'.\Carbon\Carbon::parse($item["updt_date"])->format('d M Y').'</b> | <a href="'.$item["excel"].'">Download Tabel</a> ('.$item["size"].')' .chr(10) .chr(10);
+                                $message .= 'Judul Tabel : <b>'.$item['title'].'</b>' .chr(10);
+                                $message .= 'Update : <b>'.\Carbon\Carbon::parse($item['updt_date'])->format('d M Y').'</b> | <a href="'.$item['excel'].'">Download Tabel</a> ('.$item['size'].')' .chr(10) .chr(10);
                             }
                            
                         }
@@ -506,8 +626,8 @@ class TelegramController extends Controller
                         foreach ($response['data'][1] as $item)
                         {
                             
-                            $message .= 'Judul Tabel : <b>'.$item["title"].'</b>' .chr(10);
-                            $message .= 'Update : <b>'.\Carbon\Carbon::parse($item["updt_date"])->format('d M Y').'</b> | <a href="'.$item["excel"].'">Download Tabel</a> ('.$item["size"].')' .chr(10) .chr(10);
+                            $message .= 'Judul Tabel : <b>'.$item['title'].'</b>' .chr(10);
+                            $message .= 'Update : <b>'.\Carbon\Carbon::parse($item['updt_date'])->format('d M Y').'</b> | <a href="'.$item['excel'].'">Download Tabel</a> ('.$item['size'].')' .chr(10) .chr(10);
                         }
                         $this->keyboard = json_encode($this->keyboard_cari_kembali);
                         $this->KirimPesan($message,true,true);
@@ -529,23 +649,27 @@ class TelegramController extends Controller
             {
                 $h = new WebApiBps();
                 $keyword = rawurlencode($this->text);
-                $response = $h->carilain($keyword,1);
+                $response = $h->caribrs($keyword,1);
                 
-                if ($response["data-availability"]=="available")
+                if ($response['data-availability']=='available')
                 {
                     if ($response['data'][0]['pages'] > 1) 
                     {
                         //ada lebih 1 pages
                         $total_tabel = $response['data'][0]['pages'];
+                        if ($total_tabel > 3) 
+                        {
+                            $total_tabel = 3;
+                        }
                         $message ='';
                         $message ='Hasil Pencarian <b>Berita Resmi Statistik</b> : ' . chr(10) .chr(10);
                         for ($i = 1; $i <= $total_tabel; $i++)
                         {
-                            $respon = $h->carilain($keyword,$i);
+                            $respon = $h->caribrs($keyword,$i);
                             foreach ($respon['data'][1] as $item)
                             {
-                                $message .= 'Judul : <b>'.$item["title"].'</b>' .chr(10);
-                                $message .= 'Update : <b>'.\Carbon\Carbon::parse($item["rl_date"])->format('d M Y').'</b> | <a href="'.$item["pdf"].'">Download</a> ('.$item["size"].')' .chr(10) .chr(10);
+                                $message .= 'Judul : <b>'.$item['title'].'</b>' .chr(10);
+                                $message .= 'Rilis : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> | <a href="'.$item['pdf'].'">Download</a> ('.$item['size'].')' .chr(10) .chr(10);
                             }
                            
                         }
@@ -559,8 +683,8 @@ class TelegramController extends Controller
                         foreach ($response['data'][1] as $item)
                         {
                             
-                            $message .= 'Judul : <b>'.$item["title"].'</b>' .chr(10);
-                            $message .= 'Update : <b>'.\Carbon\Carbon::parse($item["rl_date"])->format('d M Y').'</b> | <a href="'.$item["pdf"].'">Download</a> ('.$item["size"].')' .chr(10) .chr(10);
+                            $message .= 'Judul : <b>'.$item['title'].'</b>' .chr(10);
+                            $message .= 'Rilis : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> | <a href="'.$item['pdf'].'">Download</a> ('.$item['size'].')' .chr(10) .chr(10);
                         }
                         $this->keyboard = json_encode($this->keyboard_cari_kembali);
                         $this->KirimPesan($message,true,true);
@@ -583,12 +707,16 @@ class TelegramController extends Controller
                 $keyword = rawurlencode($this->text);
                 $response = $h->carilain($keyword,1);
                 
-                if ($response["data-availability"]=="available")
+                if ($response['data-availability']=='available')
                 {
                     if ($response['data'][0]['pages'] > 1) 
                     {
                         //ada lebih 1 pages
                         $total_tabel = $response['data'][0]['pages'];
+                        if ($total_tabel > 3) 
+                        {
+                            $total_tabel = 3;
+                        }
                         $message ='';
                         $message ='Hasil Pencarian <b>Lainnya</b> : ' . chr(10) .chr(10);
                         for ($i = 1; $i <= $total_tabel; $i++)
@@ -596,8 +724,8 @@ class TelegramController extends Controller
                             $respon = $h->carilain($keyword,$i);
                             foreach ($respon['data'][1] as $item)
                             {
-                                $message .= 'Judul : <b>'.$item["title"].'</b>' .chr(10);
-                                $message .= 'Update : <b>'.\Carbon\Carbon::parse($item["rl_date"])->format('d M Y').'</b>' .chr(10) .chr(10);
+                                $message .= 'Judul : <b>'.$item['title'].'</b>' .chr(10);
+                                $message .= 'Tanggal : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b>' .chr(10) .chr(10);
                             }
                            
                         }
@@ -610,9 +738,10 @@ class TelegramController extends Controller
                     
                         foreach ($response['data'][1] as $item)
                         {
-                            
-                            $message .= 'Judul : <b>'.$item["title"].'</b>' .chr(10);
-                            $message .= 'Update : <b>'.\Carbon\Carbon::parse($item["rl_date"])->format('d M Y').'</b>' .chr(10) .chr(10);
+                            $url_link = explode("-",$item['rl_date']);
+                            $link = 'https://ntb.bps.go.id/news/'.$url_link[0].'/'.$url_link[1].'/'.$url_link[2].'/'.$item['news_id'].'/bpsntb.html';
+                            $message .= 'Judul : <b>'.$item['title'].'</b>' .chr(10);
+                            $message .= 'Tanggal : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> | <a href="'.$link.'">Link</a>' .chr(10) .chr(10);
                         }
                         $this->keyboard = json_encode($this->keyboard_cari_kembali);
                         $this->KirimPesan($message,true,true);
@@ -703,6 +832,36 @@ class TelegramController extends Controller
         $h = new WebApiBps();
         $keyword = rawurlencode($keyword);
         $response = $h->carilain($keyword,1);
+        
+        dd($response);
+        if ($response['data-availability']=='available')
+        {
+            dd($response['data'][0]);
+            $hasil = array();
+            foreach ($response['data'][1] as $item)
+            {
+                $hasil[]=array(
+                    'pub_id' => $item["pub_id"],
+                    'judul' => $item["title"],
+                    'cover_url' => $item["cover"],
+                    'pdf' => $item["pdf"]
+                );
+            }
+            //$dd($response['data']);
+        }
+        else 
+        {
+            $hasil ='ERROR';
+        }
+        
+        return $response;
+    }
+
+    public function cariBrsSaja($keyword)
+    {
+        $h = new WebApiBps();
+        $keyword = rawurlencode($keyword);
+        $response = $h->caribrs($keyword,1);
         
         dd($response);
         if ($response['data-availability']=='available')
