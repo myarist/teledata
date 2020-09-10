@@ -13,6 +13,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Http;
 use App\Helpers\WebApiBps;
+use App\LogCari;
 
 class TelegramController extends Controller
 {
@@ -377,7 +378,7 @@ class TelegramController extends Controller
 
     public function CariBrs()
     {
-        $message = "Masukkan Kata Kunci untuk Pencarian Berita Resmi Statistik : ";
+        $message = "Masukkan <b>Kata Kunci</b> untuk <b>Pencarian Berita Resmi Statistik</b> : ";
  
         LogPengunjung::create([
             'username' => $this->username,
@@ -410,7 +411,7 @@ class TelegramController extends Controller
     }
     public function CariStatistik()
     {
-        $message = "Masukkan Kata Kunci untuk Pencarian Statistik : ";
+        $message = "Masukkan <b>Kata Kunci</b> untuk <b>Pencarian Statistik</b> : ";
  
         LogPengunjung::create([
             'username' => $this->username,
@@ -424,7 +425,7 @@ class TelegramController extends Controller
 
     public function CariLainnya()
     {
-        $message = "Masukkan Kata Kunci untuk Pencarian Lainnya : ";
+        $message = "Masukkan <b>Kata Kunci</b> untuk <b>Pencarian Lainnya</b> : ";
  
         LogPengunjung::create([
             'username' => $this->username,
@@ -442,6 +443,7 @@ class TelegramController extends Controller
         $message = '<b>TENTANG BOT TeleDATA (Telegram Data BPSNTB)</b>' .chr(10) .chr(10);
         $message .= 'Bot TeleData ini merupakan invoasi dari BPS Provinsi Nusa Tenggara Barat.' .chr(10);
         $message .= 'memudahkan pengguna data melakukan pencarian data melalui Telegram.' .chr(10);
+        $message .= 'dikembangkan oleh Bidang IPDS' .chr(10);
         $this->KirimPesan($message,true);
         $this->showMenu();
     }
@@ -535,7 +537,14 @@ class TelegramController extends Controller
                 }
                 elseif ($tg->command == 'CariPublikasi')
                 {
-                    
+                     //log keyword yg dicari
+                     LogCari::create([
+                        'username' => $this->username,
+                        'chatid' => $this->chat_id,
+                        'command' => 'CariPublikasi',
+                        'keyword' => $this->text
+                    ]);
+                    //batas
                     $h = new WebApiBps();
                     $keyword = rawurlencode($this->text);
                     $response = $h->caripublikasi($keyword,1);
@@ -593,6 +602,14 @@ class TelegramController extends Controller
                 }
                 elseif ($tg->command == 'CariStatistik')
                 {
+                     //log keyword yg dicari
+                     LogCari::create([
+                        'username' => $this->username,
+                        'chatid' => $this->chat_id,
+                        'command' => 'CariStatistik',
+                        'keyword' => $this->text
+                    ]);
+                    //batas
                     $h = new WebApiBps();
                     $keyword = rawurlencode($this->text);
                     $response = $h->caristatistik($keyword,1);
@@ -650,6 +667,14 @@ class TelegramController extends Controller
                 }
                 elseif ($tg->command == 'CariBrs')
                 {
+                     //log keyword yg dicari
+                     LogCari::create([
+                        'username' => $this->username,
+                        'chatid' => $this->chat_id,
+                        'command' => 'CariBrs',
+                        'keyword' => $this->text
+                    ]);
+                    //batas
                     $h = new WebApiBps();
                     $keyword = rawurlencode($this->text);
                     $response = $h->caribrs($keyword,1);
@@ -706,6 +731,14 @@ class TelegramController extends Controller
                 }
                 elseif ($tg->command == 'CariLainnya')
                 {
+                     //log keyword yg dicari
+                     LogCari::create([
+                        'username' => $this->username,
+                        'chatid' => $this->chat_id,
+                        'command' => 'CariLainnya',
+                        'keyword' => $this->text
+                    ]);
+                    //batas
                     $h = new WebApiBps();
                     $keyword = rawurlencode($this->text);
                     $response = $h->carilain($keyword,1);
