@@ -39,6 +39,9 @@ class TelegramController extends Controller
                     ['text' => 'Pencarian Data','callback_data' => 'menucari']
                 ],
                 [
+                    ['text' => 'Profil Saya','callback_data' => 'myprofil']
+                ],
+                [
                     ['text'=> 'Tentang Bot', 'callback_data'=> 'tentangbot']
                 ]
             ]
@@ -50,6 +53,9 @@ class TelegramController extends Controller
                 ],
                 [
                     ['text' => 'Subjek Statistik','callback_data' => 'caristatistik']
+                ],
+                [
+                    ['text' => 'Berita Resmi Statistik','callback_data' => 'caribrs']
                 ],
                 [
                     ['text'=> 'Lainnya', 'callback_data'=> 'carilainnnya']
@@ -121,6 +127,12 @@ class TelegramController extends Controller
                     break;
                 case 'carilainnnya':
                     $this->CariLainnya();
+                    break;
+                case 'caribrs':
+                    $this->CariBrs();
+                    break;
+                case 'myprofil':
+                    $this->MyProfil();
                     break;
                 default:
                 $this->showMenu();
@@ -230,6 +242,43 @@ class TelegramController extends Controller
  
         $this->KirimPesan($message);
     }
+    public function MyProfil()
+    {
+        LogPengunjung::create([
+            'username' => $this->username,
+            'command' => __FUNCTION__
+        ]);
+        $count = DataPengunjung::where('username','=',$this->username)->count();
+        if ($count > 0) 
+        {
+            //datanya sudah ada langsung suguhkan menu
+            $data = DataPengunjung::where('username','=',$this->username)->first();
+            if ($data->nama == NULL)
+            {
+                $this->InputNama();
+            }
+            elseif ($data->email == NULL)
+            {
+                $this->InputEmail();
+            }
+            elseif ($data->nohp == NULL)
+            {
+                $this->InputHP();
+            }
+            else
+            {
+                $message = 'Anda terdaftar sebagai : <b>'.$data->nama.'</b>' .chr(10);
+                $message .= 'Email : <b>'.$data->email.'</b>' .chr(10);
+                $message .= 'No HP : <b>'.$data->nohp.'</b>' .chr(10);
+                $this->KirimPesan($message, true);
+                $this->showMenu();
+            }
+        }
+        else 
+        {
+            $this->AwalStart();
+        }
+    }
     public function MenuCari()
     {
         $message = '';
@@ -240,6 +289,19 @@ class TelegramController extends Controller
     public function CariPublikasi()
     {
         $message = "Masukkan Kata Kunci untuk Pencarian Publikasi : ";
+ 
+        LogPengunjung::create([
+            'username' => $this->username,
+            'command' => __FUNCTION__
+        ]);
+        $this->keyboard = json_encode($this->keyboard_cari_kembali);
+        $this->KirimPesan($message,true,true);
+        
+    }
+
+    public function CariBrs()
+    {
+        $message = "Masukkan Kata Kunci untuk Pencarian Berita Resmi Statistik : ";
  
         LogPengunjung::create([
             'username' => $this->username,
@@ -363,7 +425,7 @@ class TelegramController extends Controller
                 $h = new WebApiBps();
                 $keyword = rawurlencode($this->text);
                 $response = $h->caripublikasi($keyword,1);
-                if ($response['data-availability']=='available')
+                if ($response["data-availability"]=="available")
                 {
                     if ($response['data'][0]['pages'] > 1) 
                     {
@@ -412,25 +474,160 @@ class TelegramController extends Controller
             }
             elseif ($tg->command == 'CariStatistik')
             {
-                $message ='';
-                $message .='Hasil Pencarian Statistik : ' . chr(10) .chr(10);
+                $h = new WebApiBps();
+                $keyword = rawurlencode($this->text);
+                $response = $h->caristatistik($keyword,1);
+                
+                if ($response["data-availability"]=="available")
+                {
+                    if ($response['data'][0]['pages'] > 1) 
+                    {
+                        //ada lebih 1 pages
+                        $total_tabel = $response['data'][0]['pages'];
+                        $message ='';
+                        $message ='Hasil Pencarian <b>Tabel Statistik</b> : ' . chr(10) .chr(10);
+                        for ($i = 1; $i <= $total_tabel; $i++)
+                        {
+                            $respon = $h->caristatistik($keyword,$i);
+                            foreach ($respon['data'][1] as $item)
+                            {
+                                $message .= 'Judul Tabel : <b>'.$item["title"].'</b>' .chr(10);
+                                $message .= 'Update : <b>'.\Carbon\Carbon::parse($item["updt_date"])->format('d M Y').'</b> | <a href="'.$item["excel"].'">Download Tabel</a> ('.$item["size"].')' .chr(10) .chr(10);
+                            }
+                           
+                        }
+                        $this->keyboard = json_encode($this->keyboard_cari_kembali);
+                        $this->KirimPesan($message,true,true);
+                    }
+                    else
+                    {
+                        $message ='Hasil Pencarian <b>Tabel Statistik</b> : ' . chr(10) .chr(10);
+                    
+                        foreach ($response['data'][1] as $item)
+                        {
+                            
+                            $message .= 'Judul Tabel : <b>'.$item["title"].'</b>' .chr(10);
+                            $message .= 'Update : <b>'.\Carbon\Carbon::parse($item["updt_date"])->format('d M Y').'</b> | <a href="'.$item["excel"].'">Download Tabel</a> ('.$item["size"].')' .chr(10) .chr(10);
+                        }
+                        $this->keyboard = json_encode($this->keyboard_cari_kembali);
+                        $this->KirimPesan($message,true,true);
+                    }
+                    
+                }
+                else 
+                {
+                    $message ='<b>Tabel Statistik</b> yang anda cari tidak tersedia' .chr(10);
+                    $message .= 'Ulangi pencarian tabel statistik' .chr(10);
+                    $this->keyboard = json_encode($this->keyboard_cari_kembali);
+                    $this->KirimPesan($message,true,true);
+                }
 
                 $tg->command = 'showMenu';
                 $tg->update();
- 
-                $this->KirimPesan($message);
-                $this->showMenu();
+            }
+            elseif ($tg->command == 'CariBrs')
+            {
+                $h = new WebApiBps();
+                $keyword = rawurlencode($this->text);
+                $response = $h->carilain($keyword,1);
+                
+                if ($response["data-availability"]=="available")
+                {
+                    if ($response['data'][0]['pages'] > 1) 
+                    {
+                        //ada lebih 1 pages
+                        $total_tabel = $response['data'][0]['pages'];
+                        $message ='';
+                        $message ='Hasil Pencarian <b>Berita Resmi Statistik</b> : ' . chr(10) .chr(10);
+                        for ($i = 1; $i <= $total_tabel; $i++)
+                        {
+                            $respon = $h->carilain($keyword,$i);
+                            foreach ($respon['data'][1] as $item)
+                            {
+                                $message .= 'Judul : <b>'.$item["title"].'</b>' .chr(10);
+                                $message .= 'Update : <b>'.\Carbon\Carbon::parse($item["rl_date"])->format('d M Y').'</b> | <a href="'.$item["pdf"].'">Download</a> ('.$item["size"].')' .chr(10) .chr(10);
+                            }
+                           
+                        }
+                        $this->keyboard = json_encode($this->keyboard_cari_kembali);
+                        $this->KirimPesan($message,true,true);
+                    }
+                    else
+                    {
+                        $message ='Hasil Pencarian <b>Berita Resmi Statistik</b> : ' . chr(10) .chr(10);
+                    
+                        foreach ($response['data'][1] as $item)
+                        {
+                            
+                            $message .= 'Judul : <b>'.$item["title"].'</b>' .chr(10);
+                            $message .= 'Update : <b>'.\Carbon\Carbon::parse($item["rl_date"])->format('d M Y').'</b> | <a href="'.$item["pdf"].'">Download</a> ('.$item["size"].')' .chr(10) .chr(10);
+                        }
+                        $this->keyboard = json_encode($this->keyboard_cari_kembali);
+                        $this->KirimPesan($message,true,true);
+                    }
+                    
+                }
+                else 
+                {
+                    $message ='<b>Pencarian Berita Resmi Statistik</b> yang anda cari tidak tersedia' .chr(10);
+                    $message .= 'Ulangi pencarian lainnya' .chr(10);
+                    $this->keyboard = json_encode($this->keyboard_cari_kembali);
+                    $this->KirimPesan($message,true,true);
+                }
+                $tg->command = 'showMenu';
+                $tg->update();
             }
             elseif ($tg->command == 'CariLainnya')
             {
-                $message ='';
-                $message .='Hasil Pencarian Lainnya : ' . chr(10) .chr(10);
-
+                $h = new WebApiBps();
+                $keyword = rawurlencode($this->text);
+                $response = $h->carilain($keyword,1);
+                
+                if ($response["data-availability"]=="available")
+                {
+                    if ($response['data'][0]['pages'] > 1) 
+                    {
+                        //ada lebih 1 pages
+                        $total_tabel = $response['data'][0]['pages'];
+                        $message ='';
+                        $message ='Hasil Pencarian <b>Lainnya</b> : ' . chr(10) .chr(10);
+                        for ($i = 1; $i <= $total_tabel; $i++)
+                        {
+                            $respon = $h->carilain($keyword,$i);
+                            foreach ($respon['data'][1] as $item)
+                            {
+                                $message .= 'Judul : <b>'.$item["title"].'</b>' .chr(10);
+                                $message .= 'Update : <b>'.\Carbon\Carbon::parse($item["rl_date"])->format('d M Y').'</b>' .chr(10) .chr(10);
+                            }
+                           
+                        }
+                        $this->keyboard = json_encode($this->keyboard_cari_kembali);
+                        $this->KirimPesan($message,true,true);
+                    }
+                    else
+                    {
+                        $message ='Hasil Pencarian <b>Lainnya</b> : ' . chr(10) .chr(10);
+                    
+                        foreach ($response['data'][1] as $item)
+                        {
+                            
+                            $message .= 'Judul : <b>'.$item["title"].'</b>' .chr(10);
+                            $message .= 'Update : <b>'.\Carbon\Carbon::parse($item["rl_date"])->format('d M Y').'</b>' .chr(10) .chr(10);
+                        }
+                        $this->keyboard = json_encode($this->keyboard_cari_kembali);
+                        $this->KirimPesan($message,true,true);
+                    }
+                    
+                }
+                else 
+                {
+                    $message ='<b>Pencarian Lainnya</b> yang anda cari tidak tersedia' .chr(10);
+                    $message .= 'Ulangi pencarian lainnya' .chr(10);
+                    $this->keyboard = json_encode($this->keyboard_cari_kembali);
+                    $this->KirimPesan($message,true,true);
+                }
                 $tg->command = 'showMenu';
                 $tg->update();
- 
-                $this->KirimPesan($message);
-                $this->showMenu();
             }
             elseif ($tg->command == 'MenuKonsultasi')
             {
@@ -479,6 +676,35 @@ class TelegramController extends Controller
         $response = $h->caripublikasi($keyword,1);
         
         
+        if ($response['data-availability']=='available')
+        {
+            dd($response['data'][0]);
+            $hasil = array();
+            foreach ($response['data'][1] as $item)
+            {
+                $hasil[]=array(
+                    'pub_id' => $item["pub_id"],
+                    'judul' => $item["title"],
+                    'cover_url' => $item["cover"],
+                    'pdf' => $item["pdf"]
+                );
+            }
+            //$dd($response['data']);
+        }
+        else 
+        {
+            $hasil ='ERROR';
+        }
+        
+        return $response;
+    }
+    public function cariLain($keyword)
+    {
+        $h = new WebApiBps();
+        $keyword = rawurlencode($keyword);
+        $response = $h->carilain($keyword,1);
+        
+        dd($response);
         if ($response['data-availability']=='available')
         {
             dd($response['data'][0]);
