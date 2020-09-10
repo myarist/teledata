@@ -14,6 +14,7 @@ use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Http;
 use App\Helpers\WebApiBps;
 use App\LogCari;
+use App\User;
 
 class TelegramController extends Controller
 {
@@ -91,6 +92,26 @@ class TelegramController extends Controller
                 ]
             ]
         ];
+        $this->keyboard_edit_profil_admin = [
+            'inline_keyboard' => [
+                [
+                    ['text' => 'Edit Nama', 'callback_data' => 'editnama'],
+                    ['text' => 'Edit Email', 'callback_data' => 'editemail'],
+                    ['text' => 'Edit No HP', 'callback_data' => 'editnohp']
+                ],
+                [
+                    ['text'=> 'Edit Profil', 'callback_data'=>'editprofil']
+                ],
+                [
+                    ['text'=> 'List Pengunjung', 'callback_data'=>'logpengunjung'],
+                    ['text'=> 'Log Pencarian', 'callback_data'=>'logpencarian'],
+                    ['text'=> 'Update ID-TG', 'callback_data'=>'updateidtg']
+                ],
+                [
+                    ['text'=> 'Menu Awal', 'callback_data'=>'menuawal']
+                ]
+            ]
+        ];
         $this->keyboard = json_encode($this->keyboard_default);
     }
  
@@ -119,13 +140,14 @@ class TelegramController extends Controller
             $this->text = $update->callbackQuery->data;
             $this->chat_id = $update->callbackQuery->from->id;
             $this->nama = $update->callbackQuery->from->first_name;
-            if (array_key_exists("username",$update->callbackQuery->from))
+           
+            if (array_key_exists("username",$update['callback_query']['from']))
             {
-                $this->username = $update->callbackQuery->from->username;
+                $this->username =  $update->callbackQuery->from->username;
             }
             else 
             {
-                $this->username= $update->callbackQuery->from->first_name;
+                $this->username=  $update->callbackQuery->from->first_name;
             }
            
             switch ($this->text) {
@@ -168,6 +190,15 @@ class TelegramController extends Controller
                 case 'selesai':
                     $this->Selesai();
                     break;
+                case 'logpengunjung':
+                    $this->LogDataPengunjung();
+                    break;
+                case 'logpencarian':
+                    $this->LogDataPencarian();
+                    break;
+                case 'updateidtg':
+                    $this->UpdateIdTele();
+                    break;
                 default:
                 $this->showMenu();
                     break;
@@ -205,11 +236,11 @@ class TelegramController extends Controller
     public function AwalStart()
     {
         
-        $count = DataPengunjung::where('username','=',$this->username)->count();
+        $count = DataPengunjung::where('chatid','=',$this->chat_id)->count();
         if ($count > 0) 
         {
             //datanya sudah ada langsung suguhkan menu
-            $data = DataPengunjung::where('username','=',$this->username)->first();
+            $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
             if ($data->nama == NULL)
             {
                 $this->InputNama();
@@ -278,12 +309,12 @@ class TelegramController extends Controller
     }
     public function Selesai()
     {
-        $count = LogPengunjung::where('username', $this->username)->count();
+        $count = LogPengunjung::where('chatid', $this->chat_id)->count();
         if ($count > 0)
         {
-            LogPengunjung::where('username', $this->username)->delete();
+            LogPengunjung::where('chatid', $this->chat_id)->delete();
         }
-        $message = "<b>Terimakasih Telah Menggunakan Layanan Kami</b> : ";
+        $message = "<b>Terimakasih Telah Menggunakan Layanan Kami</b>" .chr(10);
         
         $this->KirimPesan($message,true);
     }
@@ -323,11 +354,11 @@ class TelegramController extends Controller
     }
     public function MyProfil()
     {
-        $count = DataPengunjung::where('username','=',$this->username)->count();
+        $count = DataPengunjung::where('chatid','=',$this->chat_id)->count();
         if ($count > 0) 
         {
             //datanya sudah ada langsung suguhkan menu
-            $data = DataPengunjung::where('username','=',$this->username)->first();
+            $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
             if ($data->nama == NULL)
             {
                 $this->InputNama();
@@ -346,7 +377,20 @@ class TelegramController extends Controller
                 $message .= 'Nama : <b>'.$data->nama.'</b>' .chr(10);
                 $message .= 'Email : <b>'.$data->email.'</b>' .chr(10);
                 $message .= 'No HP : <b>'.$data->nohp.'</b>' .chr(10);
-                $this->keyboard = json_encode($this->keyboard_edit_profil);
+                $cek_admin = User::where('chatid_tg','=',$this->chat_id)->orWhere('user_tg','=',$this->username)->count();
+                if ($cek_admin > 0)
+                {
+                    //admin dan tampilkan keyboard
+                    $message .= chr(10).'Role : Admin Sistem <b>TeleData</b> ('.$this->username.')' .chr(10);
+                    $this->keyboard = json_encode($this->keyboard_edit_profil_admin);
+                }
+                else 
+                {
+                    //keyboard biasa
+                    $this->keyboard = json_encode($this->keyboard_edit_profil);
+                }
+                
+                
                 $this->KirimPesan($message,true,true);
             }
         }
@@ -447,17 +491,71 @@ class TelegramController extends Controller
         $this->KirimPesan($message,true);
         $this->showMenu();
     }
+    public function LogDataPencarian()
+    {
+        $cek = LogCari::count();
+        if ($cek > 0)
+        {
+            $data = LogCari::take(-30)->get();
+            $message = 'Data 30 Keyword Pencarian terakhir di TeleData' .chr(10);
+            $i=1;
+            foreach ($data as $item) {
+                $message .= $i.'. Nama: <b>'.$item->username .'</b> | Keyword: ('.$item->command.') <b>'. $item->keyword .'</b> | tanggal: '. \Carbon\Carbon::parse($item->created_at)->format('d M Y H:i') .chr(10);
+                $i++;
+            }
+        }
+        else 
+        {
+            $message = 'Data Log Pencarian masih kosong' .chr(10);
+        }
+        
+       $this->KirimPesan($message,true);
+       $this->MyProfil();
+    }
+    public function LogDataPengunjung()
+    {
+        $data = DataPengunjung::take(-30)->get();
+        $message = 'Data 30 Pengunjung TeleData terakhir' .chr(10);
+        $i=1;
+        foreach ($data as $item) {
+            $message .= $i.'. Nama: <b>'.$item->nama .'</b> | Email: <b>'. $item->email .'</b> | No HP: <b>'.$item->nohp.'</b> | Daftar: <b>'. \Carbon\Carbon::parse($item->created_at)->format('d M Y H:i') .'</b>' .chr(10) .chr(10);
+            $i++;
+        }
+       $this->KirimPesan($message,true);
+       $this->MyProfil();
+
+    }
+    public function UpdateIdTele()
+    {
+        $cek = User::where('user_tg','=',$this->username)->count();
+        if ($cek > 0)
+        {
+            //username admin ada dan update id telegram
+            $data = User::where('user_tg','=',$this->username)->first();
+            $data->chatid_tg = $this->chat_id;
+            $data->update();
+
+            $message ='Data ID Telegram admin <b>'.$this->username.'</b> sudah di update'.chr(10);
+        }
+        else 
+        {
+            //bukan admin
+            $message ='Anda bukan admin sistem'.chr(10);
+        }
+        $this->KirimPesan($message,true);
+        $this->MyProfil();
+    }
     public function CheckInputan()
     {
-            $cek = LogPengunjung::where('username', $this->username)->count();
+            $cek = LogPengunjung::where('chatid','=',$this->chat_id)->count();
             if ($cek > 0 )
             {
-                $tg = LogPengunjung::where('username', $this->username)->latest("updated_at")->first();
+                $tg = LogPengunjung::where('chatid','=',$this->chat_id)->latest("updated_at")->first();
                 if ($tg->command == 'InputNama') {
                     $message ='';
                     $message .='Nama <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
                     $message .='<i>Silakan masukkan email anda</i> :' . chr(10);
-                    $data = DataPengunjung::where('username', $this->username)->first();
+                    $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
                     $data->nama = $this->text;
                     $data->update();
 
@@ -469,7 +567,7 @@ class TelegramController extends Controller
                 elseif ($tg->command == 'EditNama') {
                     $message ='';
                     $message .='Nama <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
-                    $data = DataPengunjung::where('username', $this->username)->first();
+                    $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
                     $data->nama = $this->text;
                     $data->update();
 
@@ -484,7 +582,7 @@ class TelegramController extends Controller
                     $message ='';
                     $message .='Email <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
                     $message .='<i>Silakan Masukkan nomor HP anda</i> :' . chr(10);
-                    $data = DataPengunjung::where('username', $this->username)->first();
+                    $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
                     $data->email = $this->text;
                     $data->update();
 
@@ -497,7 +595,7 @@ class TelegramController extends Controller
                 {
                     $message ='';
                     $message .='Email <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
-                    $data = DataPengunjung::where('username', $this->username)->first();
+                    $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
                     $data->email = $this->text;
                     $data->update();
 
@@ -511,7 +609,7 @@ class TelegramController extends Controller
                 {
                     $message ='';
                     $message .='Nomor HP <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
-                    $data = DataPengunjung::where('username', $this->username)->first();
+                    $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
                     $data->nohp = $this->text;
                     $data->update();
 
@@ -525,7 +623,7 @@ class TelegramController extends Controller
                 {
                     $message ='';
                     $message .='Nomor HP <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
-                    $data = DataPengunjung::where('username', $this->username)->first();
+                    $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
                     $data->nohp = $this->text;
                     $data->update();
 
