@@ -268,6 +268,8 @@ class TelegramController extends Controller
         {
             $message = 'Selamat datang di <b>TeleDATA (Telegram Data BPSNTB)</b>' .chr(10);
             $message .= '<b>BPS Provinsi Nusa Tenggara Barat</b>' .chr(10) .chr(10);
+            $message .= '<i>Untuk dapat menggunakan layanan <b>TeleData</b></i>' .chr(10);
+            $message .= '<i>Anda perlu memasukkan <b>Nama Lengkap</b>, <b>Email</b> dan <b>No HP</b></i>' .chr(10) .chr(10);
             $this->nama = $this->username;
             $data = new DataPengunjung();
             $data->username = $this->username;
