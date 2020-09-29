@@ -1,7 +1,5 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,20 +10,24 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+Auth::routes([
+    'register' => false, // Registration Routes...
+    'reset' => false, // Password Reset Routes...
+    'verify' => false, // Email Verification Routes...
+  ]);
 Route::get('/', function () {
-    return view('welcome');
+    return view('depan');
 });
-/*
-Route::post('/3Nb71akPKQTM3jSK2BdLxT1VGq1FHfRquaGKJMTP/webhook', function () {
-    $update = Telegram::commandsHandler(true);
-    dd($update);
-});
-*/
-//Route::post('/3Nb71akPKQTM3jSK2BdLxT1VGq1FHfRquaGKJMTP/webhook','TelegramController@handleRequest')->name('webhook');
+
 Route::get('set-hook', 'TelegramController@setWebHook');
 Route::post(env('TELEGRAM_HASH_URL') . '/webhook', 'TelegramController@WebHook')->name('webhook');
 Route::get('get-me', 'TelegramController@getMe');
 Route::get('caripub/{keyword}', 'TelegramController@CariPub')->name('cari.pub');
 Route::get('carilain/{keyword}', 'TelegramController@cariLain')->name('cari.lain');
 Route::get('caribrs/{keyword}', 'TelegramController@cariBrsSaja')->name('cari.brs');
+
+Route::group(['middleware' => ['auth']], function () {
+  
+});
+
+Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout')->name('logout');
