@@ -25,7 +25,9 @@
         </li>      
         <li> <a class="waves-effect waves-dark" href="{{url('')}}" aria-expanded="false"><i class="ti-pie-chart"></i><span class="hide-menu">KONSULTASI</span></a>
         </li>
-        <li> <a class="waves-effect waves-dark" href="{{url('')}}" aria-expanded="false"><i class="ti-layout-grid2"></i><span class="hide-menu">USER</span></a>
+        <li> <a class="waves-effect waves-dark" href="{{url('')}}" aria-expanded="false"><i class="ti-pie-chart"></i><span class="hide-menu">LOG PENCARIAN</span></a>
+        </li>
+        <li> <a class="waves-effect waves-dark" href="{{route('admin.list')}}" aria-expanded="false"><i class="ti-layout-grid2"></i><span class="hide-menu">USER</span></a>
         </li>
         @endif
     </ul>
