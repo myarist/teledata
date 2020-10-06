@@ -23,6 +23,15 @@ use Illuminate\Support\Facades\DB;
 class PengunjungController extends Controller
 {
     //
+    protected $telegram;
+    protected $chat_id;
+    protected $username;
+    protected $text;
+    protected $nama;
+    public function __construct()
+    {
+        $this->telegram = new Api(env('TELEGRAM_BOT_TOKEN'));
+    }
     public function list()
     {
         $dataPengunjung = DataPengunjung::get();
@@ -76,7 +85,35 @@ class PengunjungController extends Controller
     }
     public function KirimPesan(Request $request)
     {
-        dd($request->all());
+        //dd($request->all());
+        //save di log_pesan
+        $data_log = new LogPesan();
+        $data_log -> username = 'admin';
+        $data_log -> chatid = '1';
+        $data_log -> isi_pesan = $request->pesan;
+        $data_log -> chatid_penerima = $request->chatid;
+        $data_log -> chat_admin = 1;
+        $data_log -> save();
+        $data = [
+            'chat_id' => $request->chatid,
+            'text' => $request->pesan,
+            'parse_mode' => 'HTML',
+        ];
+        $result = $this->telegram->sendMessage($data);
+        if ($result)
+        {   
+            $pesan_error = 'Pesan sudah dikirim ke '. $request->nama ;
+            $pesan_warna = 'success';
+        }
+        else 
+        {
+            $pesan_error = '(ERROR) Pesan tidak dikirim';
+            $pesan_warna = 'danger';
+        }
+        
+        Session::flash('message', $pesan_error);
+        Session::flash('message_type', $pesan_warna);
+        return redirect()->route('pengunjung.list');
     }
 
 }
