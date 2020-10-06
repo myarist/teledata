@@ -28,6 +28,7 @@ Route::get('caribrs/{keyword}', 'TelegramController@cariBrsSaja')->name('cari.br
 
 Route::group(['middleware' => ['auth']], function () {
   Route::get('admin/list', 'AdminController@list')->name('admin.list');
+  Route::get('konsultasi/list', 'KonsultasiController@list')->name('konsultasi.list');
 });
 
 Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout')->name('logout');
