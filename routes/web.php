@@ -29,6 +29,11 @@ Route::get('caribrs/{keyword}', 'TelegramController@cariBrsSaja')->name('cari.br
 Route::group(['middleware' => ['auth']], function () {
   Route::get('admin/list', 'AdminController@list')->name('admin.list');
   Route::get('konsultasi/list', 'KonsultasiController@list')->name('konsultasi.list');
+  Route::get('pengunjung/list', 'PengunjungController@list')->name('pengunjung.list');
+  Route::post('pengunjung/flag', 'PengunjungController@FlagPengunjung')->name('pengunjung.flag');
+  Route::post('pengunjung/hapus', 'PengunjungController@HapusPengunjung')->name('pengunjung.hapus');
+  Route::post('pengunjung/kirimpesan', 'PengunjungController@KirimPesan')->name('pengunjung.kirimpesan');
+  Route::get('konsultasi/list', 'KonsultasiController@list')->name('konsultasi.list');
 });
 
 Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout')->name('logout');

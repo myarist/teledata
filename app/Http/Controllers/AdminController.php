@@ -9,7 +9,9 @@ use App\DataPengunjung;
 use Carbon\Carbon;
 use Telegram\Bot\Keyboard\Keyboard;
 use App\LogPesan;
-use DB;
+use Session;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {

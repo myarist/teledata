@@ -21,9 +21,9 @@
         @if (Auth::user())
         <li class="nav-small-cap">--- ADMIN</li>  
         <li>
-            <a class="waves-effect waves-dark" href="{{url('')}}" aria-expanded="false"><i class="ti-pie-chart"></i><span class="hide-menu">PENGUNJUNG</span></a>
+            <a class="waves-effect waves-dark" href="{{route('pengunjung.list')}}" aria-expanded="false"><i class="ti-pie-chart"></i><span class="hide-menu">PENGUNJUNG</span></a>
         </li>      
-        <li> <a class="waves-effect waves-dark" href="{{url('')}}" aria-expanded="false"><i class="ti-pie-chart"></i><span class="hide-menu">KONSULTASI</span></a>
+        <li> <a class="waves-effect waves-dark" href="{{route('konsultasi.list')}}" aria-expanded="false"><i class="ti-pie-chart"></i><span class="hide-menu">KONSULTASI</span></a>
         </li>
         <li> <a class="waves-effect waves-dark" href="{{url('')}}" aria-expanded="false"><i class="ti-pie-chart"></i><span class="hide-menu">LOG PENCARIAN</span></a>
         </li>

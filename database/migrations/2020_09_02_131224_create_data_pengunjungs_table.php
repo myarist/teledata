@@ -20,6 +20,7 @@ class CreateDataPengunjungsTable extends Migration
             $table->string('nama')->nullable();
             $table->string('email')->nullable();
             $table->string('nohp')->nullable();
+            $table->boolean('flag_berita')->default(1);
             $table->timestamps();
         });
     }
