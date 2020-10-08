@@ -38,34 +38,15 @@
                 <div class="chat-left-aside">
                     <div class="open-panel"><i class="ti-angle-right"></i></div>
                     <div class="chat-left-inner">
-                        <div class="form-material">
-                            <input class="form-control p-2" type="text" placeholder="Search Contact">
+                        <div class="p-3 b-b">
+                            <h4 class="box-title">Daftar Nama</h4>
                         </div>
                         <ul class="chatonline style-none ">
+                            @foreach ($dataUser as $item)
                             <li>
-                                <a href="javascript:void(0)"><img src="../assets/images/users/1.jpg" alt="user-img" class="img-circle"> <span>Varun Dhavan <small class="text-success">online</small></span></a>
+                                <a href="{{route('konsultasi.chat',$item->chatid)}}"><span>{{$item->nama}} <small class="text-success">{{$item->username}}</small></span></a>
                             </li>
-                            <li>
-                                <a href="javascript:void(0)" class="active"><img src="../assets/images/users/2.jpg" alt="user-img" class="img-circle"> <span>Genelia Deshmukh <small class="text-warning">Away</small></span></a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)"><img src="../assets/images/users/3.jpg" alt="user-img" class="img-circle"> <span>Ritesh Deshmukh <small class="text-danger">Busy</small></span></a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)"><img src="../assets/images/users/4.jpg" alt="user-img" class="img-circle"> <span>Arijit Sinh <small class="text-muted">Offline</small></span></a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)"><img src="../assets/images/users/5.jpg" alt="user-img" class="img-circle"> <span>Govinda Star <small class="text-success">online</small></span></a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)"><img src="../assets/images/users/6.jpg" alt="user-img" class="img-circle"> <span>John Abraham<small class="text-success">online</small></span></a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)"><img src="../assets/images/users/7.jpg" alt="user-img" class="img-circle"> <span>Hritik Roshan<small class="text-success">online</small></span></a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)"><img src="../assets/images/users/8.jpg" alt="user-img" class="img-circle"> <span>Pwandeep rajan <small class="text-success">online</small></span></a>
-                            </li>
+                            @endforeach
                             <li class="p-20"></li>
                         </ul>
                     </div>
@@ -78,65 +59,51 @@
                             <h4 class="box-title">Chat Message</h4>
                         </div>
                     </div>
-                    <div class="chat-rbox">
+                    <div class="chat-rbox" id="slimtest1" style="height: 350px;">
                         <ul class="chat-list p-3">
-                            <!--chat Row -->
-                            <li>
-                                <div class="chat-img"><img src="../assets/images/users/1.jpg" alt="user" /></div>
-                                <div class="chat-content">
-                                    <h5>James Anderson</h5>
-                                    <div class="box bg-light-info">Lorem Ipsum is simply dummy text of the printing & type setting industry.</div>
-                                    <div class="chat-time">10:56 am</div>
-                                </div>
-                            </li>
-                            <!--chat Row -->
-                            <li>
-                                <div class="chat-img"><img src="../assets/images/users/2.jpg" alt="user" /></div>
-                                <div class="chat-content">
-                                    <h5>Bianca Doe</h5>
-                                    <div class="box bg-light-info">It’s Great opportunity to work.</div>
-                                    <div class="chat-time">10:57 am</div>
-                                </div>
-                            </li>
-                            <!--chat Row -->
-                            <li class="reverse">
-                                <div class="chat-content">
-                                    <h5>Steave Doe</h5>
-                                    <div class="box bg-light-inverse">It’s Great opportunity to work.</div>
-                                    <div class="chat-time">10:57 am</div>
-                                </div>
-                                <div class="chat-img"><img src="../assets/images/users/5.jpg" alt="user" /></div>
-                            </li>
-                            <!--chat Row -->
-                            <li class="reverse">
-                                <div class="chat-content">
-                                    <h5>Steave Doe</h5>
-                                    <div class="box bg-light-inverse">It’s Great opportunity to work.</div>
-                                    <div class="chat-time">10:57 am</div>
-                                </div>
-                                <div class="chat-img"><img src="../assets/images/users/5.jpg" alt="user" /></div>
-                            </li>
-                            <!--chat Row -->
-                            <li>
-                                <div class="chat-img"><img src="../assets/images/users/3.jpg" alt="user" /></div>
-                                <div class="chat-content">
-                                    <h5>Angelina Rhodes</h5>
-                                    <div class="box bg-light-info">Well we have good budget for the project</div>
-                                    <div class="chat-time">11:00 am</div>
-                                </div>
-                            </li>
-                            <!--chat Row -->
+                            @foreach ($dataChat as $item)
+                                @if ($item->chat_admin == 0)
+                                    <!--chat Row -->
+                                    <li>
+                                        <div class="chat-content">
+                                            <h5>{{$item->dp_nama}}</h5>
+                                            <div class="box bg-light-info">
+                                                {!! html_entity_decode($item->isi_pesan) !!}
+                                            </div>
+                                            <div class="chat-time">{{\Carbon\Carbon::parse($item->created_at)->format('j M Y h:i a')}}</div>
+                                        </div>
+                                    </li>
+                                    <!--chat Row -->
+                                @else
+                                    <!--chat Row -->
+                                    <li class="reverse">
+                                        <div class="chat-content">
+                                            <h5>Admin</h5>
+                                            <div class="box bg-light-inverse">
+                                                {!! html_entity_decode($item->isi_pesan) !!}
+                                            </div>
+                                            <div class="chat-time">{{\Carbon\Carbon::parse($item->created_at)->format('j M Y h:i a')}}</div>
+                                        </div>
+                                        
+                                    </li>
+                                    <!--chat Row -->
+                                @endif
+                            @endforeach
                         </ul>
                     </div>
                     <div class="card-body border-top">
+                        <form name="KirimPesan" method="POST" action="{{route('konsultasi.reply')}}">
+                            @csrf
                         <div class="row">
                             <div class="col-8">
-                                <textarea placeholder="Type your message here" class="form-control border-0"></textarea>
+                                <textarea placeholder="Tulis pesan disini" name="pesan" id="pesan" class="form-control border-0" required></textarea>
                             </div>
                             <div class="col-4 text-right">
-                                <button type="button" class="btn btn-info btn-circle btn-lg"><i class="fas fa-paper-plane"></i> </button>
+                                <button type="submit" class="btn btn-info btn-circle btn-lg"><i class="fas fa-paper-plane"></i> </button>
                             </div>
                         </div>
+                        <input type="hidden" name="chatid" id="chatid" value="{{$chatid}}" />
+                    </form>
                     </div>
                 </div>
                 <!-- .chat-right-panel -->
@@ -157,5 +124,9 @@
 @endsection
 
 @section('js')
-   
+   <!-- slimscrollbar scrollbar JavaScript -->
+   <script src="{{asset('dist/js/perfect-scrollbar.jquery.min.js')}}"></script>
+   <script>
+    $('#slimtest1, #slimtest2, #slimtest3, #slimtest4').perfectScrollbar();
+   </script>  
 @endsection

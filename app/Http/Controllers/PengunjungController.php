@@ -100,8 +100,14 @@ class PengunjungController extends Controller
             'parse_mode' => 'HTML',
         ];
         $result = $this->telegram->sendMessage($data);
+        LogPengunjung::create([
+            'username' => $request->nama,
+            'chatid' => $request->chatid,
+            'command' => 'MenuKonsultasi'
+        ]);
         if ($result)
         {   
+
             $pesan_error = 'Pesan sudah dikirim ke '. $request->nama ;
             $pesan_warna = 'success';
         }

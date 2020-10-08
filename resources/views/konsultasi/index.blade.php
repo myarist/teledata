@@ -33,6 +33,17 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
+                <div class="row float-right">
+                    <div class="col-lg-12 ">
+                        Status : 
+                        @if (Auth::user()->status_online == '1')
+                        <button class="btn btn-sm btn-success statusonline" data-id="{{Auth::user()->id}}" data-flag="{{Auth::user()->status_online}}">ONLINE</button>
+                        @else
+                        <button class="btn btn-sm btn-danger statusonline" data-id="{{Auth::user()->id}}" data-flag="{{Auth::user()->status_online}}">OFFLINE</button>
+                        @endif
+                        
+                    </div>
+                </div>
                 <div class="table-responsive">
                    
                     <table id="pengunjung" class="table table-bordered table-hover table-striped" cellspacing="0" width="100%">
@@ -51,7 +62,7 @@
                            @foreach ($dataChat as $item)
                                <tr>
                                    <td>{{$loop->iteration}}</td>
-                                   <td>{{$item->nama}}</td>
+                                   <td><a href="{{route('konsultasi.chat',$item->chatid)}}">{{$item->nama}}</a></td>
                                    <td>{{$item->chatid}}</td>
                                    <td>{{$item->username}}</td>
                                    <td>{{$item->isi_pesan}} <span class="badge badge-success ml-auto">{{$item->jumlah_pesan}}</span></td>
@@ -108,4 +119,5 @@
     </script>
     <!-- Sweet-Alert  -->
     <script src="{{asset('assets/node_modules/sweetalert2/dist/sweetalert2.all.min.js')}}"></script>
+    @include('konsultasi.js')
 @endsection

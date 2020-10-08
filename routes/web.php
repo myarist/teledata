@@ -28,12 +28,20 @@ Route::get('caribrs/{keyword}', 'TelegramController@cariBrsSaja')->name('cari.br
 
 Route::group(['middleware' => ['auth']], function () {
   Route::get('admin/list', 'AdminController@list')->name('admin.list');
-  Route::get('konsultasi/list', 'KonsultasiController@list')->name('konsultasi.list');
+  Route::post('admin/flag', 'AdminController@FlagAdmin')->name('admin.flag');
+  Route::post('admin/simpan', 'AdminController@SimpanAdmin')->name('admin.simpan');
+  Route::get('admin/view/{id}', 'AdminController@cariadmin')->name('admin.cari');
+  Route::post('admin/updateadmin', 'AdminController@UpdateAdmin')->name('admin.update');
+  Route::post('admin/gantipassword', 'AdminController@GantiPasswordAdmin')->name('admin.gantipassword');
+  Route::post('admin/hapus', 'AdminController@HapusAdmin')->name('admin.hapus');
+  Route::post('admin/statusonline', 'AdminController@StatusOnline')->name('admin.statusonline');
   Route::get('pengunjung/list', 'PengunjungController@list')->name('pengunjung.list');
   Route::post('pengunjung/flag', 'PengunjungController@FlagPengunjung')->name('pengunjung.flag');
   Route::post('pengunjung/hapus', 'PengunjungController@HapusPengunjung')->name('pengunjung.hapus');
   Route::post('pengunjung/kirimpesan', 'PengunjungController@KirimPesan')->name('pengunjung.kirimpesan');
   Route::get('konsultasi/list', 'KonsultasiController@list')->name('konsultasi.list');
+  Route::get('konsultasi/chat/{chatid}', 'KonsultasiController@Chat')->name('konsultasi.chat');
+  Route::post('konsultasi/reply', 'KonsultasiController@ReplyChat')->name('konsultasi.reply');
 });
 
 Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout')->name('logout');

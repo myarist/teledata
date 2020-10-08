@@ -25,6 +25,7 @@ class CreateUsersTable extends Migration
             $table->string('lastip',20)->nullable();
             $table->dateTime('lastlogin')->nullable();
             $table->boolean('aktif')->default(1);
+            $table->boolean('status_online')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });

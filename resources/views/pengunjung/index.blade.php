@@ -34,7 +34,6 @@
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
-                   
                     <table id="pengunjung" class="table table-bordered table-hover table-striped" cellspacing="0" width="100%">
                         <thead>
                             <tr>
@@ -112,6 +111,7 @@
                 buttons: [
                     'copy', 'excel', 'pdf', 'print'
                 ],
+                responsive: true,
                 "displayLength": 30,
                 
             });
