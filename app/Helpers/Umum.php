@@ -12,6 +12,7 @@ class WebApiBps
 		$this->cookie = "cookie.txt";
         $this->ch = curl_init();
         $this->webapi = env('WEBAPI_BPS');
+        $this->tgapi = env('TELEGRAM_BOT_TOKEN');
 	}
 	
 	// DESTRUCTOR
@@ -91,6 +92,15 @@ class WebApiBps
         else {
             $url="https://webapi.bps.go.id/v1/api/list/?model=pressrelease&domain=5200&key=".$this->webapi."&keyword=".$keyword;
         }
+		 
+		$ch = $this->connectcurl($this->ch, $url);
+        $result = curl_exec ($ch); 
+        $result = json_decode($result, TRUE);
+		return $result;
+    }
+    public function webinfo()
+    {
+        $url = 'https://api.telegram.org/bot'.$this->tgapi.'/getWebhookInfo';
 		 
 		$ch = $this->connectcurl($this->ch, $url);
         $result = curl_exec ($ch); 

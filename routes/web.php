@@ -19,14 +19,16 @@ Route::get('/', function () {
     return view('depan');
 });
 
-Route::get('set-hook', 'TelegramController@setWebHook');
+
 Route::post(env('TELEGRAM_HASH_URL') . '/webhook', 'TelegramController@WebHook')->name('webhook');
-Route::get('get-me', 'TelegramController@getMe');
 Route::get('caripub/{keyword}', 'TelegramController@CariPub')->name('cari.pub');
 Route::get('carilain/{keyword}', 'TelegramController@cariLain')->name('cari.lain');
 Route::get('caribrs/{keyword}', 'TelegramController@cariBrsSaja')->name('cari.brs');
 
 Route::group(['middleware' => ['auth']], function () {
+  Route::get('set-hook', 'TelegramController@setWebHook');
+  Route::get('get-me', 'TelegramController@getMe');
+  Route::get('botstatus', 'TelegramController@WebhookInfo')->name('bot.status');
   Route::get('admin/list', 'AdminController@list')->name('admin.list');
   Route::post('admin/flag', 'AdminController@FlagAdmin')->name('admin.flag');
   Route::post('admin/simpan', 'AdminController@SimpanAdmin')->name('admin.simpan');
@@ -42,6 +44,7 @@ Route::group(['middleware' => ['auth']], function () {
   Route::get('konsultasi/list', 'KonsultasiController@list')->name('konsultasi.list');
   Route::get('konsultasi/chat/{chatid}', 'KonsultasiController@Chat')->name('konsultasi.chat');
   Route::post('konsultasi/reply', 'KonsultasiController@ReplyChat')->name('konsultasi.reply');
+  Route::get('cari/list', 'CariController@list')->name('cari.list');
 });
 
 Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout')->name('logout');

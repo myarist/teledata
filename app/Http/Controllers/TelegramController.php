@@ -51,6 +51,28 @@ class TelegramController extends Controller
                 ]
             ]
         ];
+        $this->keyboard_default_admin = [
+            'inline_keyboard' => [
+                [
+                    ['text' => 'Konsultasi Statistik', 'callback_data' => 'konsultasi']
+                ],
+                [
+                    ['text' => 'Pencarian Data','callback_data' => 'menucari']
+                ],
+                [
+                    ['text' => 'Profil Saya','callback_data' => 'myprofil']
+                ],
+                [
+                    ['text' => 'Menu Admin','callback_data' => 'menuadmin']
+                ],
+                [
+                    ['text'=> 'Tentang Bot', 'callback_data'=> 'tentangbot']
+                ],
+                [
+                    ['text'=> 'Selesai', 'callback_data'=> 'selesai']
+                ]
+            ]
+        ];
         $this->keyboard_cari = [
             'inline_keyboard' => [
                 [
@@ -127,7 +149,13 @@ class TelegramController extends Controller
         $response = $this->telegram->getMe();
         return $response;
     }
-
+    public function WebhookInfo()
+    {
+        $h = new WebApiBps();
+        $response = $h->webinfo();
+       
+		return $response;
+    }
     public function setWebHook()
     {
         $url = env('TELEGRAM_WEBHOOK_URL') . '/' . env('TELEGRAM_HASH_URL') . '/webhook';
