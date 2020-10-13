@@ -20,6 +20,8 @@ class CreateLogPesansTable extends Migration
             $table->text('isi_pesan');
             $table->string('chatid_penerima')->nullable();
             $table->boolean('chat_admin')->default(0);
+            $table->string('msg_id',20)->nullable();
+            $table->string('waktu_kirim',12)->nullable();
             $table->timestamps();
         });
     }

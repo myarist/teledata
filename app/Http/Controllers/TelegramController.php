@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Http;
 use App\Helpers\WebApiBps;
 use App\LogCari;
 use App\User;
+use Illuminate\Support\Facades\Validator;
 
 class TelegramController extends Controller
 {
@@ -28,7 +29,11 @@ class TelegramController extends Controller
     protected $keyboard;
     protected $keyboard_default;
     protected $keyboard_cari;
-
+    protected $message_id;
+    protected $waktu_kirim;
+    protected $msg_id;
+    protected $forward_date;
+    
     public function __construct()
     {
         $this->telegram = new Api(env('TELEGRAM_BOT_TOKEN'));
@@ -64,6 +69,46 @@ class TelegramController extends Controller
                 ],
                 [
                     ['text' => 'Menu Admin','callback_data' => 'menuadmin']
+                ],
+                [
+                    ['text'=> 'Tentang Bot', 'callback_data'=> 'tentangbot']
+                ],
+                [
+                    ['text'=> 'Selesai', 'callback_data'=> 'selesai']
+                ]
+            ]
+        ];
+        $this->keyboard_admin = [
+            'inline_keyboard' => [
+                [
+                    ['text'=> 'Ubah Status Online', 'callback_data'=>'flagstatusonline']
+                ],
+                [
+                    ['text'=> 'List Pengunjung', 'callback_data'=>'logpengunjung'],
+                    ['text'=> 'Log Pencarian', 'callback_data'=>'logpencarian']
+                ],
+                [
+                    ['text'=> 'List Operator', 'callback_data'=>'listoperator'],
+                    ['text'=> 'Ganti Password', 'callback_data'=>'gantipasswd']
+                ],
+                [
+                    ['text'=> 'Kembali ke Menu Awal', 'callback_data'=>'menuawal']
+                ]
+            ]
+        ];
+        $this->keyboard_default_admin_belumtg = [
+            'inline_keyboard' => [
+                [
+                    ['text' => 'Konsultasi Statistik', 'callback_data' => 'konsultasi']
+                ],
+                [
+                    ['text' => 'Pencarian Data','callback_data' => 'menucari']
+                ],
+                [
+                    ['text' => 'Profil Saya','callback_data' => 'myprofil']
+                ],
+                [
+                    ['text' => 'Update Telegram ID','callback_data' => 'updateidtg']
                 ],
                 [
                     ['text'=> 'Tentang Bot', 'callback_data'=> 'tentangbot']
@@ -132,11 +177,6 @@ class TelegramController extends Controller
                     ['text'=> 'Edit Profil', 'callback_data'=>'editprofil']
                 ],
                 [
-                    ['text'=> 'List Pengunjung', 'callback_data'=>'logpengunjung'],
-                    ['text'=> 'Log Pencarian', 'callback_data'=>'logpencarian'],
-                    ['text'=> 'Update ID-TG', 'callback_data'=>'updateidtg']
-                ],
-                [
                     ['text'=> 'Menu Awal', 'callback_data'=>'menuawal']
                 ]
             ]
@@ -175,6 +215,8 @@ class TelegramController extends Controller
             $this->text = $update->callbackQuery->data;
             $this->chat_id = $update->callbackQuery->from->id;
             $this->nama = $update->callbackQuery->from->first_name;
+            $this->message_id = $update->callbackQuery->message->message_id;
+            $this->waktu_kirim = $update->callbackQuery->message->date;
            
             if (array_key_exists("username",$update['callback_query']['from']))
             {
@@ -234,6 +276,18 @@ class TelegramController extends Controller
                 case 'updateidtg':
                     $this->UpdateIdTele();
                     break;
+                case 'menuadmin':
+                    $this->MenuAdmin();
+                    break;
+                case 'flagstatusonline':
+                    $this->FlagKonsultasi();
+                    break;
+                case 'listoperator':
+                    $this->ListOperator();
+                    break;
+                case 'gantipasswd':
+                    $this->GantiPasswd();
+                    break;
                 default:
                 $this->showMenu();
                     break;
@@ -242,20 +296,52 @@ class TelegramController extends Controller
         } 
         else 
         {
-            /*
+            /* 
             Pertama kali pengunjung menghubungi bot klik /start
             */
-            $this->chat_id = $request['message']['chat']['id'];
-            $this->first_name = $request['message']['from']['first_name'];
-            $this->text = $request['message']['text'];
-            if (array_key_exists("username",$request['message']['from']))
+            //cek dulu apakah messagenya ada edited_message
+            if (isset($request['edited_message']))
             {
-                $this->username = $request['message']['from']['username'];
+                $this->chat_id = $request['edited_message']['chat']['id'];
+                $this->first_name = $request['edited_message']['from']['first_name'];
+                $this->text = $request['edited_message']['text'];
+                $this->message_id = $request['edited_message']['message_id'];
+                $this->waktu_kirim = $request['edited_message']['date'];
+                if (array_key_exists("username",$request['edited_message']['from']))
+                {
+                    $this->username = $request['edited_message']['from']['username'];
+                }
+                else 
+                {
+                    $this->username= $this->first_name;
+                }
             }
             else 
             {
-                $this->username= $this->first_name;
+                $this->chat_id = $request['message']['chat']['id'];
+                $this->first_name = $request['message']['from']['first_name'];
+                $this->text = $request['message']['text'];
+                $this->message_id = $request['message']['message_id'];
+                $this->waktu_kirim = $request['message']['date'];
+
+                if (isset($request['message']['reply_to_message']['forward_date']))
+                {
+                    $this->forward_date = $request['message']['reply_to_message']['forward_date'];
+                }
+                else 
+                {
+                    $this->forward_date = $request['message']['date'];
+                }
+                if (array_key_exists("username",$request['message']['from']))
+                {
+                    $this->username = $request['message']['from']['username'];
+                }
+                else 
+                {
+                    $this->username= $this->first_name;
+                }
             }
+            
 
             switch ($this->text) {
                 case '/start':
@@ -351,13 +437,39 @@ class TelegramController extends Controller
         $message = 'Selamat datang di <b>TeleDATA (Telegram Data BPSNTB)</b>' .chr(10);
         $message .= '<b>BPS Provinsi Nusa Tenggara Barat</b>' .chr(10) .chr(10);
         $message .= 'Silakan <b>Pilih Layanan</b> yang tersedia : ' .chr(10) .chr(10);
+        $cek_admin = User::where('chatid_tg','=',$this->chat_id)->orWhere('user_tg','=',$this->username)->count();
+        if ($cek_admin > 0)
+        {
+            //admin dan tampilkan keyboard
+            $data_admin = User::where('chatid_tg','=',$this->chat_id)->orWhere('user_tg','=',$this->username)->first();
+            $message .= chr(10).'Role : Admin Sistem <b>TeleData</b> ('.$this->username.')' .chr(10);
+            if ($data_admin->chatid_tg == '')
+            {
+                //update chatid_tg dulu
+                $this->keyboard = json_encode($this->keyboard_default_admin_belumtg);
+            }
+            else 
+            {
+                //langsung tampilkan menuadmin
+                $this->keyboard = json_encode($this->keyboard_default_admin);
+            }
+            //jika chatid_tg belum ada isinya di menu admin
+            //update keyboard  $this->keyboard_default_admin_belumtg
+            
+        }
+        else 
+        {
+            //keyboard biasa
+            $this->keyboard = json_encode($this->keyboard_default);
+            
+        }
         $this->KirimPesan($message,true,true);
     }
     //nama lengkap, email, nomor hp
     public function InputEmail()
     {
-        $message = "Silakan Masukkan Email anda : ";
-        $this->KirimPesan($message);
+        $message = "<i>Silakan masukkan alamat email anda : </i>";
+        $this->KirimPesan($message,true);
     }
     public function EditEmail()
     {
@@ -366,8 +478,8 @@ class TelegramController extends Controller
             'chatid' => $this->chat_id,
             'command' => __FUNCTION__
         ]);
-        $message = "Silakan Masukkan Email anda : ";
-        $this->KirimPesan($message);
+        $message = "<i>Silakan masukkan alamat <b>email baru</b> anda : </i>";
+        $this->KirimPesan($message,true);
     }
     public function InputHP()
     {
@@ -392,7 +504,7 @@ class TelegramController extends Controller
             'chatid' => $this->chat_id,
             'command' => __FUNCTION__
         ]);
-        $message = "<i>Silakan Masukkan Nomor HP anda</i> : ";
+        $message = "<i>Silakan masukkan Nomor HP baru anda</i> : ";
         $this->KirimPesan($message,true);
     }
     public function InputNama()
@@ -409,7 +521,7 @@ class TelegramController extends Controller
     }
     public function EditNama()
     {
-        $message = "<i>Silakan Masukkan Nama Lengkap</i> :";
+        $message = "<i>Silakan masukkan Nama Lengkap Anda</i> :";
  
         LogPengunjung::create([
             'username' => $this->username,
@@ -501,20 +613,80 @@ class TelegramController extends Controller
         
     }
 
-    public function MenuKonsultasi()
+    public function MenuKonsultasi($reply = false)
     {
         $message = '<b>Layanan Konsultasi Online</b>' .chr(10);
         $message .= 'Hari Layanan :  Senin - Jumat (Kecuali hari libur)' .chr(10);
         $message .= 'Jam Layanan : 08.00 - 15.00 WITA' .chr(10) .chr(10);
-        $message .= '<b>Tidak ada Operator Online</b>' .chr(10) .chr(10);
-        $message .= 'Pesan anda akan terbaca saat operator Online' .chr(10) .chr(10) .chr(10);
-        $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
+        $this->KirimPesan($message,true);
+        //cek dulu hari apa
+        if (Carbon::now()->format('w') > 1 and Carbon::now()->format('w') < 6)
+        {
+            //hari kerja
+            //cek jam
+            if (Carbon::now()->format('H') > 7 and Carbon::now()->format('H') < 16 )
+            {
+                //cek operator ada online ngga
+                if (Carbon::now()->format('H') < 15)
+                {
+                    $cek_admin = User::where([['status_online','1'],['aktif','1']])->count();
+                    if ($cek_admin > 0)
+                    {
+                        //operator ada online
+                        $message = '<b>Operator Online</b>' .chr(10) .chr(10) .chr(10);
+                        $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10) .chr(10);
+                    }
+                    else
+                    {
+                        $message = '<b>Belum ada Operator Online</b>' .chr(10) .chr(10);
+                        $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10) .chr(10);
+                        $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
+                    }
+                }
+                else
+                {
+                    //sudah jam 3 sore dan tutup
+                    $message = '<b>Silakan tinggalkan pesan</b>' .chr(10);
+                    $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
+                    $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
+                }
+                
+            }
+            else 
+            {
+                //diluar jam layanan
+                $message = '<b>Silakan tinggalkan pesan</b>' .chr(10);
+                $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
+                $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
+            }
+            
+        }
+        else 
+        {
+            //hari sabtu dan minggu
+            $message = '<b>Silakan tinggalkan pesan</b>' .chr(10);
+            $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
+            $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
 
-        LogPengunjung::create([
-            'username' => $this->username,
-            'chatid' => $this->chat_id,
-            'command' => __FUNCTION__
-        ]);
+        }
+        
+        if ($reply)
+        {
+            //ReplyByAdmin
+            LogPengunjung::create([
+                'username' => $this->username,
+                'chatid' => $this->chat_id,
+                'command' => 'ReplyByAdmin'
+            ]);
+        }
+        else 
+        {
+            LogPengunjung::create([
+                'username' => $this->username,
+                'chatid' => $this->chat_id,
+                'command' => __FUNCTION__
+            ]);
+        }
         $this->keyboard = json_encode($this->keyboard_kembali);
         $this->KirimPesan($message,true,true);
         
@@ -562,12 +734,16 @@ class TelegramController extends Controller
         $cek = LogCari::count();
         if ($cek > 0)
         {
-            $data = LogCari::take(-30)->get();
+            $data = LogCari::orderBy('created_at','desc')->take(30)->get();
             $message = 'Data 30 Keyword Pencarian terakhir di TeleData' .chr(10);
             $i=1;
             foreach ($data as $item) {
-                $message .= $i.'. Nama: <b>'.$item->username .'</b> | Keyword: ('.$item->command.') <b>'. $item->keyword .'</b> | tanggal: '. \Carbon\Carbon::parse($item->created_at)->format('d M Y H:i') .chr(10);
+                $message .= $i.'. Nama: <b>'.$item->username .'</b> | Keyword: ('.$item->command.') <b>'. $item->keyword .'</b> | tanggal: '. Carbon::parse($item->created_at)->format('d M Y H:i') .chr(10);
                 $i++;
+            }
+            if (strlen($message) > 4096)
+            {
+                $message .= 'Pesan terlalu panjang' .chr(10);
             }
         }
         else 
@@ -575,20 +751,22 @@ class TelegramController extends Controller
             $message = 'Data Log Pencarian masih kosong' .chr(10);
         }
         
-       $this->KirimPesan($message,true);
-       $this->MyProfil();
+        $this->keyboard = json_encode($this->keyboard_admin);
+        $this->KirimPesan($message,true,true);
+       //$this->MenuAdmin();
     }
     public function LogDataPengunjung()
     {
-        $data = DataPengunjung::take(-30)->get();
+        $data = DataPengunjung::orderBY('created_at','desc')->take(30)->get();
         $message = 'Data 30 Pengunjung TeleData terakhir' .chr(10);
         $i=1;
         foreach ($data as $item) {
-            $message .= $i.'. Nama: <b>'.$item->nama .'</b> | Email: <b>'. $item->email .'</b> | No HP: <b>'.$item->nohp.'</b> | Daftar: <b>'. \Carbon\Carbon::parse($item->created_at)->format('d M Y H:i') .'</b>' .chr(10) .chr(10);
+            $message .= $i.'. Nama: <b>'.$item->nama .'</b> | Email: <b>'. $item->email .'</b> | No HP: <b>'.$item->nohp.'</b> | chat_id: <b>'.$item->chatid.'</b> | username: <b>'.$item->username.'</b> | Daftar: <b>'. Carbon::parse($item->created_at)->format('d M Y H:i') .'</b>' .chr(10) .chr(10);
             $i++;
         }
-       $this->KirimPesan($message,true);
-       $this->MyProfil();
+        $this->keyboard = json_encode($this->keyboard_admin);
+        $this->KirimPesan($message,true,true);
+       //$this->MenuAdmin();
 
     }
     public function UpdateIdTele()
@@ -609,7 +787,148 @@ class TelegramController extends Controller
             $message ='Anda bukan admin sistem'.chr(10);
         }
         $this->KirimPesan($message,true);
-        $this->MyProfil();
+        //$this->MenuAdmin();
+    }
+    public function FlagKonsultasi()
+    {
+        $cek_dulu = User::where('chatid_tg','=',$this->chat_id)->count();
+        if ($cek_dulu > 0)
+        {
+            $data_admin = User::where('chatid_tg','=',$this->chat_id)->first();
+            if ($data_admin->status_online == 1)
+            {
+                $flag_konsultasi = 0;
+            }
+            else 
+            {
+                $flag_konsultasi = 1;
+            }
+            $data_admin->status_online = $flag_konsultasi;
+            $data_admin->update();
+            $message = 'Status Online berhasil diubah' .chr(10) .chr(10);
+            $this->KirimPesan($message,true);
+            $this->MenuAdmin();
+
+        }
+        else 
+        {
+           //bukan admin
+           $message ='Anda bukan admin sistem'.chr(10);
+           $this->KirimPesan($message,true);
+           $this->MenuAwal(); 
+        }
+    }
+    public function ListOperator()
+    {
+        $cek_dulu = User::where('chatid_tg','=',$this->chat_id)->count();
+        if ($cek_dulu > 0)
+        {
+            $data = User::orderBY('created_at','desc')->take(30)->get();
+            $message = 'Data 30 Operator TeleData terakhir' .chr(10);
+            $i=1;
+            foreach ($data as $item) {
+                if ($item->lastip != '')
+                {
+                    $lastlogin = $item->lastip .' ('. Carbon::parse($item->lastlogin)->format('d M Y H:i') .')';
+                }
+                else 
+                {
+                    $lastlogin ='';
+                }
+                $message .= $i.'. Nama: <b>'.$item->nama .'</b> | Email: <b>'. $item->email .'</b> | user_tg: <b>'.$item->user_tg.'</b> | chat_id: <b>'.$item->chatid_tg.'</b> | username: <b>'.$item->username.'</b> | lastlogin: <b>'. $lastlogin .'</b>' .chr(10) .chr(10);
+                $i++;
+            }
+            $this->keyboard = json_encode($this->keyboard_admin);
+            $this->KirimPesan($message,true,true);
+        }
+        else 
+        {
+           //bukan admin
+           $message ='Anda bukan admin sistem'.chr(10);
+           $this->KirimPesan($message,true);
+           $this->MenuAwal(); 
+        }
+    }
+    public function GantiPasswd()
+    {
+        $cek_dulu = User::where('chatid_tg','=',$this->chat_id)->count();
+        if ($cek_dulu > 0)
+        {
+            
+            $message = 'Masih dalam pengembangan' .chr(10);
+            
+            //$this->keyboard = json_encode($this->keyboard_admin);
+            $this->KirimPesan($message,true);
+            $this->MenuAdmin();
+        }
+        else 
+        {
+           //bukan admin
+           $message ='Anda bukan admin sistem'.chr(10);
+           $this->KirimPesan($message,true);
+           $this->MenuAwal(); 
+        }
+    }
+    public function MenuAdmin()
+    {
+        $cek_dulu = User::where('chatid_tg','=',$this->chat_id)->count();
+        if ($cek_dulu > 0)
+        {
+            $data_admin = User::where('chatid_tg','=',$this->chat_id)->first();
+            if ($data_admin->status_online == 1)
+            {
+                $flag_statusonline = 'ONLINE';
+            }
+            else 
+            {
+                $flag_statusonline = 'OFFLINE';
+            }
+            if ($data_admin->aktif == 1)
+            {
+                $flag_aktif = 'AKTIF';
+            }
+            else 
+            {
+                $flag_aktif = 'NONAKTIF';
+            }
+            if ($data_admin->lastip != '')
+            {
+                $lastlogin = $data_admin->lastip .' ('. Carbon::parse($data_admin->lastlogin)->format('d M Y H:i') .')';
+            }
+            else 
+            {
+                $lastlogin ='';
+            }
+            $message = 'Menu Admin TeleData' .chr(10) .chr(10);
+            $message .= 'Nama : <b>'.$data_admin->nama.'</b>' .chr(10);
+            $message .= 'Username (Web) : <b>'.$data_admin->username.'</b>' .chr(10);
+            $message .= 'Username (TG) : <b>'.$data_admin->user_tg.'</b>' .chr(10);
+            $message .= 'chatid (TG) : <b>'.$data_admin->chatid_tg.'</b>' .chr(10);
+            $message .= 'Email : <b>'.$data_admin->email.'</b>' .chr(10);
+            $message .= 'Lastlogin : <b>'.$lastlogin.'</b>' .chr(10);
+            $message .= 'Status Akun : <b>'.$flag_aktif.'</b>' .chr(10);
+            $message .= 'Status Online : <b>'.$flag_statusonline.'</b>' .chr(10);
+            if ($data_admin->status_online == 1)
+            {
+                $flag_konsultasi = 'Flag Konsultasi ONLINE';
+            }
+            else 
+            {
+                $flag_konsultasi = 'Flag Konsultasi OFFLINE';
+            }
+            
+            $this->keyboard = json_encode($this->keyboard_admin);
+            $this->KirimPesan($message,true,true);
+        }
+        else
+        {
+            //bukan admin
+            $message ='Anda bukan admin sistem'.chr(10);
+            $this->KirimPesan($message,true);
+            $this->MenuAwal();
+        }
+        
+        
     }
     public function CheckInputan()
     {
@@ -618,86 +937,202 @@ class TelegramController extends Controller
             {
                 $tg = LogPengunjung::where('chatid','=',$this->chat_id)->latest("updated_at")->first();
                 if ($tg->command == 'InputNama') {
-                    $message ='';
-                    $message .='Nama <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
-                    $message .='<i>Silakan masukkan email anda</i> :' . chr(10);
-                    $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
-                    $data->nama = $this->text;
-                    $data->update();
-
-                    $tg->command = 'InputEmail';
-                    $tg->update();
+                    
+                    $pesan_error = [
+                        'required' => ':attribute wajib terisi!!!',
+                        'string'=> ':attribute harus berupa karakter',
+                        'regex'=> ':attribute harus berupa karakter',
+                        'min' => ':attribute harus diisi minimal :min karakter!!!',
+                        'max' => ':attribute harus diisi maksimal :max karakter!!!',
+                    ];
+                    $validator = Validator::make(['Nama' => $this->text],
+                            ['Nama' => 'string|min:3|max:50|regex:/^([a-zA-Z]+\s)*[a-zA-Z]+$/'],$pesan_error
+                        );
+                    if ($validator->fails()) {
+                        // your code
+                        $message = $validator->errors()->first() .chr(10);
+                        $this->KirimPesan($message,true);
+                        $this->InputNama();
+                    }
+                    else                     
+                    {
+                        $message ='';
+                        $message .='Nama <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
+                        $message .='<i>Silakan masukkan email anda</i> :' . chr(10);
+                        $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
+                        $data->nama = $this->text;
+                        $data->update();
     
-                    $this->KirimPesan($message,true);
+                        $tg->command = 'InputEmail';
+                        $tg->update();
+        
+                        $this->KirimPesan($message,true);
+                    }
+                   
                 }
                 elseif ($tg->command == 'EditNama') {
-                    $message ='';
-                    $message .='Nama <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
-                    $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
-                    $data->nama = $this->text;
-                    $data->update();
+                    $pesan_error = [
+                        'required' => ':attribute wajib terisi!!!',
+                        'string'=> ':attribute harus berupa karakter',
+                        'regex'=> ':attribute harus berupa karakter',
+                        'min' => ':attribute harus diisi minimal :min karakter!!!',
+                        'max' => ':attribute harus diisi maksimal :max karakter!!!',
+                    ];
+                    $validator = Validator::make(['Nama' => $this->text],
+                            ['Nama' => 'string|min:3|max:50|regex:/^([a-zA-Z]+\s)*[a-zA-Z]+$/'],$pesan_error
+                        );
+                    if ($validator->fails()) {
+                        // your code
+                        $message = $validator->errors()->first() .chr(10);
+                        $this->KirimPesan($message,true);
+                        $this->EditNama();
+                    }
+                    else
+                    {
+                        $message ='';
+                        $message .='Nama <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
+                        $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
+                        $data->nama = $this->text;
+                        $data->update();
 
-                    $tg->command = 'showMenu';
-                    $tg->update();
-    
-                    $this->KirimPesan($message,true);
-                    $this->MyProfil();
+                        $tg->command = 'showMenu';
+                        $tg->update();
+        
+                        $this->KirimPesan($message,true);
+                        $this->MyProfil();
+                    } 
                 }
                 elseif ($tg->command == 'InputEmail')
                 {
-                    $message ='';
-                    $message .='Email <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
-                    $message .='<i>Silakan Masukkan nomor HP anda</i> :' . chr(10);
-                    $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
-                    $data->email = $this->text;
-                    $data->update();
-
-                    $tg->command = 'InputHP';
-                    $tg->update();
+                    $pesan_error = [
+                        'required' => ':attribute wajib terisi!!!',
+                        'email'=> ':attribute harus alamat lengkap',
+                        'regex'=> ':attribute harus berupa alamat yang valid',
+                        'min' => ':attribute harus diisi minimal :min karakter!!!',
+                        'max' => ':attribute harus diisi maksimal :max karakter!!!',
+                    ];
+                    $validator = Validator::make(['Email' => $this->text],
+                            ['Email' => 'required|email|regex:/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/'],$pesan_error
+                        );
+                    if ($validator->fails()) {
+                        // your code
+                        $message = $validator->errors()->first() .chr(10);
+                        $this->KirimPesan($message,true);
+                        $this->InputEmail();
+                    }
+                    else
+                    {
+                        $message ='';
+                        $message .='Email <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
+                        $message .='<i>Silakan Masukkan nomor HP anda</i> :' . chr(10);
+                        $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
+                        $data->email = $this->text;
+                        $data->update();
     
-                    $this->KirimPesan($message,true);
+                        $tg->command = 'InputHP';
+                        $tg->update();
+        
+                        $this->KirimPesan($message,true);
+                    }
+                   
                 }
                 elseif ($tg->command == 'EditEmail')
                 {
-                    $message ='';
-                    $message .='Email <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
-                    $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
-                    $data->email = $this->text;
-                    $data->update();
+                    $pesan_error = [
+                        'required' => ':attribute wajib terisi!!!',
+                        'email'=> ':attribute harus alamat lengkap',
+                        'regex'=> ':attribute harus berupa alamat yang valid',
+                        'min' => ':attribute harus diisi minimal :min karakter!!!',
+                        'max' => ':attribute harus diisi maksimal :max karakter!!!',
+                    ];
+                    $validator = Validator::make(['Email' => $this->text],
+                            ['Email' => 'required|email|regex:/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/'],$pesan_error
+                        );
+                    if ($validator->fails()) {
+                        // your code
+                        $message = $validator->errors()->first() .chr(10);
+                        $this->KirimPesan($message,true);
+                        $this->EditEmail();
+                    }
+                    else
+                    {
+                        $message ='';
+                        $message .='Email <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
+                        $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
+                        $data->email = $this->text;
+                        $data->update();
 
-                    $tg->command = 'showMenu';
-                    $tg->update();
-    
-                    $this->KirimPesan($message,true);
-                    $this->MyProfil();
+                        $tg->command = 'showMenu';
+                        $tg->update();
+        
+                        $this->KirimPesan($message,true);
+                        $this->MyProfil();
+                    }
+                    
                 }
                 elseif ($tg->command == 'EditNoHp')
                 {
-                    $message ='';
-                    $message .='Nomor HP <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
-                    $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
-                    $data->nohp = $this->text;
-                    $data->update();
+                    $pesan_error = [
+                        'required' => ':attribute wajib terisi!!!',
+                        'regex'=> ':attribute harus berupa angka',
+                        'min' => ':attribute harus diisi minimal :min angka!!!',
+                        'max' => ':attribute harus diisi maksimal :max angka!!!',
+                    ];
+                    $validator = Validator::make(['Nohp' => $this->text],
+                            ['Nohp' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10'],$pesan_error
+                        );
+                    if ($validator->fails()) {
+                        // your code
+                        $message = $validator->errors()->first() .chr(10);
+                        $this->KirimPesan($message,true);
+                        $this->EditNoHp();
+                    }
+                    else
+                    {
+                        $message ='';
+                        $message .='Nomor HP <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
+                        $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
+                        $data->nohp = $this->text;
+                        $data->update();
 
-                    $tg->command = 'showMenu';
-                    $tg->update();
-    
-                    $this->KirimPesan($message,true);
-                    $this->MyProfil();
+                        $tg->command = 'showMenu';
+                        $tg->update();
+        
+                        $this->KirimPesan($message,true);
+                        $this->MyProfil();
+                    }
                 }
                 elseif ($tg->command == 'InputHP')
                 {
-                    $message ='';
-                    $message .='Nomor HP <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
-                    $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
-                    $data->nohp = $this->text;
-                    $data->update();
-
-                    $tg->command = 'showMenu';
-                    $tg->update();
+                    $pesan_error = [
+                        'required' => ':attribute wajib terisi!!!',
+                        'regex'=> ':attribute harus berupa angka',
+                        'min' => ':attribute harus diisi minimal :min angka!!!',
+                        'max' => ':attribute harus diisi maksimal :max angka!!!',
+                    ];
+                    $validator = Validator::make(['Nohp' => $this->text],
+                            ['Nohp' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10'],$pesan_error
+                        );
+                    if ($validator->fails()) {
+                        // your code
+                        $message = $validator->errors()->first() .chr(10);
+                        $this->KirimPesan($message,true);
+                        $this->InputHP();
+                    }
+                    else
+                    {
+                        $message ='';
+                        $message .='Nomor HP <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
+                        $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
+                        $data->nohp = $this->text;
+                        $data->update();
     
-                    $this->KirimPesan($message,true);
-                    $this->showMenu();
+                        $tg->command = 'showMenu';
+                        $tg->update();
+        
+                        $this->KirimPesan($message,true);
+                        $this->showMenu();
+                    }
                 }
                 elseif ($tg->command == 'CariPublikasi')
                 {
@@ -958,31 +1393,87 @@ class TelegramController extends Controller
                     }
                     $this->CariLainnya();
                 }
+                elseif ($tg->command == 'ReplyByAdmin')
+                {
+                    //ambil dulu pesan sebelumnya utk dptkan chat_id
+                    //reply_to_message harus isset
+                    //$this->first_name = $request['message']['from']['first_name'];
+                    //ambil forward_date dan text
+                    //cocokan dgn di log_pesan
+                    
+                    $cek_pesan = LogPesan::where('waktu_kirim','=',$this->forward_date)->count();
+                    if ($cek_pesan > 0)
+                    {
+                        $dt = LogPesan::where('waktu_kirim','=',$this->forward_date)->first();
+                        $this->msg_id = $dt->msg_id;
+                        //save replynya
+                        $data_baru = new LogPesan();
+                        $data_baru->username = 'admin';
+                        $data_baru->chatid = '1';
+                        $data_baru->isi_pesan = $this->text;
+                        $data_baru->msg_id = $this->message_id;
+                        $data_baru->waktu_kirim = $this->waktu_kirim;
+                        $data_baru->chatid_penerima = $dt->chatid;
+                        $data_baru->chat_admin = '1';
+                        $data_baru->save();
+
+                        $this->KirimByAdmin($dt->chatid, true);
+                        $this->MenuKonsultasi(true);
+                    }
+                    else
+                    {
+                        
+                        //kembali ke menukonsultasi
+                        $message ='';
+                        $message .='Pesan anda <b>'.$this->text.'</b> belum terkirim' . chr(10) .chr(10);
+                        $message .= 'Gunakan fitur reply untuk membalas pesan ke pengunjung' .chr(10).chr(10);
+                        
+                        $this->KirimPesan($message,true);
+                        $this->MenuKonsultasi(true);
+                    }                    
+                }
                 elseif ($tg->command == 'MenuKonsultasi')
                 {
-                    $message ='';
-                    $message .='Pesan anda <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
-                    
                     $dt = new LogPesan();
                     $dt->username = $this->username;
                     $dt->chatid = $this->chat_id;
                     $dt->isi_pesan = $this->text;
+                    $dt->msg_id = $this->message_id;
+                    $dt->waktu_kirim = $this->waktu_kirim;
                     $dt->save();
-
-                    /*
-                    $tg->command = 'showMenu';
-                    $tg->update();
-                    */
-                    $this->KirimPesan($message,true);
-                    $this->MenuKonsultasi();
+                    //cek admin yg online dan ada chatid langsung forwardkan
+                    $cek_admin_online = User::where([['chatid_tg','<>',''],['status_online','=','1']])->count();
+                    if ($cek_admin_online > 0)
+                    {
+                        //kirim forward pesan
+                        $data_admin = User::where([['chatid_tg','<>',''],['status_online','=','1']])->get();
+                        foreach ($data_admin as $item) {
+                            $this->TeruskanPesan($item->chatid_tg);
+                            LogPengunjung::create([
+                                'username' => $item->user_tg,
+                                'chatid' => $item->chatid_tg,
+                                'command' => 'ReplyByAdmin'
+                            ]);
+                        }
+                        
+                    }
+                        $message ='';
+                        $message .='Pesan anda <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
+                        
+                        /*
+                        $tg->command = 'showMenu';
+                        $tg->update();
+                        */
+                        $this->KirimPesan($message,true);
+                        $this->MenuKonsultasi();                    
                 }
                 else 
                 {
                     $message ='';
-                    $message .='Perintah tidak dikenali. silakan pilih menu' . chr(10) .chr(10);
+                    $message .='Perintah tidak dikenali. <b>Silakan pilih menu dibawah ini</b>' . chr(10) .chr(10);
                     $tg->command = 'showMenu';
                     $tg->update();
-                    $this->KirimPesan($message);
+                    $this->KirimPesan($message,true);
                     $this->AwalStart();
                 }
             }
@@ -1004,11 +1495,32 @@ class TelegramController extends Controller
             'chat_id' => $this->chat_id,
             'text' => $message,
         ];
- 
         if ($parse_html) $data['parse_mode'] = 'HTML';
         if ($keyboard) $data['reply_markup'] = $this->keyboard;
  
         $this->telegram->sendMessage($data);
+    }
+    protected function KirimByAdmin($chatid, $parse_html = false, $keyboard = false)
+    {
+        $data = [
+            'chat_id' => $chatid,
+            'text' => $this->text,
+            'disable_web_page_preview'=> true,
+            'reply_to_message_id' => $this->msg_id
+        ];
+        if ($parse_html) $data['parse_mode'] = 'HTML';
+        if ($keyboard) $data['reply_markup'] = $this->keyboard;
+ 
+        $this->telegram->sendMessage($data);
+    }
+    protected function TeruskanPesan($kirim_chat_id)
+    {
+        $data = [
+            'chat_id' => $kirim_chat_id,
+            'from_chat_id' => $this->chat_id,
+	        'message_id' => $this->message_id
+        ]; 
+        $this->telegram->forwardMessage($data);
     }
     public function CariPub($keyword)
     {
@@ -1098,4 +1610,5 @@ class TelegramController extends Controller
         
         return $response;
     }
+    
 }
