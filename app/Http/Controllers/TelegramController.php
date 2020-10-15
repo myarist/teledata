@@ -92,7 +92,7 @@ class TelegramController extends Controller
                     ['text'=> 'Ganti Password', 'callback_data'=>'gantipasswd']
                 ],
                 [
-                    ['text'=> 'Kembali ke Menu Awal', 'callback_data'=>'menuawal']
+                    ['text'=> 'Kembali ke Menu Utama', 'callback_data'=>'menuawal']
                 ]
             ]
         ];
@@ -133,7 +133,7 @@ class TelegramController extends Controller
                     ['text'=> 'Lainnya', 'callback_data'=> 'carilainnnya']
                 ],
                 [
-                    ['text'=> 'Menu Awal', 'callback_data'=>'menuawal']
+                    ['text'=> 'Menu Utama', 'callback_data'=>'menuawal']
                 ]
             ]
         ];
@@ -147,7 +147,7 @@ class TelegramController extends Controller
         $this->keyboard_kembali = [
             'inline_keyboard' => [
                 [
-                    ['text'=> 'Kembali ke Menu Awal', 'callback_data'=>'menuawal']
+                    ['text'=> 'Kembali ke Menu Utama', 'callback_data'=>'menuawal']
                 ]
             ]
         ];
@@ -162,7 +162,7 @@ class TelegramController extends Controller
                     ['text'=> 'Edit Profil', 'callback_data'=>'editprofil']
                 ],
                 [
-                    ['text'=> 'Menu Awal', 'callback_data'=>'menuawal']
+                    ['text'=> 'Menu Utama', 'callback_data'=>'menuawal']
                 ]
             ]
         ];
@@ -177,7 +177,7 @@ class TelegramController extends Controller
                     ['text'=> 'Edit Profil', 'callback_data'=>'editprofil']
                 ],
                 [
-                    ['text'=> 'Menu Awal', 'callback_data'=>'menuawal']
+                    ['text'=> 'Menu Utama', 'callback_data'=>'menuawal']
                 ]
             ]
         ];
@@ -187,21 +187,23 @@ class TelegramController extends Controller
     public function getMe()
     {
         $response = $this->telegram->getMe();
-        return $response;
+        //return $response;
+        return view('admin.getme',['respon'=>$response]);
     }
     public function WebhookInfo()
     {
         $h = new WebApiBps();
         $response = $h->webinfo();
        
-		return $response;
+        //return $response;
+        return view('admin.botstatus',['respon'=>$response]);
     }
     public function setWebHook()
     {
         $url = env('TELEGRAM_WEBHOOK_URL') . '/' . env('TELEGRAM_HASH_URL') . '/webhook';
         $response = $this->telegram->setWebhook(['url' => $url]);
- 
-        return $response == true ? redirect()->back() : dd($response);
+        //dd($response);
+        return view('admin.setwebhook',['respon'=>$response]);
     }
     public function WebHook(Request $request)
     {
@@ -307,6 +309,14 @@ class TelegramController extends Controller
                 $this->text = $request['edited_message']['text'];
                 $this->message_id = $request['edited_message']['message_id'];
                 $this->waktu_kirim = $request['edited_message']['date'];
+                if (isset($request['edited_message']['reply_to_message']['forward_date']))
+                {
+                    $this->forward_date = $request['edited_message']['reply_to_message']['forward_date'];
+                }
+                else 
+                {
+                    $this->forward_date = $request['edited_message']['date'];
+                }
                 if (array_key_exists("username",$request['edited_message']['from']))
                 {
                     $this->username = $request['edited_message']['from']['username'];
@@ -559,17 +569,10 @@ class TelegramController extends Controller
                 $cek_admin = User::where('chatid_tg','=',$this->chat_id)->orWhere('user_tg','=',$this->username)->count();
                 if ($cek_admin > 0)
                 {
-                    //admin dan tampilkan keyboard
+                    //admin
                     $message .= chr(10).'Role : Admin Sistem <b>TeleData</b> ('.$this->username.')' .chr(10);
-                    $this->keyboard = json_encode($this->keyboard_edit_profil_admin);
-                }
-                else 
-                {
-                    //keyboard biasa
-                    $this->keyboard = json_encode($this->keyboard_edit_profil);
-                }
-                
-                
+                }                
+                $this->keyboard = json_encode($this->keyboard_edit_profil);
                 $this->KirimPesan($message,true,true);
             }
         }
