@@ -135,7 +135,7 @@ class TelegramController extends Controller
                     ['text'=> 'Lainnya', 'callback_data'=> 'carilainnnya']
                 ],
                 [
-                    ['text'=> 'Menu Utama', 'callback_data'=>'menuawal']
+                    ['text'=> 'Kembali ke Menu Utama', 'callback_data'=>'menuawal']
                 ]
             ]
         ];
@@ -164,7 +164,7 @@ class TelegramController extends Controller
                     ['text'=> 'Edit Profil', 'callback_data'=>'editprofil']
                 ],
                 [
-                    ['text'=> 'Menu Utama', 'callback_data'=>'menuawal']
+                    ['text'=> 'Kembali ke Menu Utama', 'callback_data'=>'menuawal']
                 ]
             ]
         ];
@@ -179,7 +179,7 @@ class TelegramController extends Controller
                     ['text'=> 'Edit Profil', 'callback_data'=>'editprofil']
                 ],
                 [
-                    ['text'=> 'Menu Utama', 'callback_data'=>'menuawal']
+                    ['text'=> 'Kembali ke Menu Utama', 'callback_data'=>'menuawal']
                 ]
             ]
         ];
@@ -795,6 +795,11 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
         foreach ($data as $item) {
             $message .= $i.'. Nama: <b>'.$item->nama .'</b> | Email: <b>'. $item->email .'</b> | No HP: <b>'.$item->nohp.'</b> | chat_id: <b>'.$item->chatid.'</b> | username: <b>'.$item->username.'</b> | Daftar: <b>'. Carbon::parse($item->created_at)->format('d M Y H:i') .'</b>' .chr(10) .chr(10);
             $i++;
+            if ($i==11 or $i==21)
+            {
+                $this->KirimPesan($message,true);
+                $message = '';
+            }
         }
         $this->keyboard = json_encode($this->keyboard_admin);
         $this->KirimPesan($message,true,true);
@@ -819,7 +824,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             $message ='Anda bukan admin sistem'.chr(10);
         }
         $this->KirimPesan($message,true);
-        //$this->MenuAdmin();
+        $this->MenuAdmin();
     }
     public function FlagKonsultasi()
     {
@@ -867,8 +872,13 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                 {
                     $lastlogin ='';
                 }
-                $message .= $i.'. Nama: <b>'.$item->nama .'</b> | Email: <b>'. $item->email .'</b> | user_tg: <b>'.$item->user_tg.'</b> | chat_id: <b>'.$item->chatid_tg.'</b> | username: <b>'.$item->username.'</b> | lastlogin: <b>'. $lastlogin .'</b>' .chr(10) .chr(10);
+                $message .= $i.'. Nama: <b>'.$item->nama .'</b> | Email: <b>'. $item->email .'</b> | user_tg: <b>'.$item->user_tg.'</b> | chat_id: <b>'.$item->chatid_tg.'</b> | username: <b>'.$item->username.'</b> | status_online: '.$item->status_online.' | lastlogin: <b>'. $lastlogin .'</b>' .chr(10) .chr(10);
                 $i++;
+                if ($i==10 or $i==20)
+                {
+                    $this->KirimPesan($message,true);
+                    $message = '';
+                }
             }
             $this->keyboard = json_encode($this->keyboard_admin);
             $this->KirimPesan($message,true,true);
@@ -1111,7 +1121,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         'max' => ':attribute harus diisi maksimal :max angka!!!',
                     ];
                     $validator = Validator::make(['Nohp' => $this->text],
-                            ['Nohp' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10'],$pesan_error
+                            ['Nohp' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:13'],$pesan_error
                         );
                     if ($validator->fails()) {
                         // your code
@@ -1143,7 +1153,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         'max' => ':attribute harus diisi maksimal :max angka!!!',
                     ];
                     $validator = Validator::make(['Nohp' => $this->text],
-                            ['Nohp' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10'],$pesan_error
+                            ['Nohp' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:13'],$pesan_error
                         );
                     if ($validator->fails()) {
                         // your code

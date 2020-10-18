@@ -92,6 +92,8 @@
 @endsection
 
 @section('js')
+    <!-- Sweet-Alert  -->
+    <script src="{{asset('assets/node_modules/sweetalert2/dist/sweetalert2.all.min.js')}}"></script>
     <!-- This is data table -->
     <script src="{{asset('assets/node_modules/datatables.net/js/jquery.dataTables.min.js')}}"></script>
     <script src="{{asset('assets/node_modules/datatables.net-bs4/js/dataTables.responsive.min.js')}}"></script>
@@ -111,15 +113,13 @@
                 buttons: [
                     'copy', 'excel', 'pdf', 'print'
                 ],
-                responsive: true,
-                "displayLength": 30,
+               "displayLength": 30,
                 
             });
             $('.buttons-copy, .buttons-csv, .buttons-print, .buttons-pdf, .buttons-excel').addClass('btn btn-primary mr-1');
         });
 
     </script>
-    <!-- Sweet-Alert  -->
-    <script src="{{asset('assets/node_modules/sweetalert2/dist/sweetalert2.all.min.js')}}"></script>
+    
     @include('pengunjung.js')
 @endsection
