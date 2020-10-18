@@ -1447,19 +1447,29 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                     if ($cek_pesan > 0)
                     {
                         $dt = LogPesan::where('waktu_kirim','=',$this->forward_date)->first();
+                        $data_admin = User::where('chatid_tg',$this->chat_id)->first();
+                        if ($data_admin)
+                        {
+                            $nama_admin = $data_admin->user_tg;
+                        }
+                        else 
+                        {
+                            $nama_admin='admin';
+                        }
                         $this->msg_id = $dt->msg_id;
+                        $pesan = $this->text .' -'.$nama_admin;
                         //save replynya
                         $data_baru = new LogPesan();
                         $data_baru->username = 'admin';
                         $data_baru->chatid = '1';
-                        $data_baru->isi_pesan = $this->text;
+                        $data_baru->isi_pesan = $pesan;
                         $data_baru->msg_id = $this->message_id;
                         $data_baru->waktu_kirim = $this->waktu_kirim;
                         $data_baru->chatid_penerima = $dt->chatid;
                         $data_baru->chat_admin = '1';
                         $data_baru->save();
 
-                        $this->KirimByAdmin($dt->chatid, true);
+                        $this->KirimByAdmin($pesan,$dt->chatid, true);
                         $this->MenuKonsultasi(true);
                     }
                     else
@@ -1544,11 +1554,11 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
  
         $this->telegram->sendMessage($data);
     }
-    protected function KirimByAdmin($chatid, $parse_html = false, $keyboard = false)
+    protected function KirimByAdmin($message,$chatid, $parse_html = false, $keyboard = false)
     {
         $data = [
             'chat_id' => $chatid,
-            'text' => $this->text,
+            'text' => $message,
             'disable_web_page_preview'=> true,
             'reply_to_message_id' => $this->msg_id
         ];
