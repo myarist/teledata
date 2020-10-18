@@ -16,6 +16,7 @@ use App\Helpers\WebApiBps;
 use App\LogCari;
 use App\User;
 use Illuminate\Support\Facades\Validator;
+use Telegram\Bot\FileUpload\InputFile;
 
 class TelegramController extends Controller
 {
@@ -33,6 +34,7 @@ class TelegramController extends Controller
     protected $waktu_kirim;
     protected $msg_id;
     protected $forward_date;
+    protected $url_photo;
     
     public function __construct()
     {
@@ -427,7 +429,8 @@ class TelegramController extends Controller
             LogPengunjung::create([
                 'username' => $this->username,
                 'chatid' => $this->chat_id,
-                'command' => __FUNCTION__
+                'command' => __FUNCTION__,
+                'msg_id' => $this->message_id
             ]);
             $this->keyboard = json_encode($this->keyboard_edit_profil);
            
@@ -446,7 +449,7 @@ class TelegramController extends Controller
     { 
         $message = 'Selamat datang di <b>TeleDATA (Telegram Data BPSNTB)</b>' .chr(10);
         $message .= '<b>BPS Provinsi Nusa Tenggara Barat</b>' .chr(10) .chr(10);
-        $message .= 'Silakan <b>Pilih Layanan</b> yang tersedia : ' .chr(10) .chr(10);
+        $message .= 'Silakan <b>Pilih Layanan</b> yang tersedia : ' .chr(10);
         $cek_admin = User::where('chatid_tg','=',$this->chat_id)->orWhere('user_tg','=',$this->username)->count();
         if ($cek_admin > 0)
         {
@@ -474,6 +477,13 @@ class TelegramController extends Controller
             
         }
         $this->KirimPesan($message,true,true);
+        LogPengunjung::create([
+            'username' => $this->username,
+            'chatid' => $this->chat_id,
+            'command' => 'showMenu',
+            'msg_id'=> $this->message_id
+        ]);
+        
     }
     //nama lengkap, email, nomor hp
     public function InputEmail()
@@ -486,7 +496,8 @@ class TelegramController extends Controller
         LogPengunjung::create([
             'username' => $this->username,
             'chatid' => $this->chat_id,
-            'command' => __FUNCTION__
+            'command' => __FUNCTION__,
+            'msg_id' => $this->message_id
         ]);
         $message = "<i>Silakan masukkan alamat <b>email baru</b> anda : </i>";
         $this->KirimPesan($message,true);
@@ -512,7 +523,8 @@ class TelegramController extends Controller
         LogPengunjung::create([
             'username' => $this->username,
             'chatid' => $this->chat_id,
-            'command' => __FUNCTION__
+            'command' => __FUNCTION__,
+            'msg_id' => $this->message_id
         ]);
         $message = "<i>Silakan masukkan Nomor HP baru anda</i> : ";
         $this->KirimPesan($message,true);
@@ -524,7 +536,8 @@ class TelegramController extends Controller
         LogPengunjung::create([
             'username' => $this->username,
             'chatid' => $this->chat_id,
-            'command' => __FUNCTION__
+            'command' => __FUNCTION__,
+            'msg_id' => $this->message_id
         ]);
  
         $this->KirimPesan($message,true);
@@ -536,7 +549,8 @@ class TelegramController extends Controller
         LogPengunjung::create([
             'username' => $this->username,
             'chatid' => $this->chat_id,
-            'command' => __FUNCTION__
+            'command' => __FUNCTION__,
+            'msg_id' => $this->message_id
         ]);
  
         $this->KirimPesan($message,true);
@@ -595,7 +609,8 @@ class TelegramController extends Controller
         LogPengunjung::create([
             'username' => $this->username,
             'chatid' => $this->chat_id,
-            'command' => __FUNCTION__
+            'command' => __FUNCTION__,
+            'msg_id' => $this->message_id
         ]);
         $this->keyboard = json_encode($this->keyboard_cari_kembali);
         $this->KirimPesan($message,true,true);
@@ -609,7 +624,8 @@ class TelegramController extends Controller
         LogPengunjung::create([
             'username' => $this->username,
             'chatid' => $this->chat_id,
-            'command' => __FUNCTION__
+            'command' => __FUNCTION__,
+            'msg_id' => $this->message_id
         ]);
         $this->keyboard = json_encode($this->keyboard_cari_kembali);
         $this->KirimPesan($message,true,true);
@@ -679,7 +695,8 @@ class TelegramController extends Controller
             LogPengunjung::create([
                 'username' => $this->username,
                 'chatid' => $this->chat_id,
-                'command' => 'ReplyByAdmin'
+                'command' => 'ReplyByAdmin',
+                'msg_id' => $this->message_id
             ]);
         }
         else 
@@ -687,7 +704,8 @@ class TelegramController extends Controller
             LogPengunjung::create([
                 'username' => $this->username,
                 'chatid' => $this->chat_id,
-                'command' => __FUNCTION__
+                'command' => __FUNCTION__,
+                'msg_id' => $this->message_id
             ]);
         }
         $this->keyboard = json_encode($this->keyboard_kembali);
@@ -701,7 +719,8 @@ class TelegramController extends Controller
         LogPengunjung::create([
             'username' => $this->username,
             'chatid' => $this->chat_id,
-            'command' => __FUNCTION__
+            'command' => __FUNCTION__,
+            'msg_id' => $this->message_id
         ]);
         $this->keyboard = json_encode($this->keyboard_cari_kembali);
         $this->KirimPesan($message,true,true);
@@ -715,7 +734,8 @@ class TelegramController extends Controller
         LogPengunjung::create([
             'username' => $this->username,
             'chatid' => $this->chat_id,
-            'command' => __FUNCTION__
+            'command' => __FUNCTION__,
+            'msg_id' => $this->message_id
         ]);
         $this->keyboard = json_encode($this->keyboard_cari_kembali);
         $this->KirimPesan($message,true,true);
@@ -724,13 +744,22 @@ class TelegramController extends Controller
     
     public function TentangBot()
     {
+        /*
+        Bot TeleData ini merupakan inovasi dari BPS Provinsi Nusa Tenggara Barat.
+Aplikasi ini dibuat untuk memudahkan pengguna data dalam melakukan pencarian data yang ada di website BPS Prov. NTB melalui Telegram.
+Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
+
+        */
         $message ='';
         $message = '<b>TENTANG BOT TeleDATA (Telegram Data BPSNTB)</b>' .chr(10) .chr(10);
         $message .= 'Bot TeleData ini merupakan invoasi dari BPS Provinsi Nusa Tenggara Barat.' .chr(10);
-        $message .= 'memudahkan pengguna data melakukan pencarian data melalui Telegram.' .chr(10);
-        $message .= 'dikembangkan oleh Bidang IPDS' .chr(10);
-        $this->KirimPesan($message,true);
-        $this->showMenu();
+        $message .= 'Aplikasi ini dibuat untuk memudahkan pengguna data dalam melakukan pencarian data yang ada di website BPS Prov. NTB melalui Telegram.' .chr(10);
+        $message .= 'Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB' .chr(10);
+        //$this->KirimPesan($message,true);
+        $this->keyboard = json_encode($this->keyboard_kembali);
+        //KirimPhoto($url,false,true);
+        $this->KirimPhoto('kirimphoto',false,true);
+        //$this->showMenu();
     }
     public function LogDataPencarian()
     {
@@ -1455,7 +1484,8 @@ class TelegramController extends Controller
                             LogPengunjung::create([
                                 'username' => $item->user_tg,
                                 'chatid' => $item->chatid_tg,
-                                'command' => 'ReplyByAdmin'
+                                'command' => 'ReplyByAdmin',
+                                'msg_id' => $this->message_id
                             ]);
                         }
                         
@@ -1486,7 +1516,8 @@ class TelegramController extends Controller
                 LogPengunjung::create([
                     'username' => $this->username,
                     'chatid' => $this->chat_id,
-                    'command' => 'showMenu'
+                    'command' => 'showMenu',
+                    'msg_id'=> $this->message_id
                 ]);
                 $this->AwalStart();
             }
@@ -1524,6 +1555,26 @@ class TelegramController extends Controller
 	        'message_id' => $this->message_id
         ]; 
         $this->telegram->forwardMessage($data);
+    }
+    protected function KirimPhoto($url,$pic = false,$keyboard = false)
+    {
+        if ($pic)
+        {
+            //kalo ada isi link
+            $photo = $url;
+        }
+        else 
+        {
+            $photo = asset('img/tentangbot.jpg');
+        }
+        $filename = 'tentang.jpg';
+        $data = [
+            'chat_id' => $this->chat_id,
+            'photo' => InputFile::create($photo, $filename),
+            'caption' => 'Tentang TeleData BPS Prov. NTB'
+        ];
+        if ($keyboard) $data['reply_markup'] = $this->keyboard;
+        $this->telegram->sendPhoto($data);
     }
     public function CariPub($keyword)
     {

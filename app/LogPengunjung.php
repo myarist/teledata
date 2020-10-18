@@ -8,5 +8,5 @@ class LogPengunjung extends Model
 {
     //
     protected $table = 'log_posisi'; 
-    protected $fillable = ['username','chatid','command'];
+    protected $fillable = ['username','chatid','command','msg_id'];
 }

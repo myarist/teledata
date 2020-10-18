@@ -18,6 +18,7 @@ class CreateLogPengunjungsTable extends Migration
             $table->string('username')->nullable();
             $table->string('chatid')->nullable();
             $table->string('command');
+            $table->string('msg_id')->nullable();
             $table->timestamps();
         });
     }
