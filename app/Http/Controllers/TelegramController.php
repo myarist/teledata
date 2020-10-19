@@ -35,6 +35,7 @@ class TelegramController extends Controller
     protected $msg_id;
     protected $forward_date;
     protected $url_photo;
+    protected $hari_libur;
     
     public function __construct()
     {
@@ -183,6 +184,8 @@ class TelegramController extends Controller
                 ]
             ]
         ];
+        $r = file_get_contents("https://github.com/guangrei/Json-Indonesia-holidays/raw/master/calendar.json");
+        $this->hari_libur = json_decode($r, true);
         $this->keyboard = json_encode($this->keyboard_default);
     }
  
@@ -643,44 +646,58 @@ class TelegramController extends Controller
         {
             //hari kerja
             //cek jam
-            if (Carbon::now()->format('H') > 7 and Carbon::now()->format('H') < 16 )
-            {
-                //cek operator ada online ngga
-                if (Carbon::now()->format('H') < 15)
-                {
-                    $cek_admin = User::where([['status_online','1'],['aktif','1']])->count();
-                    if ($cek_admin > 0)
-                    {
-                        //operator ada online
-                        $message = '<b>Operator Online</b>' .chr(10) .chr(10);
-                        $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
-                    }
-                    else
-                    {
-                        $message = '<b>Belum ada Operator Online</b>' .chr(10);
-                        $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
-                        $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
-                    }
-                }
-                else
-                {
-                    //sudah jam 3 sore dan tutup
-                    $message = '<b>Diluar hari dan jam layanan</b>' .chr(10);
-                    $message .= '<b>Silakan tinggalkan pesan</b>' .chr(10);
-                    $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
-                    $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
-                }
-                
-            }
-            else 
+            //cek dulu hari libur apa ngga
+            $cek_libur = isset($this->hari_libur[Carbon::now()->format("Ymd")])?true:false;
+            if ($cek_libur == true)
             {
                 //diluar jam layanan
-                $message = '<b>Diluar hari dan jam layanan</b>' .chr(10);
+                $message = '<b>Hari Libur : '.$this->hari_libur[Carbon::now()->format("Ymd")]['deskripsi'].'</b>' .chr(10);
                 $message .= '<b>Silakan tinggalkan pesan</b>' .chr(10);
                 $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
                 $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
             }
-            
+            else 
+            {
+                //tidak libur
+                //hari kerja
+                if (Carbon::now()->format('H') > 7 and Carbon::now()->format('H') < 16 )
+                {
+                    //cek operator ada online ngga
+                    if (Carbon::now()->format('H') < 15)
+                    {
+                        $cek_admin = User::where([['status_online','1'],['aktif','1']])->count();
+                        if ($cek_admin > 0)
+                        {
+                            //operator ada online
+                            $message = '<b>Operator Online</b>' .chr(10) .chr(10);
+                            $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
+                        }
+                        else
+                        {
+                            $message = '<b>Belum ada Operator Online</b>' .chr(10);
+                            $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
+                            $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
+                        }
+                    }
+                    else
+                    {
+                        //sudah jam 3 sore dan tutup
+                        $message = '<b>Diluar jam layanan</b>' .chr(10);
+                        $message .= '<b>Silakan tinggalkan pesan</b>' .chr(10);
+                        $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
+                        $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
+                    }
+                    
+                }
+                else 
+                {
+                    //diluar jam layanan
+                    $message = '<b>Diluar jam layanan</b>' .chr(10);
+                    $message .= '<b>Silakan tinggalkan pesan</b>' .chr(10);
+                    $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
+                    $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
+                }
+            }
         }
         else 
         {
