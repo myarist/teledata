@@ -639,7 +639,7 @@ class TelegramController extends Controller
         $message .= 'Jam Layanan : 08.00 - 15.00 WITA' .chr(10) .chr(10);
         $this->KirimPesan($message,true);
         //cek dulu hari apa
-        if (Carbon::now()->format('w') > 1 and Carbon::now()->format('w') < 6)
+        if (Carbon::now()->format('w') > 0 and Carbon::now()->format('w') < 6)
         {
             //hari kerja
             //cek jam
@@ -652,20 +652,21 @@ class TelegramController extends Controller
                     if ($cek_admin > 0)
                     {
                         //operator ada online
-                        $message = '<b>Operator Online</b>' .chr(10) .chr(10) .chr(10);
-                        $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10) .chr(10);
+                        $message = '<b>Operator Online</b>' .chr(10) .chr(10);
+                        $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
                     }
                     else
                     {
-                        $message = '<b>Belum ada Operator Online</b>' .chr(10) .chr(10);
-                        $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10) .chr(10);
+                        $message = '<b>Belum ada Operator Online</b>' .chr(10);
+                        $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
                         $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
                     }
                 }
                 else
                 {
                     //sudah jam 3 sore dan tutup
-                    $message = '<b>Silakan tinggalkan pesan</b>' .chr(10);
+                    $message = '<b>Diluar hari dan jam layanan</b>' .chr(10);
+                    $message .= '<b>Silakan tinggalkan pesan</b>' .chr(10);
                     $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
                     $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
                 }
@@ -674,7 +675,8 @@ class TelegramController extends Controller
             else 
             {
                 //diluar jam layanan
-                $message = '<b>Silakan tinggalkan pesan</b>' .chr(10);
+                $message = '<b>Diluar hari dan jam layanan</b>' .chr(10);
+                $message .= '<b>Silakan tinggalkan pesan</b>' .chr(10);
                 $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
                 $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
             }
@@ -683,7 +685,8 @@ class TelegramController extends Controller
         else 
         {
             //hari sabtu dan minggu
-            $message = '<b>Silakan tinggalkan pesan</b>' .chr(10);
+            $message = '<b>Diluar hari dan jam layanan</b>' .chr(10);
+            $message .= '<b>Silakan tinggalkan pesan</b>' .chr(10);
             $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
             $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
 
