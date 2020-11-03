@@ -55,6 +55,9 @@ class TelegramController extends Controller
                     ['text'=> 'Tentang Bot', 'callback_data'=> 'tentangbot']
                 ],
                 [
+                    ['text'=> 'Feedback', 'callback_data'=> 'feedbacksistem']
+                ],
+                [
                     ['text'=> 'Selesai', 'callback_data'=> 'selesai']
                 ]
             ]
@@ -77,8 +80,22 @@ class TelegramController extends Controller
                     ['text'=> 'Tentang Bot', 'callback_data'=> 'tentangbot']
                 ],
                 [
+                    ['text'=> 'Feedback', 'callback_data'=> 'feedbacksistem']
+                ],
+                [
                     ['text'=> 'Selesai', 'callback_data'=> 'selesai']
                 ]
+            ]
+        ];
+        $this->keyboard_feedback = [
+            'inline_keyboard' => [
+                [
+                    ['text'=> '1', 'callback_data'=>'feedback1'],
+                    ['text'=> '2', 'callback_data'=>'feedback2'],
+                    ['text'=> '3', 'callback_data'=>'feedback3'],
+                    ['text'=> '4', 'callback_data'=>'feedback4'],
+                    ['text'=> '5', 'callback_data'=>'feedback5']
+                ],
             ]
         ];
         $this->keyboard_admin = [
@@ -295,6 +312,24 @@ class TelegramController extends Controller
                 case 'gantipasswd':
                     $this->GantiPasswd();
                     break;
+                case 'feedbacksistem':
+                    $this->FeedBackSistem();
+                    break;
+                case 'feedback1':
+                    $this->ProsesFeedBack();
+                    break;
+                case 'feedback2':
+                    $this->ProsesFeedBack();
+                    break;
+                case 'feedback3':
+                    $this->ProsesFeedBack();
+                    break;
+                case 'feedback4':
+                    $this->ProsesFeedBack();
+                    break;
+                case 'feedback5':
+                    $this->ProsesFeedBack();
+                    break;
                 default:
                 $this->showMenu();
                     break;
@@ -448,6 +483,29 @@ class TelegramController extends Controller
         $this->KirimPesan($message,true,true);
 
     }
+    public function FeedBackSistem()
+    {
+        LogPengunjung::create([
+            'username' => $this->username,
+            'chatid' => $this->chat_id,
+            'command' => __FUNCTION__,
+            'msg_id' => $this->message_id
+        ]);
+        $message ='';
+        $message .= 'Bagaimana penilaian Bapak/Ibu untuk TeleData' .chr(10);
+        $message .= 'Silakan pilih nilai dibawah ini : ' .chr(10);
+        $this->keyboard = json_encode($this->keyboard_feedback);
+        $this->KirimPesan($message,true,true);
+    }
+    public function ProsesFeedBack()
+    {
+        $message ='';
+        $message .= 'Terimakasih atas penilaian Bapak/Ibu untuk perbaikan <b>Teledata</b> Kedepan' .chr(10);
+        $message .= ' ' .chr(10) .chr(10);
+        $message .= 'Silakan masukkan komentar Bapak/Ibu tentang <b>TeleDATA</b> : '.chr(10) .chr(10);
+        $this->KirimPesan($message,true);
+    }
+    
     public function showMenu($info = false)
     { 
         $message = 'Selamat datang di <b>TeleDATA (Telegram Data BPSNTB)</b>' .chr(10);
@@ -1503,6 +1561,15 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         $this->KirimPesan($message,true);
                         $this->MenuKonsultasi(true);
                     }                    
+                }
+                elseif ($tg->command == 'FeedBackSistem')
+                {
+                    $message ='';
+                    $message .='Masukkan Bapak/Ibu <b>'.$this->text.'</b> sudah tersimpan' . chr(10);
+                    $message .= 'Terimakasih atas masukkan Bapak/Ibu untuk perbaikan <b>TeleDATA</b>' .chr(10).chr(10);
+                    
+                    $this->KirimPesan($message,true);
+                    $this->AwalStart();
                 }
                 elseif ($tg->command == 'MenuKonsultasi')
                 {
