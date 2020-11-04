@@ -12,6 +12,7 @@ use App\LogPesan;
 use Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\LogFeedback;
 
 class AdminController extends Controller
 {

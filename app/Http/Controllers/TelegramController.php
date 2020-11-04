@@ -17,6 +17,7 @@ use App\LogCari;
 use App\User;
 use Illuminate\Support\Facades\Validator;
 use Telegram\Bot\FileUpload\InputFile;
+use App\LogFeedback;
 
 class TelegramController extends Controller
 {
@@ -55,7 +56,7 @@ class TelegramController extends Controller
                     ['text'=> 'Tentang Bot', 'callback_data'=> 'tentangbot']
                 ],
                 [
-                    ['text'=> 'Feedback', 'callback_data'=> 'feedbacksistem']
+                    ['text'=> 'Feedback', 'callback_data'=> 'myfeedback']
                 ],
                 [
                     ['text'=> 'Selesai', 'callback_data'=> 'selesai']
@@ -80,11 +81,19 @@ class TelegramController extends Controller
                     ['text'=> 'Tentang Bot', 'callback_data'=> 'tentangbot']
                 ],
                 [
-                    ['text'=> 'Feedback', 'callback_data'=> 'feedbacksistem']
+                    ['text'=> 'Feedback', 'callback_data'=> 'myfeedback']
                 ],
                 [
                     ['text'=> 'Selesai', 'callback_data'=> 'selesai']
                 ]
+            ]
+        ];
+        $this->keyboard_myfeedback = [
+            'inline_keyboard' => [
+                [
+                    ['text'=> 'Berikan Feedback', 'callback_data'=>'feedbacksistem'],
+                    ['text'=> 'Menu Utama', 'callback_data'=>'menuawal']
+                ],
             ]
         ];
         $this->keyboard_feedback = [
@@ -109,10 +118,10 @@ class TelegramController extends Controller
                 ],
                 [
                     ['text'=> 'List Operator', 'callback_data'=>'listoperator'],
-                    ['text'=> 'Ganti Password', 'callback_data'=>'gantipasswd']
+                    ['text'=> 'List Feedback', 'callback_data'=>'listfeedback']
                 ],
                 [
-                    ['text'=> 'Kembali ke Menu Utama', 'callback_data'=>'menuawal']
+                    ['text'=> 'Menu Utama', 'callback_data'=>'menuawal']
                 ]
             ]
         ];
@@ -312,6 +321,9 @@ class TelegramController extends Controller
                 case 'gantipasswd':
                     $this->GantiPasswd();
                     break;
+                case 'myfeedback':
+                    $this->MyFeedBack();
+                    break;
                 case 'feedbacksistem':
                     $this->FeedBackSistem();
                     break;
@@ -329,6 +341,9 @@ class TelegramController extends Controller
                     break;
                 case 'feedback5':
                     $this->ProsesFeedBack();
+                    break;
+                case 'listfeedback':
+                    $this->ListFeedBack();
                     break;
                 default:
                 $this->showMenu();
@@ -483,6 +498,87 @@ class TelegramController extends Controller
         $this->KirimPesan($message,true,true);
 
     }
+    public function ListFeedBack()
+    {
+        $data = LogFeedback::orderBY('created_at','desc')->take(30)->get();
+        $message = 'Data 30 Feedback Pengunjung <b>TeleDATA</b> terakhir' .chr(10);
+        $i=1;
+        foreach ($data as $item) {
+            if ($item->nilai_feedback == '5')
+            {
+                $nilai = '⭐️⭐️⭐️⭐️⭐️';
+            }
+            elseif ($item->nilai_feedback == '4')
+            {
+                $nilai = '⭐️⭐️⭐️⭐️';
+            }
+            elseif ($item->nilai_feedback == '3')
+            {
+                $nilai = '⭐️⭐️⭐️';
+            }
+            elseif ($item->nilai_feedback == '2')
+            {
+                $nilai = '⭐️⭐️';
+            }
+            else
+            {
+                $nilai = '⭐️';
+            }
+            $message .= $i.'. Nama: <b>'.$item->Pengunjung->nama .'</b> | chat_id: <b>'.$item->chatid.'</b> | username: <b>'.$item->username.'</b>'.chr(10). $nilai .' <i>'.Carbon::parse($item->created_at)->format('d M Y H:i').'</i>'. chr(10) .'<i>'.$item->isi_feedback.'</i> ' .chr(10) .chr(10);
+            $i++;
+            if ($i==11 or $i==21)
+            {
+                $this->KirimPesan($message,true);
+                $message = '';
+            }
+        }
+        $this->keyboard = json_encode($this->keyboard_admin);
+        $this->KirimPesan($message,true,true);
+       //$this->MenuAdmin();
+    }
+    public function MyFeedBack()
+    {
+        //cek dulu feedbacknya
+        $message = 'Penilaian terhadap <b>TeleDATA</b>' .chr(10) .chr(10);
+        $cek_fb = LogFeedback::where('chatid',$this->chat_id)->count();
+        if ($cek_fb > 0)
+        {
+            //sudah ada ngisi
+            $data = LogFeedback::where('chatid',$this->chat_id)->first();
+            if ($data->nilai_feedback == '5')
+            {
+                $nilai = '⭐️⭐️⭐️⭐️⭐️';
+            }
+            elseif ($data->nilai_feedback == '4')
+            {
+                $nilai = '⭐️⭐️⭐️⭐️';
+            }
+            elseif ($data->nilai_feedback == '3')
+            {
+                $nilai = '⭐️⭐️⭐️';
+            }
+            elseif ($data->nilai_feedback == '2')
+            {
+                $nilai = '⭐️⭐️';
+            }
+            else
+            {
+                $nilai = '⭐️';
+            }
+
+            $message .= '<b>Nilai</b> : '. $nilai .chr(10);
+            $message .= '<b>Komentar</b> : <i>'.$data->isi_feedback.'</i>' .chr(10);
+            $message .= '<b>Tanggal</b> : '.\Carbon\Carbon::parse($data->updated_at)->format('j F Y H:i') .chr(10);
+        }
+        else 
+        {
+            
+            $message .= '<i>Belum ada feedback dari Bapak/Ibu</i>' .chr(10);
+        }
+        
+        $this->keyboard = json_encode($this->keyboard_myfeedback);
+        $this->KirimPesan($message,true,true);
+    }
     public function FeedBackSistem()
     {
         LogPengunjung::create([
@@ -500,6 +596,51 @@ class TelegramController extends Controller
     public function ProsesFeedBack()
     {
         //input nilai sesuai pilihan
+        //cek dulu apakah sudah pernah ngisi
+        //kalo sudah pernah mengisi langsung update saja
+        if ($this->text == 'feedback1') 
+        {
+            $nilai = 1;
+        }
+        elseif ($this->text == 'feedback2')
+        {
+            $nilai = 2;
+        }
+        elseif ($this->text == 'feedback3')
+        {
+            $nilai = 3;
+        }
+        elseif ($this->text == 'feedback4')
+        {
+            $nilai = 4;
+        }
+        else
+        {
+            $nilai = 5;
+        }
+
+        $cek_fb = LogFeedback::where('chatid',$this->chat_id)->count();
+        if ($cek_fb > 0)
+        {
+            //sudah pernah mengisi feedback
+            $data = LogFeedback::where('chatid',$this->chat_id)->first();
+            $data->username = $this->username;
+            $data->nilai_feedback = $nilai;
+            $data->msg_id = $this->message_id;
+            $data->waktu_kirim = $this->waktu_kirim;
+            $data->update();
+        }
+        else 
+        {
+            //baru ngisi feedback
+            $data = new LogFeedback();
+            $data->username = $this->username;
+            $data->chatid = $this->chat_id;;
+            $data->nilai_feedback = $nilai;
+            $data->msg_id = $this->message_id;
+            $data->waktu_kirim = $this->waktu_kirim;
+            $data->save();
+        }
         $message ='';
         $message .= 'Terimakasih atas penilaian Bapak/Ibu untuk perbaikan <b>Teledata</b> Kedepan' .chr(10) .chr(10);
         $message .= 'Silakan masukkan komentar Bapak/Ibu tentang <b>TeleDATA</b> : '.chr(10) .chr(10);
@@ -933,6 +1074,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
            $this->MenuAwal(); 
         }
     }
+    
     public function ListOperator()
     {
         $cek_dulu = User::where('chatid_tg','=',$this->chat_id)->count();
@@ -1564,12 +1706,35 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                 }
                 elseif ($tg->command == 'FeedBackSistem')
                 {
+                    $cek_fb = LogFeedback::where('chatid',$this->chat_id)->count();
+                    if ($cek_fb > 0)
+                    {
+                        //sudah pernah mengisi feedback
+                        $data = LogFeedback::where('chatid',$this->chat_id)->first();
+                        $data->username = $this->username;
+                        $data->isi_feedback = $this->text;
+                        $data->msg_id = $this->message_id;
+                        $data->waktu_kirim = $this->waktu_kirim;
+                        $data->update();
+                    }
+                    else 
+                    {
+                        //baru ngisi feedback
+                        $data = new LogFeedback();
+                        $data->username = $this->username;
+                        $data->chatid = $this->chat_id;;
+                        $data->isi_feedback = $this->text;
+                        $data->msg_id = $this->message_id;
+                        $data->waktu_kirim = $this->waktu_kirim;
+                        $data->save();
+                    }
                     $message ='';
-                    $message .='Masukkan Bapak/Ibu <b>'.$this->text.'</b> sudah tersimpan' . chr(10);
+                    //$message .='Masukkan Bapak/Ibu <b>'.$this->text.'</b> sudah tersimpan' . chr(10);
+                    $message .='Masukkan Bapak/Ibu sudah tersimpan' . chr(10);
                     $message .= 'Terimakasih atas masukkan Bapak/Ibu untuk perbaikan <b>TeleDATA</b>' .chr(10).chr(10);
-                    
-                    $this->KirimPesan($message,true);
-                    $this->AwalStart();
+                    $this->msg_id = $this->message_id;
+                    $this->ReplyPesan($message,true);
+                    $this->MyFeedBack();
                 }
                 elseif ($tg->command == 'MenuKonsultasi')
                 {
@@ -1635,6 +1800,19 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
         $data = [
             'chat_id' => $this->chat_id,
             'text' => $message,
+        ];
+        if ($parse_html) $data['parse_mode'] = 'HTML';
+        if ($keyboard) $data['reply_markup'] = $this->keyboard;
+ 
+        $this->telegram->sendMessage($data);
+    }
+    protected function ReplyPesan($message, $parse_html = false, $keyboard = false)
+    {
+        $data = [
+            'chat_id' => $this->chat_id,
+            'text' => $message,
+            'disable_web_page_preview'=> true,
+            'reply_to_message_id' => $this->msg_id
         ];
         if ($parse_html) $data['parse_mode'] = 'HTML';
         if ($keyboard) $data['reply_markup'] = $this->keyboard;
