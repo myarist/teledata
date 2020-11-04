@@ -499,9 +499,9 @@ class TelegramController extends Controller
     }
     public function ProsesFeedBack()
     {
+        //input nilai sesuai pilihan
         $message ='';
-        $message .= 'Terimakasih atas penilaian Bapak/Ibu untuk perbaikan <b>Teledata</b> Kedepan' .chr(10);
-        $message .= ' ' .chr(10) .chr(10);
+        $message .= 'Terimakasih atas penilaian Bapak/Ibu untuk perbaikan <b>Teledata</b> Kedepan' .chr(10) .chr(10);
         $message .= 'Silakan masukkan komentar Bapak/Ibu tentang <b>TeleDATA</b> : '.chr(10) .chr(10);
         $this->KirimPesan($message,true);
     }
