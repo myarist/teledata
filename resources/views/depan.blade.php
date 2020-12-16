@@ -29,7 +29,7 @@
             <div class="card-body">
                 <div class="d-flex m-b-40 align-items-center no-block">
                     <h5 class="card-title ">JUMLAH PENGUNJUNG</h5>
-                   
+
                 </div>
                 <div id="jumlah-pengunjung" style="height: 320px;"></div>
             </div>
@@ -71,7 +71,7 @@
                         </div>
                         <div class="text-white"><i class="fas fa-user"></i> {{$dataFeedback->count()}} total</div>
                     </div>
-                   
+
                 </div>
             </div>
         </div>
@@ -86,7 +86,7 @@
                         <div class="carousel-item @if ($loop->first) active @endif">
                             <h4 class="cmin-height"><i>{{$item->isi_feedback}}</i></h4>
                             <div class="d-flex no-block">
-                                
+
                             <span class="m-t-20">
                                 <h4 class="text-white m-b-0">{{$item->Pengunjung->nama}}</h4>
                                 @for ($i = 1; $i < 6; $i++)
@@ -97,8 +97,8 @@
                                     @endif
                                 @endfor
                                 <p class="text-white">{{\Carbon\Carbon::parse($item->created_at)->isoFormat('D MMMM Y H:m')}}</p>
-                            
-                            
+
+
                             </span>
                             </div>
                         </div>
@@ -112,12 +112,11 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">JUMLAH KONSULTASI</h4>
-                
-                    
-                    <div class="p-10">
-                        <h6 class="font-light text-right" >Total : {{$dataKonsul->count()}}</h6>
-                    </div>
-                
+                <div class="stats-row float-right">
+                    <div class="stat-item">
+                        <h6>TOTAL</h6>
+                        <b>{{$dataKonsul->count()}}</b></div>
+                </div>
             </div>
             <div id="jumlah-konsultasi" class="sparkchart"></div>
         </div>
@@ -139,7 +138,7 @@
 @section('js')
     <!-- Sweet-Alert  -->
     <script src="{{asset('assets/node_modules/sweetalert2/dist/sweetalert2.all.min.js')}}"></script>
-    
+
     <!--morris JavaScript -->
     <script src="{{asset('assets/node_modules/raphael/raphael-min.js')}}"></script>
     <script src="{{asset('assets/node_modules/morrisjs/morris.min.js')}}"></script>

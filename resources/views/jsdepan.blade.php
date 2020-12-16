@@ -19,20 +19,20 @@ Morris.Area({
         hideHover: 'auto',
         lineColors: ['#009efb'],
         resize: true
-        
+
     });
     // Morris donut chart
-        
+
     Morris.Donut({
         element: 'jumlah-pencarian',
         data: {!! $dataDonut !!},
         resize: true,
-        colors:['#009efb', '#55ce63', '#2f3d4a']
+        colors:['#55ce63','#fccf03','#009efb', '#2f3d4a']
     });
-    var sparklineLogin = function() { 
-       
-  
-       $("#jumlah-konsultasi").sparkline([2,4,12,6,8,5,9,4,8,6,6,2 ], {
+    var sparklineLogin = function() {
+
+
+       $("#jumlah-konsultasi").sparkline({!! $dataKonsulChart !!}, {
            type: 'line',
            width: '100%',
            height: '50',
@@ -41,7 +41,7 @@ Morris.Area({
            maxSpotColor: '#26c6da',
            highlightLineColor: 'rgba(0, 0, 0, 0.2)',
            highlightSpotColor: '#26c6da'
-       });      
+       });
     }
     var sparkResize;
 
@@ -50,6 +50,6 @@ Morris.Area({
             sparkResize = setTimeout(sparklineLogin, 500);
         });
         sparklineLogin();
-});    
+});
 
 </script>

@@ -21,7 +21,7 @@
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
     @section('css')
-        
+
     @show
 </head>
 
@@ -75,23 +75,23 @@
                         <!-- Search -->
                         <!-- ============================================================== -->
                         <li class="nav-item">
-                            
+
                         </li>
                     </ul>
                     <!-- ============================================================== -->
                     <!-- User profile and search -->
                     <!-- ============================================================== -->
                     <ul class="navbar-nav my-lg-0">
-                        
+
                         <!-- ============================================================== -->
                         <!-- User Profile -->
                         <!-- ============================================================== -->
                         <li class="nav-item dropdown u-pro">
                             <a class="nav-link dropdown-toggle waves-effect waves-dark profile-pic" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="hidden-md-down">
                                  @if (Auth::user())
-                                {{Auth::user()->nama}} 
-                                @else 
-                                MASUK 
+                                {{Auth::user()->nama}}
+                                @else
+                                MASUK
                                 @endif &nbsp;<i class="fa fa-angle-down"></i></span> </a>
                             <div class="dropdown-menu dropdown-menu-right animated flipInY">
                                 <!-- text-->
@@ -108,7 +108,7 @@
                         <!-- ============================================================== -->
                         <!-- End User Profile -->
                         <!-- ============================================================== -->
-                        
+
                     </ul>
                 </div>
             </nav>
@@ -150,7 +150,13 @@
         <!-- footer -->
         <!-- ============================================================== -->
         <footer class="footer">
-            &copy; {{date('Y')}} Bidang IPDS BPS Provinsi NTB
+            &copy; @if (date('Y')=='2020')
+            {{date('Y')}}
+            @else
+                2000 - {{date('Y')}}
+            @endif Bidang IPDS BPS Provinsi NTB
+
+            <span class="float-right"><a href="https://ig.dyatmika.com" target="_blank">Created by Blimika</a></span>
         </footer>
         <!-- ============================================================== -->
         <!-- End footer -->

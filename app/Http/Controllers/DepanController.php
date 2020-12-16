@@ -41,7 +41,7 @@ class DepanController extends Controller
             {
                 $label = 'Data Statistik';
             }
-            else 
+            else
             {
                 $label = 'Lainnya';
             }
@@ -52,20 +52,44 @@ class DepanController extends Controller
         {
             $jumlah_pengunjung = \DB::table('data_pengunjung')->whereDate('created_at','<=',$item->format('Y-m-d'))->count();
             $hari_tgl[]=array('tanggal'=>$item->format('d M'),'jumlah'=>$jumlah_pengunjung);
-        }   
+        }
         $data_bulan = array(
             1=>'Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'
         );
-        $bulan = date('m');
+        $bulan = date('n');
         $tahun = date('Y');
         $data_konsul = array();
-        for ($i = 0 ; $i < 6; $i++)
+        for ($i=1,$thn=$tahun,$j=$bulan; $i <= 6; $i++)
         {
-           $jumlah_konsul = LogPesan::whereMonth('created_at','<=',$bulan-$i)->whereYear('created_at','=',$tahun)->count();
+           $jumlah_konsul = LogPesan::whereMonth('created_at','<=',$j)->whereYear('created_at','=',$thn)->count();
+           $data_konsul[]=array('tanggal'=>$data_bulan[$j] .' '.$thn,'jumlah'=>$jumlah_konsul);
+           $j = $j-1;
+           if ($j == 0)
+           {
+              $j = 12;
+              $thn = $thn -1;
+           }
         }
+        $data_konsul = array_reverse($data_konsul);
+        $data_konsul = collect($data_konsul)->pluck('jumlah');
         $d_konsul = LogPesan::get();
+        //data_pengunjung perbulan
+        $data_pengunjung = array();
+        for ($i=1,$thn=$tahun,$j=$bulan; $i <= 6; $i++)
+        {
+           $jumlah_pengunjung = LogPengunjung::whereMonth('created_at','<=',$j)->whereYear('created_at','=',$thn)->count();
+           $data_pengunjung[]=array('tanggal'=>$data_bulan[$j] .' '.$thn,'jumlah'=>$jumlah_pengunjung);
+           $j = $j-1;
+           if ($j == 0)
+           {
+              $j = 12;
+              $thn = $thn -1;
+           }
+        }
+        $data_pengunjung = array_reverse($data_pengunjung);
+        //batas
         $feed = LogFeedback::orderBy('created_at','desc')->get();
-        //dd(json_encode($hari_tgl));
-        return view('depan',['dataFeedback'=>$feed,'dataChart'=>json_encode($hari_tgl),'dataDonut'=>json_encode($d_cari),'dataKonsul'=>$d_konsul]);
+        //dd($hari_tgl,json_encode($data_konsul));
+        return view('depan',['dataFeedback'=>$feed,'dataChart'=>json_encode($data_pengunjung),'dataDonut'=>json_encode($d_cari),'dataKonsul'=>$d_konsul,'dataKonsulChart'=>json_encode($data_konsul)]);
     }
 }
