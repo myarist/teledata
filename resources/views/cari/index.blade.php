@@ -46,7 +46,6 @@
                                 <th>Command</th>
                                 <th>Keyword</th>
                                 <th>Tanggal</th>
-                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -58,13 +57,12 @@
                             @foreach ($dataCari as $item)
                                 <tr>
                                     <td>{{$loop->iteration}}</td>
-                                    <td></td>
+                                    <td>{{$item->Pengunjung->nama}}</td>
                                     <td>{{$item->chatid}}</td>
                                     <td>{{$item->username}}</td>
                                     <td>{{$item->command}}</td>
                                     <td>{{$item->keyword}}</td>
                                     <td>{{$item->created_at}}</td>
-                                    <td></td>
                                 </tr>
                             @endforeach
                          @endif

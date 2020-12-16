@@ -15,10 +15,12 @@ Auth::routes([
     'reset' => false, // Password Reset Routes...
     'verify' => false, // Email Verification Routes...
   ]);
+/*
 Route::get('/', function () {
     return view('depan');
 });
-
+*/
+Route::get('/', 'DepanController@dashboard')->name('awal');
 
 Route::post(env('TELEGRAM_HASH_URL') . '/webhook', 'TelegramController@WebHook')->name('webhook');
 Route::get('caripub/{keyword}', 'TelegramController@CariPub')->name('cari.pub');
@@ -45,6 +47,7 @@ Route::group(['middleware' => ['auth']], function () {
   Route::get('konsultasi/chat/{chatid}', 'KonsultasiController@Chat')->name('konsultasi.chat');
   Route::post('konsultasi/reply', 'KonsultasiController@ReplyChat')->name('konsultasi.reply');
   Route::get('cari/list', 'CariController@list')->name('cari.list');
+  Route::get('feedback/list', 'FeedbackController@list')->name('feedback.list');
 });
 
 Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout')->name('logout');
