@@ -29,6 +29,7 @@ Route::get('caribrs/{keyword}', 'TelegramController@cariBrsSaja')->name('cari.br
 
 Route::group(['middleware' => ['auth']], function () {
   Route::get('set-hook', 'TelegramController@setWebHook')->name('set.webhook');
+  Route::get('off-hook', 'TelegramController@OffWebHook')->name('off.webhook');
   Route::get('get-me', 'TelegramController@getMe')->name('get.me');
   Route::get('botstatus', 'TelegramController@WebhookInfo')->name('bot.status');
   Route::get('admin/list', 'AdminController@list')->name('admin.list');

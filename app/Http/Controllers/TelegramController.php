@@ -38,7 +38,7 @@ class TelegramController extends Controller
     protected $url_photo;
     protected $hari_libur;
     protected $keyboard_bawah;
-    
+
     public function __construct()
     {
         $this->telegram = new Api(env('TELEGRAM_BOT_TOKEN'));
@@ -231,14 +231,14 @@ class TelegramController extends Controller
                     ['Profile', 'Tentang Saya'],
                     ['Feedback','Selesai']
                 ],
-                'resize_keyboard' => true, 
+                'resize_keyboard' => true,
                 'one_time_keyboard' => true,
         ];
         $r = file_get_contents("https://github.com/guangrei/Json-Indonesia-holidays/raw/master/calendar.json");
         $this->hari_libur = json_decode($r, true);
         $this->keyboard = json_encode($this->keyboard_default);
     }
- 
+
     public function getMe()
     {
         $response = $this->telegram->getMe();
@@ -249,7 +249,7 @@ class TelegramController extends Controller
     {
         $h = new WebApiBps();
         $response = $h->webinfo();
-       
+
         //return $response;
         return view('admin.botstatus',['respon'=>$response]);
     }
@@ -260,10 +260,18 @@ class TelegramController extends Controller
         //dd($response);
         return view('admin.setwebhook',['respon'=>$response]);
     }
+    public function OffWebHook()
+    {
+        $h = new WebApiBps();
+        $response = $h->resetwebhook();
+
+        //return $response;
+        return view('admin.setwebhook',['respon'=>$response]);
+    }
     public function WebHook(Request $request)
     {
         $update = $this->telegram->getWebhookUpdate();
-        if ($update->isType('callback_query')) 
+        if ($update->isType('callback_query'))
         {
 
             /*
@@ -274,16 +282,16 @@ class TelegramController extends Controller
             $this->nama = $update->callbackQuery->from->first_name;
             $this->message_id = $update->callbackQuery->message->message_id;
             $this->waktu_kirim = $update->callbackQuery->message->date;
-           
+
             if (array_key_exists("username",$update['callback_query']['from']))
             {
                 $this->username =  $update->callbackQuery->from->username;
             }
-            else 
+            else
             {
                 $this->username=  $update->callbackQuery->from->first_name;
             }
-           
+
             switch ($this->text) {
                 case 'menucari':
                     $this->MenuCari();
@@ -379,11 +387,11 @@ class TelegramController extends Controller
                 $this->showMenu();
                     break;
             }
-            
-        } 
-        else 
+
+        }
+        else
         {
-            /* 
+            /*
             Pertama kali pengunjung menghubungi bot klik /start
             */
             //cek dulu apakah messagenya ada edited_message
@@ -398,7 +406,7 @@ class TelegramController extends Controller
                 {
                     $this->forward_date = $request['edited_message']['reply_to_message']['forward_date'];
                 }
-                else 
+                else
                 {
                     $this->forward_date = $request['edited_message']['date'];
                 }
@@ -406,12 +414,12 @@ class TelegramController extends Controller
                 {
                     $this->username = $request['edited_message']['from']['username'];
                 }
-                else 
+                else
                 {
                     $this->username= $this->first_name;
                 }
             }
-            else 
+            else
             {
                 $this->chat_id = $request['message']['chat']['id'];
                 $this->first_name = $request['message']['from']['first_name'];
@@ -423,7 +431,7 @@ class TelegramController extends Controller
                 {
                     $this->forward_date = $request['message']['reply_to_message']['forward_date'];
                 }
-                else 
+                else
                 {
                     $this->forward_date = $request['message']['date'];
                 }
@@ -431,12 +439,12 @@ class TelegramController extends Controller
                 {
                     $this->username = $request['message']['from']['username'];
                 }
-                else 
+                else
                 {
                     $this->username= $this->first_name;
                 }
             }
-            
+
 
             switch ($this->text) {
                 case '/start':
@@ -454,9 +462,9 @@ class TelegramController extends Controller
     }
     public function AwalStart()
     {
-        
+
         $count = DataPengunjung::where('chatid','=',$this->chat_id)->count();
-        if ($count > 0) 
+        if ($count > 0)
         {
             //datanya sudah ada langsung suguhkan menu
             $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
@@ -481,15 +489,15 @@ class TelegramController extends Controller
                 //$this->keyboard = $this->keyboard_bawah;
                 /*
                 $reply_markup = $telegram->replyKeyboardMarkup([
-                    'keyboard' => $this->keyboard_bawah, 
-                    'resize_keyboard' => true, 
+                    'keyboard' => $this->keyboard_bawah,
+                    'resize_keyboard' => true,
                     'one_time_keyboard' => true
                 ]); */
                 //$this->keyboard = json_encode($this->keyboard_bawah);
                 $this->KirimPesan($message, true);
-                $this->showMenu();                
+                $this->showMenu();
             }
-            
+
         }
         else
         {
@@ -506,7 +514,7 @@ class TelegramController extends Controller
             $this->KirimPesan($message,true);
             $this->InputNama();
         }
-        
+
     }
     public function TambahAdmin()
     {
@@ -516,7 +524,7 @@ class TelegramController extends Controller
             //bisa akses menu ini
             $message = "Masukkan tambah admin sesuai format berikut : ";
             $message = "perintah : <b>/tambahadmin<spasi>namalengkap-username_telegram-email-password</b>";
-    
+
             LogPengunjung::create([
                 'username' => $this->username,
                 'chatid' => $this->chat_id,
@@ -524,9 +532,9 @@ class TelegramController extends Controller
                 'msg_id' => $this->message_id
             ]);
             $this->keyboard = json_encode($this->keyboard_edit_profil);
-           
+
         }
-        else 
+        else
         {
             //tidak bisa akses menu ini
             $message = "Anda tidak dapat mengakses menu ini: ";
@@ -628,12 +636,12 @@ class TelegramController extends Controller
             $message .= '<b>Komentar</b> : <i>'.$data->isi_feedback.'</i>' .chr(10);
             $message .= '<b>Tanggal</b> : '.\Carbon\Carbon::parse($data->updated_at)->format('j F Y H:i') .chr(10);
         }
-        else 
+        else
         {
-            
+
             $message .= '<i>Belum ada feedback dari Bapak/Ibu</i>' .chr(10);
         }
-        
+
         $this->keyboard = json_encode($this->keyboard_myfeedback);
         $this->KirimPesan($message,true,true);
         if (!$hapus)
@@ -671,7 +679,7 @@ class TelegramController extends Controller
         //input nilai sesuai pilihan
         //cek dulu apakah sudah pernah ngisi
         //kalo sudah pernah mengisi langsung update saja
-        if ($this->text == 'feedback1') 
+        if ($this->text == 'feedback1')
         {
             $nilai = 1;
         }
@@ -703,7 +711,7 @@ class TelegramController extends Controller
             $data->waktu_kirim = $this->waktu_kirim;
             $data->update();
         }
-        else 
+        else
         {
             //baru ngisi feedback
             $data = new LogFeedback();
@@ -723,10 +731,10 @@ class TelegramController extends Controller
             $this->HapusKeyboard($this->chat_id);
         }
     }
-    
+
     public function showMenu($info = false)
-    { 
-        
+    {
+
         $message = 'Selamat datang di <b>TeleDATA (Telegram Data BPSNTB)</b>' .chr(10);
         $message .= '<b>BPS Provinsi Nusa Tenggara Barat</b>' .chr(10) .chr(10);
         $message .= 'Silakan <b>Pilih Layanan</b> yang tersedia : ' .chr(10);
@@ -741,30 +749,30 @@ class TelegramController extends Controller
                 //update chatid_tg dulu
                 $this->keyboard = json_encode($this->keyboard_default_admin_belumtg);
             }
-            else 
+            else
             {
                 //langsung tampilkan menuadmin
                 $this->keyboard = json_encode($this->keyboard_default_admin);
             }
             //jika chatid_tg belum ada isinya di menu admin
             //update keyboard  $this->keyboard_default_admin_belumtg
-            
+
         }
-        else 
+        else
         {
             //keyboard biasa
             $this->keyboard = json_encode($this->keyboard_default);
-            
+
         }
         $this->KirimPesan($message,true,true);
-        
+
         LogPengunjung::create([
             'username' => $this->username,
             'chatid' => $this->chat_id,
             'command' => 'showMenu',
             'msg_id'=> $this->message_id
         ]);
-        
+
     }
     //nama lengkap, email, nomor hp
     public function InputEmail()
@@ -819,33 +827,33 @@ class TelegramController extends Controller
     public function InputNama()
     {
         $message = "<i>Silakan Masukkan Nama Lengkap</i> :";
- 
+
         LogPengunjung::create([
             'username' => $this->username,
             'chatid' => $this->chat_id,
             'command' => __FUNCTION__,
             'msg_id' => $this->message_id
         ]);
- 
+
         $this->KirimPesan($message,true);
     }
     public function EditNama()
     {
         $message = "<i>Silakan masukkan Nama Lengkap Anda</i> :";
- 
+
         LogPengunjung::create([
             'username' => $this->username,
             'chatid' => $this->chat_id,
             'command' => __FUNCTION__,
             'msg_id' => $this->message_id
         ]);
- 
+
         $this->KirimPesan($message,true);
     }
     public function MyProfil()
     {
         $count = DataPengunjung::where('chatid','=',$this->chat_id)->count();
-        if ($count > 0) 
+        if ($count > 0)
         {
             //datanya sudah ada langsung suguhkan menu
             $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
@@ -878,13 +886,13 @@ class TelegramController extends Controller
                 {
                     //admin
                     $message .= chr(10).'Role : Admin Sistem <b>TeleData</b> ('.$this->username.')' .chr(10);
-                }                
+                }
                 $this->keyboard = json_encode($this->keyboard_edit_profil);
                 $this->KirimPesan($message,true,true);
                 $this->HapusKeyboard($this->chat_id);
             }
         }
-        else 
+        else
         {
             $this->AwalStart();
         }
@@ -936,7 +944,7 @@ class TelegramController extends Controller
         }
     }
 
-    public function MenuKonsultasi($reply = false)
+    public function MenuKonsultasi($reply = false,$hapus=false)
     {
         $message = '<b>Layanan Konsultasi Online</b>' .chr(10);
         $message .= 'Hari Layanan :  Senin - Jumat (Kecuali hari libur)' .chr(10);
@@ -958,7 +966,7 @@ class TelegramController extends Controller
                 $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
                 $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
             }
-            else 
+            else
             {
                 //tidak libur
                 //hari kerja
@@ -989,9 +997,9 @@ class TelegramController extends Controller
                         $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
                         $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
                     }
-                    
+
                 }
-                else 
+                else
                 {
                     //diluar jam layanan
                     $message .= '<b>Diluar jam layanan</b>' .chr(10);
@@ -1001,7 +1009,7 @@ class TelegramController extends Controller
                 }
             }
         }
-        else 
+        else
         {
             //hari sabtu dan minggu
             $message .= '<b>Diluar hari dan jam layanan</b>' .chr(10);
@@ -1010,7 +1018,7 @@ class TelegramController extends Controller
             $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
 
         }
-        
+
         if ($reply)
         {
             //ReplyByAdmin
@@ -1021,7 +1029,7 @@ class TelegramController extends Controller
                 'msg_id' => $this->message_id
             ]);
         }
-        else 
+        else
         {
             LogPengunjung::create([
                 'username' => $this->username,
@@ -1032,12 +1040,17 @@ class TelegramController extends Controller
         }
         $this->keyboard = json_encode($this->keyboard_konsul_kembali);
         $this->KirimPesan($message,true,true);
-        $this->HapusKeyboard($this->chat_id);
+
+        if (!$hapus)
+        {
+            $this->HapusKeyboard($this->chat_id);
+        }
+
     }
     public function CariStatistik($hapus=false)
     {
         $message = "Masukkan <b>Kata Kunci</b> untuk <b>Pencarian Statistik</b> : ";
- 
+
         LogPengunjung::create([
             'username' => $this->username,
             'chatid' => $this->chat_id,
@@ -1055,7 +1068,7 @@ class TelegramController extends Controller
     public function CariLainnya($hapus=false)
     {
         $message = "Masukkan <b>Kata Kunci</b> untuk <b>Pencarian Lainnya</b> : ";
- 
+
         LogPengunjung::create([
             'username' => $this->username,
             'chatid' => $this->chat_id,
@@ -1069,7 +1082,7 @@ class TelegramController extends Controller
             $this->HapusKeyboard($this->chat_id);
         }
     }
-    
+
     public function TentangBot()
     {
         /*
@@ -1119,11 +1132,11 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                 $message .= 'Pesan terlalu panjang' .chr(10);
             }
         }
-        else 
+        else
         {
             $message = 'Data Log Pencarian masih kosong' .chr(10);
         }
-        
+
         $this->keyboard = json_encode($this->keyboard_admin);
         $this->KirimPesan($message,true,true);
        //$this->MenuAdmin();
@@ -1174,7 +1187,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
 
             $message ='Data ID Telegram admin <b>'.$this->username.'</b> sudah di update'.chr(10);
         }
-        else 
+        else
         {
             //bukan admin
             $message ='Anda bukan admin sistem'.chr(10);
@@ -1198,7 +1211,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             {
                 $flag_konsultasi = 0;
             }
-            else 
+            else
             {
                 $flag_konsultasi = 1;
             }
@@ -1209,15 +1222,15 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             $this->MenuAdmin();
 
         }
-        else 
+        else
         {
            //bukan admin
            $message ='Anda bukan admin sistem'.chr(10);
            $this->KirimPesan($message,true);
-           $this->MenuAwal(); 
+           $this->MenuAwal();
         }
     }
-    
+
     public function ListOperator($hapus=false)
     {
         LogPengunjung::create([
@@ -1237,7 +1250,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                 {
                     $lastlogin = $item->lastip .' ('. Carbon::parse($item->lastlogin)->format('d M Y H:i') .')';
                 }
-                else 
+                else
                 {
                     $lastlogin ='';
                 }
@@ -1251,14 +1264,14 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             }
             $this->keyboard = json_encode($this->keyboard_admin);
             $this->KirimPesan($message,true,true);
-            
+
         }
-        else 
+        else
         {
            //bukan admin
            $message ='Anda bukan admin sistem'.chr(10);
            $this->KirimPesan($message,true);
-           $this->MenuAwal(); 
+           $this->MenuAwal();
            if (!$hapus)
            {
                $this->HapusKeyboard($this->chat_id);
@@ -1270,19 +1283,19 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
         $cek_dulu = User::where('chatid_tg','=',$this->chat_id)->count();
         if ($cek_dulu > 0)
         {
-            
+
             $message = 'Masih dalam pengembangan' .chr(10);
-            
+
             //$this->keyboard = json_encode($this->keyboard_admin);
             $this->KirimPesan($message,true);
             $this->MenuAdmin();
         }
-        else 
+        else
         {
            //bukan admin
            $message ='Anda bukan admin sistem'.chr(10);
            $this->KirimPesan($message,true);
-           $this->MenuAwal(); 
+           $this->MenuAwal();
         }
     }
     public function MenuAdmin($hapus=false)
@@ -1301,7 +1314,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             {
                 $flag_statusonline = 'ONLINE';
             }
-            else 
+            else
             {
                 $flag_statusonline = 'OFFLINE';
             }
@@ -1309,7 +1322,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             {
                 $flag_aktif = 'AKTIF';
             }
-            else 
+            else
             {
                 $flag_aktif = 'NONAKTIF';
             }
@@ -1317,7 +1330,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             {
                 $lastlogin = $data_admin->lastip .' ('. Carbon::parse($data_admin->lastlogin)->format('d M Y H:i') .')';
             }
-            else 
+            else
             {
                 $lastlogin ='';
             }
@@ -1334,11 +1347,11 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             {
                 $flag_konsultasi = 'Flag Konsultasi ONLINE';
             }
-            else 
+            else
             {
                 $flag_konsultasi = 'Flag Konsultasi OFFLINE';
             }
-            
+
             $this->keyboard = json_encode($this->keyboard_admin);
             $this->KirimPesan($message,true,true);
             if (!$hapus)
@@ -1356,7 +1369,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                 $this->HapusKeyboard($this->chat_id);
             }
             $this->MenuAwal();
-        }        
+        }
     }
     public function CheckInputan()
     {
@@ -1365,7 +1378,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             {
                 $tg = LogPengunjung::where('chatid','=',$this->chat_id)->latest("updated_at")->first();
                 if ($tg->command == 'InputNama') {
-                    
+
                     $pesan_error = [
                         'required' => ':attribute wajib terisi!!!',
                         'string'=> ':attribute harus berupa karakter',
@@ -1382,7 +1395,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         $this->KirimPesan($message,true);
                         $this->InputNama();
                     }
-                    else                     
+                    else
                     {
                         $message ='';
                         $message .='Nama <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
@@ -1390,13 +1403,13 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
                         $data->nama = $this->text;
                         $data->update();
-    
+
                         $tg->command = 'InputEmail';
                         $tg->update();
-        
+
                         $this->KirimPesan($message,true);
                     }
-                   
+
                 }
                 elseif ($tg->command == 'EditNama') {
                     $pesan_error = [
@@ -1425,10 +1438,10 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
 
                         $tg->command = 'showMenu';
                         $tg->update();
-        
+
                         $this->KirimPesan($message,true);
                         $this->MyProfil();
-                    } 
+                    }
                 }
                 elseif ($tg->command == 'InputEmail')
                 {
@@ -1456,13 +1469,13 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
                         $data->email = $this->text;
                         $data->update();
-    
+
                         $tg->command = 'InputHP';
                         $tg->update();
-        
+
                         $this->KirimPesan($message,true);
                     }
-                   
+
                 }
                 elseif ($tg->command == 'EditEmail')
                 {
@@ -1492,11 +1505,11 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
 
                         $tg->command = 'showMenu';
                         $tg->update();
-        
+
                         $this->KirimPesan($message,true);
                         $this->MyProfil();
                     }
-                    
+
                 }
                 elseif ($tg->command == 'EditNoHp')
                 {
@@ -1525,7 +1538,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
 
                         $tg->command = 'showMenu';
                         $tg->update();
-        
+
                         $this->KirimPesan($message,true);
                         $this->MyProfil();
                     }
@@ -1554,10 +1567,10 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
                         $data->nohp = $this->text;
                         $data->update();
-    
+
                         $tg->command = 'showMenu';
                         $tg->update();
-        
+
                         $this->KirimPesan($message,true);
                         $this->showMenu();
                     }
@@ -1577,15 +1590,15 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                     $response = $h->caripublikasi($keyword,1);
                     if ($response['data-availability']=='available')
                     {
-                        if ($response['data'][0]['pages'] > 1) 
+                        if ($response['data'][0]['pages'] > 1)
                         {
                             //ada lebih 1 pages
                             $total_tabel = $response['data'][0]['pages'];
-                            if ($total_tabel > 3) 
+                            if ($total_tabel > 3)
                             {
                                 $total_tabel = 3;
                             }
-                            $message ='[TOTAL : '.$total_tabel.'] Hasil Pencarian Publikasi dengan kata kunci <b>'.$this->text.'</b> :  ' . chr(10) .chr(10);
+                            $message ='Hasil Pencarian Publikasi dengan kata kunci <b>'.$this->text.'</b> :  ' . chr(10) .chr(10);
                             for ($i = 1; $i <= $total_tabel; $i++)
                             {
                                 $respon = $h->caripublikasi($keyword,$i);
@@ -1594,7 +1607,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                                     $message .= 'Judul Publikasi : <b>'.$item['title'].'</b>' .chr(10);
                                     $message .= 'Rilis : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> | <a href="'.$item['pdf'].'">Download PDF</a> ('.$item['size'].')' .chr(10) .chr(10);
                                 }
-                            
+
                             }
                             $this->keyboard = json_encode($this->keyboard_cari_kembali);
                             $this->KirimPesan($message,true);
@@ -1603,19 +1616,19 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         {
                             $message ='';
                             $message ='Hasil Pencarian Publikasi dengan kata kunci <b>'.$this->text.'</b> :  ' . chr(10) .chr(10);
-                        
+
                             foreach ($response['data'][1] as $item)
                             {
-                                
+
                                 $message .= 'Judul Publikasi : <b>'.$item['title'].'</b>' .chr(10);
                                 $message .= 'Rilis : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> | <a href="'.$item['pdf'].'">Download PDF</a> ('.$item['size'].')' .chr(10) .chr(10);
                             }
                             $this->keyboard = json_encode($this->keyboard_cari_kembali);
                             $this->KirimPesan($message,true);
                         }
-                        
+
                     }
-                    else 
+                    else
                     {
                         $message ='Publikasi yang anda cari tidak tersedia' .chr(10);
                         $message .= 'Ulangi pencarian publikasi' .chr(10);
@@ -1623,11 +1636,11 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         //$this->KirimPesan($message,true,true);
                         $this->KirimPesan($message,true);
                     }
-                    
+
                     //$tg->command = 'showMenu';
                     //$tg->update();
                     $this->CariPublikasi(true);
-                    
+
                 }
                 elseif ($tg->command == 'CariStatistik')
                 {
@@ -1642,14 +1655,14 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                     $h = new WebApiBps();
                     $keyword = rawurlencode($this->text);
                     $response = $h->caristatistik($keyword,1);
-                    
+
                     if ($response['data-availability']=='available')
                     {
-                        if ($response['data'][0]['pages'] > 1) 
+                        if ($response['data'][0]['pages'] > 1)
                         {
                             //ada lebih 1 pages
                             $total_tabel = $response['data'][0]['pages'];
-                            if ($total_tabel > 3) 
+                            if ($total_tabel > 3)
                             {
                                 $total_tabel = 3;
                             }
@@ -1663,7 +1676,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                                     $message .= 'Judul Tabel : <b>'.$item['title'].'</b>' .chr(10);
                                     $message .= 'Update : <b>'.\Carbon\Carbon::parse($item['updt_date'])->format('d M Y').'</b> | <a href="'.$item['excel'].'">Download Tabel</a> ('.$item['size'].')' .chr(10) .chr(10);
                                 }
-                            
+
                             }
                             $this->keyboard = json_encode($this->keyboard_cari_kembali);
                             $this->KirimPesan($message,true);
@@ -1671,19 +1684,19 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         else
                         {
                             $message ='Hasil Pencarian <b>Tabel Statistik</b> : ' . chr(10) .chr(10);
-                        
+
                             foreach ($response['data'][1] as $item)
                             {
-                                
+
                                 $message .= 'Judul Tabel : <b>'.$item['title'].'</b>' .chr(10);
                                 $message .= 'Update : <b>'.\Carbon\Carbon::parse($item['updt_date'])->format('d M Y').'</b> | <a href="'.$item['excel'].'">Download Tabel</a> ('.$item['size'].')' .chr(10) .chr(10);
                             }
                             $this->keyboard = json_encode($this->keyboard_cari_kembali);
                             $this->KirimPesan($message,true);
                         }
-                        
+
                     }
-                    else 
+                    else
                     {
                         $message ='<b>Tabel Statistik</b> yang anda cari tidak tersedia' .chr(10);
                         $message .= 'Ulangi pencarian tabel statistik' .chr(10);
@@ -1706,14 +1719,14 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                     $h = new WebApiBps();
                     $keyword = rawurlencode($this->text);
                     $response = $h->caribrs($keyword,1);
-                    
+
                     if ($response['data-availability']=='available')
                     {
-                        if ($response['data'][0]['pages'] > 1) 
+                        if ($response['data'][0]['pages'] > 1)
                         {
                             //ada lebih 1 pages
                             $total_tabel = $response['data'][0]['pages'];
-                            if ($total_tabel > 3) 
+                            if ($total_tabel > 3)
                             {
                                 $total_tabel = 3;
                             }
@@ -1727,7 +1740,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                                     $message .= 'Judul : <b>'.$item['title'].'</b>' .chr(10);
                                     $message .= 'Rilis : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> | <a href="'.$item['pdf'].'">Download</a> ('.$item['size'].')' .chr(10) .chr(10);
                                 }
-                            
+
                             }
                             $this->keyboard = json_encode($this->keyboard_cari_kembali);
                             $this->KirimPesan($message,true);
@@ -1735,19 +1748,19 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         else
                         {
                             $message ='Hasil Pencarian <b>Berita Resmi Statistik</b> : ' . chr(10) .chr(10);
-                        
+
                             foreach ($response['data'][1] as $item)
                             {
-                                
+
                                 $message .= 'Judul : <b>'.$item['title'].'</b>' .chr(10);
                                 $message .= 'Rilis : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> | <a href="'.$item['pdf'].'">Download</a> ('.$item['size'].')' .chr(10) .chr(10);
                             }
                             $this->keyboard = json_encode($this->keyboard_cari_kembali);
                             $this->KirimPesan($message,true);
                         }
-                        
+
                     }
-                    else 
+                    else
                     {
                         $message ='<b>Pencarian Berita Resmi Statistik</b> yang anda cari tidak tersedia' .chr(10);
                         $message .= 'Ulangi pencarian lainnya' .chr(10);
@@ -1769,14 +1782,14 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                     $h = new WebApiBps();
                     $keyword = rawurlencode($this->text);
                     $response = $h->carilain($keyword,1);
-                    
+
                     if ($response['data-availability']=='available')
                     {
-                        if ($response['data'][0]['pages'] > 1) 
+                        if ($response['data'][0]['pages'] > 1)
                         {
                             //ada lebih 1 pages
                             $total_tabel = $response['data'][0]['pages'];
-                            if ($total_tabel > 3) 
+                            if ($total_tabel > 3)
                             {
                                 $total_tabel = 3;
                             }
@@ -1790,7 +1803,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                                     $message .= 'Judul : <b>'.$item['title'].'</b>' .chr(10);
                                     $message .= 'Tanggal : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b>' .chr(10) .chr(10);
                                 }
-                            
+
                             }
                             $this->keyboard = json_encode($this->keyboard_cari_kembali);
                             $this->KirimPesan($message,true);
@@ -1798,7 +1811,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         else
                         {
                             $message ='Hasil Pencarian <b>Lainnya</b> : ' . chr(10) .chr(10);
-                        
+
                             foreach ($response['data'][1] as $item)
                             {
                                 $url_link = explode("-",$item['rl_date']);
@@ -1809,9 +1822,9 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                             $this->keyboard = json_encode($this->keyboard_cari_kembali);
                             $this->KirimPesan($message,true);
                         }
-                        
+
                     }
-                    else 
+                    else
                     {
                         $message ='<b>Pencarian Lainnya</b> yang anda cari tidak tersedia' .chr(10);
                         $message .= 'Ulangi pencarian lainnya' .chr(10);
@@ -1827,17 +1840,18 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                     //$this->first_name = $request['message']['from']['first_name'];
                     //ambil forward_date dan text
                     //cocokan dgn di log_pesan
-                    
+
                     $cek_pesan = LogPesan::where('waktu_kirim','=',$this->forward_date)->count();
                     if ($cek_pesan > 0)
                     {
                         $dt = LogPesan::where('waktu_kirim','=',$this->forward_date)->first();
+                        $d_pengunjung = DataPengunjung::where('chatid',$dt->chatid)->first();
                         $data_admin = User::where('chatid_tg',$this->chat_id)->first();
                         if ($data_admin)
                         {
                             $nama_admin = $data_admin->user_tg;
                         }
-                        else 
+                        else
                         {
                             $nama_admin='admin';
                         }
@@ -1855,19 +1869,24 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         $data_baru->save();
 
                         $this->KirimByAdmin($pesan,$dt->chatid, true);
-                        $this->MenuKonsultasi(true);
+                        //$this->MenuKonsultasi(true,true);
+                        //pesan diterukan ke admin yg balas
+                        $message ='';
+                        $message .='Pesan anda <b>'.$pesan.'</b> sudah terkirim ke <b>'.$d_pengunjung->nama.'</b>' .chr(10) .chr(10);
+
+                        $this->KirimPesan($message,true);
                     }
                     else
                     {
-                        
+
                         //kembali ke menukonsultasi
                         $message ='';
                         $message .='Pesan anda <b>'.$this->text.'</b> belum terkirim' . chr(10) .chr(10);
                         $message .= 'Gunakan fitur reply untuk membalas pesan ke pengunjung' .chr(10).chr(10);
-                        
+
                         $this->KirimPesan($message,true);
-                        $this->MenuKonsultasi(true);
-                    }                    
+                        //$this->MenuKonsultasi(true,true);
+                    }
                 }
                 elseif ($tg->command == 'FeedBackSistem')
                 {
@@ -1882,7 +1901,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         $data->waktu_kirim = $this->waktu_kirim;
                         $data->update();
                     }
-                    else 
+                    else
                     {
                         //baru ngisi feedback
                         $data = new LogFeedback();
@@ -1925,19 +1944,19 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                                 'msg_id' => $this->message_id
                             ]);
                         }
-                        
+
                     }
                         $message ='';
                         $message .='Pesan anda <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
-                        
+
                         /*
                         $tg->command = 'showMenu';
                         $tg->update();
                         */
                         $this->KirimPesan($message,true);
-                        $this->MenuKonsultasi();                    
+                        $this->MenuKonsultasi(false,true);
                 }
-                else 
+                else
                 {
                     $message ='';
                     $message .='Perintah tidak dikenali. <b>Silakan pilih menu dibawah ini</b>' . chr(10) .chr(10);
@@ -1947,7 +1966,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                     $this->AwalStart();
                 }
             }
-            else 
+            else
             {
                 //sama sekali belum ada di log / pengunjung sudah selesai
                 LogPengunjung::create([
@@ -1981,7 +2000,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
         ];
         if ($parse_html) $data['parse_mode'] = 'HTML';
         if ($keyboard) $data['reply_markup'] = $this->keyboard;
- 
+
         $this->telegram->sendMessage($data);
     }
     protected function ReplyPesan($message, $parse_html = false, $keyboard = false)
@@ -1994,7 +2013,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
         ];
         if ($parse_html) $data['parse_mode'] = 'HTML';
         if ($keyboard) $data['reply_markup'] = $this->keyboard;
- 
+
         $this->telegram->sendMessage($data);
     }
     protected function KirimByAdmin($message,$chatid, $parse_html = false, $keyboard = false)
@@ -2007,7 +2026,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
         ];
         if ($parse_html) $data['parse_mode'] = 'HTML';
         if ($keyboard) $data['reply_markup'] = $this->keyboard;
- 
+
         $this->telegram->sendMessage($data);
     }
     protected function TeruskanPesan($kirim_chat_id)
@@ -2016,7 +2035,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             'chat_id' => $kirim_chat_id,
             'from_chat_id' => $this->chat_id,
 	        'message_id' => $this->message_id
-        ]; 
+        ];
         $this->telegram->forwardMessage($data);
     }
     protected function KirimPhoto($url,$pic = false,$keyboard = false)
@@ -2026,7 +2045,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             //kalo ada isi link
             $photo = $url;
         }
-        else 
+        else
         {
             $photo = asset('img/tentangbot.jpg');
         }
@@ -2044,8 +2063,8 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
         $h = new WebApiBps();
         $keyword = rawurlencode($keyword);
         $response = $h->caripublikasi($keyword,1);
-        
-        
+
+
         if ($response['data-availability']=='available')
         {
             dd($response['data'][0]);
@@ -2061,11 +2080,11 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             }
             //$dd($response['data']);
         }
-        else 
+        else
         {
             $hasil ='ERROR';
         }
-        
+
         return $response;
     }
     public function cariLain($keyword)
@@ -2073,7 +2092,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
         $h = new WebApiBps();
         $keyword = rawurlencode($keyword);
         $response = $h->carilain($keyword,1);
-        
+
         dd($response);
         if ($response['data-availability']=='available')
         {
@@ -2090,11 +2109,11 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             }
             //$dd($response['data']);
         }
-        else 
+        else
         {
             $hasil ='ERROR';
         }
-        
+
         return $response;
     }
 
@@ -2103,7 +2122,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
         $h = new WebApiBps();
         $keyword = rawurlencode($keyword);
         $response = $h->caribrs($keyword,1);
-        
+
         dd($response);
         if ($response['data-availability']=='available')
         {
@@ -2120,12 +2139,12 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             }
             //$dd($response['data']);
         }
-        else 
+        else
         {
             $hasil ='ERROR';
         }
-        
+
         return $response;
     }
-    
+
 }
