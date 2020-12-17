@@ -1585,7 +1585,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                             {
                                 $total_tabel = 3;
                             }
-                            $message ='[TOTAL : '.$total_tabel.'] Hasil Pencarian Publikasi dengan kata kunci <b>'.$this->text.'</b> :  ' . chr(10) .chr(10);
+                            $message ='Hasil Pencarian Publikasi dengan kata kunci <b>'.$this->text.'</b> :  ' . chr(10) .chr(10);
                             for ($i = 1; $i <= $total_tabel; $i++)
                             {
                                 $respon = $h->caripublikasi($keyword,$i);
