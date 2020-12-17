@@ -25,7 +25,7 @@ class FeedbackController extends Controller
     //
     public function List()
     {
-        $feed = LogFeedback::orderBy('created_at','desc')->get();
+        $feed = LogFeedback::orderBy('updated_at','desc')->get();
         return view('feedback.index',['dataFeedback'=>$feed]);
     }
 }

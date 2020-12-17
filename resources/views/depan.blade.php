@@ -96,7 +96,7 @@
                                         <span class="far fa-star"></span>
                                     @endif
                                 @endfor
-                                <p class="text-white">{{\Carbon\Carbon::parse($item->created_at)->isoFormat('D MMMM Y H:m')}}</p>
+                                <p class="text-white">{{\Carbon\Carbon::parse($item->updated_at)->isoFormat('D MMMM Y H:m')}}</p>
 
 
                             </span>

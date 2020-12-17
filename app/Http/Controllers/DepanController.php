@@ -88,7 +88,7 @@ class DepanController extends Controller
         }
         $data_pengunjung = array_reverse($data_pengunjung);
         //batas
-        $feed = LogFeedback::orderBy('created_at','desc')->get();
+        $feed = LogFeedback::orderBy('updated_at','desc')->get();
         //dd($hari_tgl,json_encode($data_konsul));
         return view('depan',['dataFeedback'=>$feed,'dataChart'=>json_encode($data_pengunjung),'dataDonut'=>json_encode($d_cari),'dataKonsul'=>$d_konsul,'dataKonsulChart'=>json_encode($data_konsul)]);
     }

@@ -152,7 +152,7 @@
                                         @endfor
                                     </td>
                                     <td>
-                                        {{\Carbon\Carbon::parse($item->created_at)->isoFormat('D MMMM Y H:m')}}
+                                        {{\Carbon\Carbon::parse($item->updated_at)->isoFormat('D MMMM Y H:m')}}
                                     </td>
                                     <td><i>{{$item->isi_feedback}}</i></td>
                                 </tr>
