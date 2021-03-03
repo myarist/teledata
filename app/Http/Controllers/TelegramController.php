@@ -389,8 +389,31 @@ class TelegramController extends Controller
             }
 
         }
+        elseif (isset($request['channel_post']))
+        {
+            // !pin pesan yang di pinned
+            $chan_id = $update->channel_post->sender_chat->id;
+            if (strpos($update->channel_post->text,'!pin') !== false)
+            {
+                if (isset($request['channel_post']['reply_to_message']))
+                {
+                    $msg_id = $update->channel_post->reply_to_message->message_id;
+                }
+                else
+                {
+                    $msg_id = $update->channel_post->message_id;
+                }
+                $data = [
+                    'chat_id' => $chan_id,
+                    'message_id' => $msg_id,
+                    'disable_notification' => true,
+                ];
+                $this->telegram->pinChatMessage($data);
+            }
+        }
         else
         {
+
             /*
             Pertama kali pengunjung menghubungi bot klik /start
             */

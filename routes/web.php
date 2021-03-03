@@ -49,6 +49,8 @@ Route::group(['middleware' => ['auth']], function () {
   Route::post('konsultasi/reply', 'KonsultasiController@ReplyChat')->name('konsultasi.reply');
   Route::get('cari/list', 'CariController@list')->name('cari.list');
   Route::get('feedback/list', 'FeedbackController@list')->name('feedback.list');
+  Route::get('channel/list', 'PesanChannelController@list')->name('channel.list');
+  Route::post('channel/kirimpesan', 'PesanChannelController@KirimPesanChannel')->name('channel.kirimpesan');
 });
 
 Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout')->name('logout');
