@@ -1894,10 +1894,41 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         $this->KirimByAdmin($pesan,$dt->chatid, true);
                         //$this->MenuKonsultasi(true,true);
                         //pesan diterukan ke admin yg balas
+
                         $message ='';
-                        $message .='Pesan anda <b>'.$pesan.'</b> sudah terkirim ke <b>'.$d_pengunjung->nama.'</b>' .chr(10) .chr(10);
+                        $message .='Pesan anda <b>'.$pesan.'</b> sudah terkirim ke <b>'.$d_pengunjung->nama.' ('.$d_pengunjung->username.')</b>' .chr(10) .chr(10);
 
                         $this->KirimPesan($message,true);
+                        //forward ke admin yg lain jg
+                        //pilih forward ke admin lain
+                        $message_ke_admin_lain ='';
+                        $message_ke_admin_lain.='Pesan dari admin ('.$data_admin->nama.') :  <b>'.$pesan.'</b> sudah terkirim ke <b> '.$d_pengunjung->nama.' ('.$d_pengunjung->username.')</b>' .chr(10) .chr(10);
+
+                        $cek_admin_online = User::where([['chatid_tg','<>',''],['status_online','=','1']])->count();
+                        if ($cek_admin_online > 0)
+                        {
+                            //kirim forward pesan
+                            $dataadmin = User::where([['chatid_tg','<>',''],['status_online','=','1']])->get();
+                            foreach ($dataadmin as $item) {
+                                $this->chat_id = $item->chatid_tg;
+                                if ($item->chatid_tg != $data_admin->chatid_tg)
+                                {
+                                    $this->KirimPesan($message_ke_admin_lain,true);
+                                }
+
+                                //$this->TeruskanPesan($item->chatid_tg);
+                                /*
+                                LogPengunjung::create([
+                                    'username' => $item->user_tg,
+                                    'chatid' => $item->chatid_tg,
+                                    'command' => 'ReplyByAdmin',
+                                    'msg_id' => $this->message_id
+                                ]);
+                                */
+                            }
+
+                        }
+
                     }
                     else
                     {
