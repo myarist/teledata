@@ -1902,7 +1902,9 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         //forward ke admin yg lain jg
                         //pilih forward ke admin lain
                         $message_ke_admin_lain ='';
-                        $message_ke_admin_lain.='Pesan dari admin ('.$data_admin->nama.') :  <b>'.$pesan.'</b> sudah terkirim ke <b> '.$d_pengunjung->nama.' ('.$d_pengunjung->username.')</b>' .chr(10) .chr(10);
+                        $message_ke_admin_lain .='Pesan dari admin ('.$data_admin->nama.'):' .chr(10);
+                        $message_ke_admin_lain .='<b>'.$pesan.'</b>' .chr(10);
+                        $message_ke_admin_lain .='sudah terkirim ke <b> '.$d_pengunjung->nama.' ('.$d_pengunjung->username.')</b>' .chr(10) .chr(10);
 
                         $cek_admin_online = User::where([['chatid_tg','<>',''],['status_online','=','1']])->count();
                         if ($cek_admin_online > 0)
