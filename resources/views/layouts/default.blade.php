@@ -153,7 +153,7 @@
             &copy; @if (date('Y')=='2020')
             {{date('Y')}}
             @else
-                2000 - {{date('Y')}}
+                2020 - {{date('Y')}}
             @endif Bidang IPDS BPS Provinsi NTB
 
             <span class="float-right"><a href="https://ig.dyatmika.com" target="_blank">Created by Blimika</a></span>

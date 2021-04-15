@@ -57,6 +57,9 @@ class TelegramController extends Controller
                     ['text'=> 'Tentang Bot', 'callback_data'=> 'tentangbot']
                 ],
                 [
+                    ['text'=> 'Langganan Info BPSNTB', 'url'=> 't.me/bpsntb']
+                ],
+                [
                     ['text'=> 'Feedback', 'callback_data'=> 'myfeedback']
                 ],
                 [
@@ -80,6 +83,9 @@ class TelegramController extends Controller
                 ],
                 [
                     ['text'=> 'Tentang Bot', 'callback_data'=> 'tentangbot']
+                ],
+                [
+                    ['text'=> 'Langganan Info BPSNTB', 'url'=> 't.me/bpsntb']
                 ],
                 [
                     ['text'=> 'Feedback', 'callback_data'=> 'myfeedback']
