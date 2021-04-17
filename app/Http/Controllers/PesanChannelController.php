@@ -19,7 +19,7 @@ use App\User;
 use Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use App\PesanChannel;
 class PesanChannelController extends Controller
 {
     //
@@ -36,20 +36,33 @@ class PesanChannelController extends Controller
     }
     public function list()
     {
-        return view('channel.index');
+        $data = PesanChannel::orderBy('created_at','desc')->get();
+        return view('channel.index',[
+            'dataPesan'=> $data
+        ]);
     }
     public function KirimPesanChannel(Request $request)
     {
+        $data_pesan = str_replace("<br>","\n",$request->pesan);
+        $data_pesan = str_replace("<div>"," ",$data_pesan);
+        $data_pesan = str_replace("</div>","",$data_pesan);
+        //$data_pesan = urlencode($request->pesan);
+        //dd($data_pesan);
         $data = [
             'chat_id' => $this->chan_id,
-            'text' => $request->pesan,
+            'text' => $data_pesan,
             'parse_mode' => 'HTML',
         ];
         $result = $this->telegram->sendMessage($data);
 
         if ($result)
         {
-
+            //simpan ke tabel pesan
+            $data = new PesanChannel();
+            $data->username = Auth::user()->username;
+            $data->chatid = Auth::user()->chatid_tg;
+            $data->isi_pesan = $request->pesan;
+            $data->save();
             $pesan_error = 'Pesan sudah dikirim ke channel' ;
             $pesan_warna = 'success';
         }

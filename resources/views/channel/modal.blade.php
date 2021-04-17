@@ -13,7 +13,7 @@
                    <div class="form-group">
                     <label for="peg_nipbps">PESAN</label>
                     <div class="controls">
-                    <textarea name="pesan" id="pesan" class="form-control" rows="5"></textarea>
+                    <textarea name="pesan" id="pesan_channel" class="form-control" rows="5"></textarea>
                     </div>
                    </div>
                </div>

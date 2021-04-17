@@ -14,6 +14,7 @@
     <title>Telegram Data - BPSNTB</title>
     <!-- Custom CSS -->
     <link href="{{asset('dist/css/style.css')}}" rel="stylesheet">
+    <link rel="stylesheet" href="{{asset('assets/node_modules/html5-editor/bootstrap-wysihtml5.css')}}" />
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -183,6 +184,9 @@
     <script src="{{asset('assets/node_modules/sparkline/jquery.sparkline.min.js')}}"></script>
     <!--Custom JavaScript -->
     <script src="{{asset('dist/js/custom.min.js')}}"></script>
+    <!-- wysuhtml5 Plugin JavaScript -->
+    <script src="{{asset('assets/node_modules/html5-editor/wysihtml5-0.3.0.js')}}"></script>
+    <script src="{{asset('assets/node_modules/html5-editor/bootstrap-wysihtml5.js')}}"></script>
     @section('js')
 
     @show

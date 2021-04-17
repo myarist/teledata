@@ -212,6 +212,9 @@ class TelegramController extends Controller
                     ['text'=> 'Edit Profil', 'callback_data'=>'editprofil']
                 ],
                 [
+                    ['text'=> 'Ubah Langganan Berita', 'callback_data'=>'ubahlangganan']
+                ],
+                [
                     ['text'=> 'Kembali ke Menu Utama', 'callback_data'=>'back_menuutama']
                 ]
                 ]
@@ -225,6 +228,9 @@ class TelegramController extends Controller
                 ],
                 [
                     ['text'=> 'Edit Profil', 'callback_data'=>'editprofil']
+                ],
+                [
+                    ['text'=> 'Ubah Langganan Berita', 'callback_data'=>'ubahlangganan']
                 ],
                 [
                     ['text'=> 'Kembali ke Menu Utama', 'callback_data'=>'menuawal']
@@ -389,6 +395,9 @@ class TelegramController extends Controller
                 case 'back_menuutama':
                     $this->BackUtama();
                     break;
+                case 'ubahlangganan':
+                    $this->UbahLanggananBerita();
+                    break;
                 default:
                 $this->showMenu();
                     break;
@@ -511,10 +520,19 @@ class TelegramController extends Controller
             }
             else
             {
+                if ($data->flag_berita == 1)
+                {
+                    $langganan = 'Ya';
+                }
+                else
+                {
+                    $langganan = 'Tidak';
+                }
                 $message = 'Anda terdaftar sebagai : ' .chr(10);
                 $message .= 'Nama : <b>'.$data->nama.'</b>' .chr(10);
                 $message .= 'Email : <b>'.$data->email.'</b>' .chr(10);
                 $message .= 'No HP : <b>'.$data->nohp.'</b>' .chr(10);
+                $message .= 'Langganan Berita : <b>'.$langganan.'</b>' .chr(10);
                 //$this->keyboard = $this->keyboard_bawah;
                 /*
                 $reply_markup = $telegram->replyKeyboardMarkup([
@@ -530,7 +548,8 @@ class TelegramController extends Controller
         }
         else
         {
-            $message = 'Selamat datang di <b>TeleDATA (Telegram Data BPSNTB)</b>' .chr(10);
+            $message = 'Selamat datang di' .chr(10);
+            $message .= '<b>TeleDATA (Telegram Data BPSNTB)</b>' .chr(10);
             $message .= '<b>BPS Provinsi Nusa Tenggara Barat</b>' .chr(10) .chr(10);
             $message .= '<i>Untuk dapat menggunakan layanan <b>TeleData</b></i>' .chr(10);
             $message .= '<i>Anda perlu memasukkan <b>Nama Lengkap</b>, <b>Email</b> dan <b>No HP</b></i>' .chr(10) .chr(10);
@@ -544,6 +563,48 @@ class TelegramController extends Controller
             $this->InputNama();
         }
 
+    }
+    public function UbahLanggananBerita($hapus=false)
+    {
+        LogPengunjung::create([
+            'username' => $this->username,
+            'chatid' => $this->chat_id,
+            'command' => __FUNCTION__,
+            'msg_id' => $this->message_id
+        ]);
+        $count = DataPengunjung::where('chatid','=',$this->chat_id)->count();
+        if ($count > 0)
+        {
+            $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
+            $flag_lama = $data->flag_berita;
+            if ($flag_lama == 1)
+            {
+                $flag_baru = 0;
+                $langganan = 'Tidak';
+                $text_tambahan = 'Anda <b>tidak</b> akan menerima berita-berita terbaru dari BPS Provinsi NTB';
+            }
+            else
+            {
+                $flag_baru = 1;
+                $langganan = 'Ya';
+                $text_tambahan = 'Anda akan menerima berita-berita terbaru dari BPS Provinsi NTB'.chr(10);
+                $text_tambahan .= 'harap tetap untuk membuka chat bot ini.'.chr(10);
+            }
+            $data->flag_berita = $flag_baru;
+            $data->update();
+
+            $message = 'Status Langganan Berita BPSNTB diubah ke <b>'.$langganan.'</b>'.chr(10);
+            $message .= $text_tambahan .chr(10);
+
+
+        }
+        else
+        {
+            $message = 'ERROR. silakan ulangi lagi'.chr(10);
+        }
+            //$this->keyboard = json_encode($this->keyboard_edit_profil);
+            $this->KirimPesan($message,true);
+            $this->MyProfil();
     }
     public function TambahAdmin()
     {
@@ -764,7 +825,8 @@ class TelegramController extends Controller
     public function showMenu($info = false)
     {
 
-        $message = 'Selamat datang di <b>TeleDATA (Telegram Data BPSNTB)</b>' .chr(10);
+        $message = 'Selamat datang di' .chr(10);
+        $message .= '<b>TeleDATA (Telegram Data BPSNTB)</b>' .chr(10);
         $message .= '<b>BPS Provinsi Nusa Tenggara Barat</b>' .chr(10) .chr(10);
         $message .= 'Silakan <b>Pilih Layanan</b> yang tersedia : ' .chr(10);
         $cek_admin = User::where('chatid_tg','=',$this->chat_id)->orWhere('user_tg','=',$this->username)->count();
@@ -906,10 +968,19 @@ class TelegramController extends Controller
                     'command' => __FUNCTION__,
                     'msg_id' => $this->message_id
                 ]);
+                if ($data->flag_berita == 1)
+                {
+                    $langganan = 'Ya';
+                }
+                else
+                {
+                    $langganan = 'Tidak';
+                }
                 $message = 'Anda terdaftar sebagai : ' .chr(10);
                 $message .= 'Nama : <b>'.$data->nama.'</b>' .chr(10);
                 $message .= 'Email : <b>'.$data->email.'</b>' .chr(10);
                 $message .= 'No HP : <b>'.$data->nohp.'</b>' .chr(10);
+                $message .= 'Langganan Berita : <b>'.$langganan.'</b>' .chr(10);
                 $cek_admin = User::where('chatid_tg','=',$this->chat_id)->orWhere('user_tg','=',$this->username)->count();
                 if ($cek_admin > 0)
                 {
@@ -990,7 +1061,7 @@ class TelegramController extends Controller
             if ($cek_libur == true)
             {
                 //diluar jam layanan
-                $message .= '<b>Hari Libur : '.$this->hari_libur[Carbon::now()->format("Ymd")]['deskripsi'].'</b>' .chr(10);
+                $message .= '<b>Hari Libur : '.$this->hari_libur[Carbon::now()->format("Ymd")]['deskripsi'].'</b>' .chr(10).chr(10);
                 $message .= '<b>Silakan tinggalkan pesan</b>' .chr(10);
                 $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
                 $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
@@ -1013,7 +1084,7 @@ class TelegramController extends Controller
                         }
                         else
                         {
-                            $message .= '<b>Belum ada Operator Online</b>' .chr(10);
+                            $message .= '<b>Belum ada Operator Online</b>' .chr(10).chr(10);
                             $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
                             $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
                         }
@@ -1021,7 +1092,7 @@ class TelegramController extends Controller
                     else
                     {
                         //sudah jam 3 sore dan tutup
-                        $message .= '<b>Diluar jam layanan</b>' .chr(10);
+                        $message .= '<b>DILUAR JAM LAYANAN</b>'.chr(10).chr(10);
                         $message .= '<b>Silakan tinggalkan pesan</b>' .chr(10);
                         $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
                         $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
@@ -1031,7 +1102,7 @@ class TelegramController extends Controller
                 else
                 {
                     //diluar jam layanan
-                    $message .= '<b>Diluar jam layanan</b>' .chr(10);
+                    $message .= '<b>DILUAR JAM LAYANAN</b>' .chr(10).chr(10);
                     $message .= '<b>Silakan tinggalkan pesan</b>' .chr(10);
                     $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
                     $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
@@ -1041,7 +1112,7 @@ class TelegramController extends Controller
         else
         {
             //hari sabtu dan minggu
-            $message .= '<b>Diluar hari dan jam layanan</b>' .chr(10);
+            $message .= '<b>DILUAR HARI dan JAM LAYANAN</b>' .chr(10).chr(10);
             $message .= '<b>Silakan tinggalkan pesan</b>' .chr(10);
             $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
             $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);

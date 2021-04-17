@@ -34,10 +34,36 @@
         <div class="card">
             <div class="card-body">
                 <div class="row">
-                    <button class="btn btn-circle btn-sm btn-info" data-toggle="modal" data-target="#KirimPesanModal"><i class="fas fa-paper-plane" data-toggle="tooltip" title="Kirim Pesan"></i></button>
-
+                    <button class="btn btn-rounded btn-info" data-toggle="modal" data-target="#KirimPesanModal"><i class="fas fa-paper-plane" data-toggle="tooltip" title="Kirim Pesan"></i> Kirim Pesan</button>
                 </div>
-
+                <div class="row m-t-20 table-responsive">
+                    <table id="pesanchannel" class="table table-bordered table-hover table-striped" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Pesan</th>
+                                <th>Pengirim</th>
+                                <th>Tanggal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if ($dataPesan -> isEmpty())
+                                <tr>
+                                    <td colspan="4">Data kirim pesan ke Channel belum tersedia</td>
+                                </tr>
+                            @else
+                                @foreach ($dataPesan as $item)
+                                    <tr>
+                                        <td>{{$loop->iteration}}</td>
+                                        <td>{!! $item->isi_pesan !!}</td>
+                                        <td>{{$item->username}}</td>
+                                        <td>{{\Carbon\Carbon::parse($item->created_at)->isoFormat('D MMMM Y HH:mm')}}</td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -75,7 +101,7 @@
     <!-- end - This is for export functionality only -->
     <script>
         $(function () {
-            $('#pengunjung').DataTable({
+            $('#pesanchannel').DataTable({
                 dom: 'Bfrtip',
                 buttons: [
                     'copy', 'excel', 'pdf', 'print'
@@ -85,6 +111,6 @@
             });
             $('.buttons-copy, .buttons-csv, .buttons-print, .buttons-pdf, .buttons-excel').addClass('btn btn-primary mr-1');
         });
-
+        $('#pesan_channel').wysihtml5();
     </script>
 @endsection

@@ -51,7 +51,7 @@ class PengunjungController extends Controller
             {
                 $flag_berita = 0;
             }
-            else 
+            else
             {
                 $flag_berita = 1;
             }
@@ -99,24 +99,27 @@ class PengunjungController extends Controller
             'text' => $request->pesan,
             'parse_mode' => 'HTML',
         ];
+        //dd($data);
+
         $result = $this->telegram->sendMessage($data);
+
         LogPengunjung::create([
             'username' => $request->nama,
             'chatid' => $request->chatid,
             'command' => 'MenuKonsultasi'
         ]);
         if ($result)
-        {   
+        {
 
             $pesan_error = 'Pesan sudah dikirim ke '. $request->nama ;
             $pesan_warna = 'success';
         }
-        else 
+        else
         {
             $pesan_error = '(ERROR) Pesan tidak dikirim';
             $pesan_warna = 'danger';
         }
-        
+
         Session::flash('message', $pesan_error);
         Session::flash('message_type', $pesan_warna);
         return redirect()->route('pengunjung.list');
