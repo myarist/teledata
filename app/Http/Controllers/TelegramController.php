@@ -57,7 +57,7 @@ class TelegramController extends Controller
                     ['text'=> 'Tentang Bot', 'callback_data'=> 'tentangbot']
                 ],
                 [
-                    ['text'=> 'Langganan Info BPSNTB', 'url'=> 't.me/bpsntb']
+                    ['text'=> 'Langganan Informasi Terkini', 'url'=> 't.me/bpsntb']
                 ],
                 [
                     ['text'=> 'Feedback', 'callback_data'=> 'myfeedback']
@@ -85,7 +85,7 @@ class TelegramController extends Controller
                     ['text'=> 'Tentang Bot', 'callback_data'=> 'tentangbot']
                 ],
                 [
-                    ['text'=> 'Langganan Info BPSNTB', 'url'=> 't.me/bpsntb']
+                    ['text'=> 'Langganan Informasi Terkini', 'url'=> 't.me/bpsntb']
                 ],
                 [
                     ['text'=> 'Feedback', 'callback_data'=> 'myfeedback']
@@ -580,20 +580,20 @@ class TelegramController extends Controller
             if ($flag_lama == 1)
             {
                 $flag_baru = 0;
-                $langganan = 'Tidak';
-                $text_tambahan = 'Anda <b>tidak</b> akan menerima berita-berita terbaru dari BPS Provinsi NTB';
+                $langganan = 'Tidak Menerima';
+                $text_tambahan = 'Anda <b>tidak</b> akan menerima Informasi Terkini dari BPS Provinsi NTB';
             }
             else
             {
                 $flag_baru = 1;
-                $langganan = 'Ya';
-                $text_tambahan = 'Anda akan menerima berita-berita terbaru dari BPS Provinsi NTB'.chr(10);
+                $langganan = 'Menerima';
+                $text_tambahan = 'Anda akan menerima Informasi Terkini dari BPS Provinsi NTB'.chr(10);
                 $text_tambahan .= 'harap tetap untuk membuka chat bot ini.'.chr(10);
             }
             $data->flag_berita = $flag_baru;
             $data->update();
 
-            $message = 'Status Langganan Berita BPSNTB diubah ke <b>'.$langganan.'</b>'.chr(10);
+            $message = 'Status Langganan Informasi Terkini diubah ke <b>'.$langganan.'</b>'.chr(10);
             $message .= $text_tambahan .chr(10);
 
 
