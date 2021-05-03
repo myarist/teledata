@@ -522,17 +522,17 @@ class TelegramController extends Controller
             {
                 if ($data->flag_berita == 1)
                 {
-                    $langganan = 'Ya';
+                    $langganan = 'Menerima';
                 }
                 else
                 {
-                    $langganan = 'Tidak';
+                    $langganan = 'Tidak Menerima';
                 }
                 $message = 'Anda terdaftar sebagai : ' .chr(10);
                 $message .= 'Nama : <b>'.$data->nama.'</b>' .chr(10);
                 $message .= 'Email : <b>'.$data->email.'</b>' .chr(10);
                 $message .= 'No HP : <b>'.$data->nohp.'</b>' .chr(10);
-                $message .= 'Langganan Berita : <b>'.$langganan.'</b>' .chr(10);
+                $message .= 'Langganan Informasi Terkini : <b>'.$langganan.'</b>' .chr(10);
                 //$this->keyboard = $this->keyboard_bawah;
                 /*
                 $reply_markup = $telegram->replyKeyboardMarkup([
@@ -970,17 +970,17 @@ class TelegramController extends Controller
                 ]);
                 if ($data->flag_berita == 1)
                 {
-                    $langganan = 'Ya';
+                    $langganan = 'Menerima';
                 }
                 else
                 {
-                    $langganan = 'Tidak';
+                    $langganan = 'Tidak Menerima';
                 }
                 $message = 'Anda terdaftar sebagai : ' .chr(10);
                 $message .= 'Nama : <b>'.$data->nama.'</b>' .chr(10);
                 $message .= 'Email : <b>'.$data->email.'</b>' .chr(10);
                 $message .= 'No HP : <b>'.$data->nohp.'</b>' .chr(10);
-                $message .= 'Langganan Berita : <b>'.$langganan.'</b>' .chr(10);
+                $message .= 'Langganan Informasi Terkini : <b>'.$langganan.'</b>' .chr(10);
                 $cek_admin = User::where('chatid_tg','=',$this->chat_id)->orWhere('user_tg','=',$this->username)->count();
                 if ($cek_admin > 0)
                 {
