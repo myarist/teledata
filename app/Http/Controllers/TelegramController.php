@@ -212,7 +212,7 @@ class TelegramController extends Controller
                     ['text'=> 'Edit Profil', 'callback_data'=>'editprofil']
                 ],
                 [
-                    ['text'=> 'Ubah Langganan Berita', 'callback_data'=>'ubahlangganan']
+                    ['text'=> 'Ubah Langganan Informasi Terkini', 'callback_data'=>'ubahlangganan']
                 ],
                 [
                     ['text'=> 'Kembali ke Menu Utama', 'callback_data'=>'back_menuutama']
@@ -230,7 +230,7 @@ class TelegramController extends Controller
                     ['text'=> 'Edit Profil', 'callback_data'=>'editprofil']
                 ],
                 [
-                    ['text'=> 'Ubah Langganan Berita', 'callback_data'=>'ubahlangganan']
+                    ['text'=> 'Ubah Langganan Informasi Terkini', 'callback_data'=>'ubahlangganan']
                 ],
                 [
                     ['text'=> 'Kembali ke Menu Utama', 'callback_data'=>'menuawal']
