@@ -42,213 +42,66 @@ class TelegramController extends Controller
     public function __construct()
     {
         $this->telegram = new Api(env('TELEGRAM_BOT_TOKEN'));
-        $this->keyboard_default = [
-            'inline_keyboard' => [
-                [
-                    ['text' => 'Konsultasi Statistik', 'callback_data' => 'konsultasi']
-                ],
-                [
-                    ['text' => 'Pencarian Data','callback_data' => 'menucari']
-                ],
-                [
-                    ['text' => 'Profil Saya','callback_data' => 'myprofil']
-                ],
-                [
-                    ['text'=> 'Tentang Bot', 'callback_data'=> 'tentangbot']
-                ],
-                [
-                    ['text'=> 'Langganan Informasi Terkini', 'url'=> 't.me/bpsntb']
-                ],
-                [
-                    ['text'=> 'Feedback', 'callback_data'=> 'myfeedback']
-                ],
-                [
-                    ['text'=> 'Selesai', 'callback_data'=> 'selesai']
-                ]
-            ]
-        ];
-        $this->keyboard_default_admin = [
-            'inline_keyboard' => [
-                [
-                    ['text' => 'Konsultasi Statistik', 'callback_data' => 'konsultasi']
-                ],
-                [
-                    ['text' => 'Pencarian Data','callback_data' => 'menucari']
-                ],
-                [
-                    ['text' => 'Profil Saya','callback_data' => 'myprofil']
-                ],
-                [
-                    ['text' => 'Menu Admin','callback_data' => 'menuadmin']
-                ],
-                [
-                    ['text'=> 'Tentang Bot', 'callback_data'=> 'tentangbot']
-                ],
-                [
-                    ['text'=> 'Langganan Informasi Terkini', 'url'=> 't.me/bpsntb']
-                ],
-                [
-                    ['text'=> 'Feedback', 'callback_data'=> 'myfeedback']
-                ],
-                [
-                    ['text'=> 'Selesai', 'callback_data'=> 'selesai']
-                ]
-                ]
-        ];
-        $this->keyboard_myfeedback = [
-            'inline_keyboard' => [
-                [
-                    ['text'=> 'Berikan Feedback', 'callback_data'=>'feedbacksistem'],
-                    ['text'=> 'Menu Utama', 'callback_data'=>'back_menuutama']
-                ],
-            ]
-        ];
-        $this->keyboard_feedback = [
-            'inline_keyboard' => [
-                [
-                    ['text'=> '1', 'callback_data'=>'feedback1'],
-                    ['text'=> '2', 'callback_data'=>'feedback2'],
-                    ['text'=> '3', 'callback_data'=>'feedback3'],
-                    ['text'=> '4', 'callback_data'=>'feedback4'],
-                    ['text'=> '5', 'callback_data'=>'feedback5']
-                ],
-            ]
-        ];
-        $this->keyboard_admin = [
-            'inline_keyboard' => [
-                [
-                    ['text'=> 'Ubah Status Online', 'callback_data'=>'flagstatusonline']
-                ],
-                [
-                    ['text'=> 'List Pengunjung', 'callback_data'=>'logpengunjung'],
-                    ['text'=> 'Log Pencarian', 'callback_data'=>'logpencarian']
-                ],
-                [
-                    ['text'=> 'List Operator', 'callback_data'=>'listoperator'],
-                    ['text'=> 'List Feedback', 'callback_data'=>'listfeedback']
-                ],
-                [
-                    ['text'=> 'Menu Utama', 'callback_data'=>'back_menuutama']
-                ]
-            ]
-        ];
-        $this->keyboard_default_admin_belumtg = [
-            'inline_keyboard' => [
-                [
-                    ['text' => 'Konsultasi Statistik', 'callback_data' => 'konsultasi']
-                ],
-                [
-                    ['text' => 'Pencarian Data','callback_data' => 'menucari']
-                ],
-                [
-                    ['text' => 'Profil Saya','callback_data' => 'myprofil']
-                ],
-                [
-                    ['text' => 'Update Telegram ID','callback_data' => 'updateidtg']
-                ],
-                [
-                    ['text'=> 'Tentang Bot', 'callback_data'=> 'tentangbot']
-                ],
-                [
-                    ['text'=> 'Selesai', 'callback_data'=> 'selesai']
-                ]
-            ]
-        ];
-        $this->keyboard_cari = [
-            'inline_keyboard' => [
-                [
-                    ['text' => 'Publikasi', 'callback_data' => 'caripublikasi']
-                ],
-                [
-                    ['text' => 'Subjek Statistik','callback_data' => 'caristatistik']
-                ],
-                [
-                    ['text' => 'Berita Resmi Statistik','callback_data' => 'caribrs']
-                ],
-                [
-                    ['text'=> 'Lainnya', 'callback_data'=> 'carilainnnya']
-                ],
-                [
-                    ['text'=> 'Kembali ke Menu Utama', 'callback_data'=>'back_menuutama']
-                ]
-                ]
-        ];
-        $this->keyboard_cari_kembali = [
-            'inline_keyboard' => [
-                [
-                    ['text'=> 'Kembali ke Menu Pencarian', 'callback_data'=>'menucari']
-                ]
-                ]
-        ];
-        $this->keyboard_kembali = [
-            'inline_keyboard' => [
-                [
-                    ['text'=> 'Kembali ke Menu Utama', 'callback_data'=>'menuawal']
-                ]
-                ]
-        ];
-        $this->keyboard_tentang_kembali = [
-            'inline_keyboard' => [
-                [
-                    ['text'=> 'Kembali ke Menu Utama', 'callback_data'=>'back_menuutama']
-                ]
-                ]
-        ];
-        $this->keyboard_konsul_kembali = [
-            'inline_keyboard' => [
-                [
-                    ['text'=> 'Kembali ke Menu Utama', 'callback_data'=>'back_menuutama']
-                ]
-                ]
-        ];
-        $this->keyboard_edit_profil = [
-            'inline_keyboard' => [
-                [
-                    ['text' => 'Edit Nama', 'callback_data' => 'editnama'],
-                    ['text' => 'Edit Email', 'callback_data' => 'editemail'],
-                    ['text' => 'Edit No HP', 'callback_data' => 'editnohp']
-                ],
-                [
-                    ['text'=> 'Edit Profil', 'callback_data'=>'editprofil']
-                ],
-                [
-                    ['text'=> 'Ubah Langganan Informasi Terkini', 'callback_data'=>'ubahlangganan']
-                ],
-                [
-                    ['text'=> 'Kembali ke Menu Utama', 'callback_data'=>'back_menuutama']
-                ]
-                ]
-        ];
-        $this->keyboard_edit_profil_admin = [
-            'inline_keyboard' => [
-                [
-                    ['text' => 'Edit Nama', 'callback_data' => 'editnama'],
-                    ['text' => 'Edit Email', 'callback_data' => 'editemail'],
-                    ['text' => 'Edit No HP', 'callback_data' => 'editnohp']
-                ],
-                [
-                    ['text'=> 'Edit Profil', 'callback_data'=>'editprofil']
-                ],
-                [
-                    ['text'=> 'Ubah Langganan Informasi Terkini', 'callback_data'=>'ubahlangganan']
-                ],
-                [
-                    ['text'=> 'Kembali ke Menu Utama', 'callback_data'=>'menuawal']
-                ]
-                ]
-        ];
-        $this->keyboard_bawah = [
-                'keyboard' => [
-                    ['Konsultasi','Pencarian'],
-                    ['Profile', 'Tentang Saya'],
-                    ['Feedback','Selesai']
-                ],
-                'resize_keyboard' => true,
-                'one_time_keyboard' => true,
-        ];
         $r = file_get_contents("https://github.com/guangrei/Json-Indonesia-holidays/raw/master/calendar.json");
         $this->hari_libur = json_decode($r, true);
-        $this->keyboard = json_encode($this->keyboard_default);
+        //keyboard
+        $this->keyboard_utama = [
+            ['🔰 Konsultasi','🔎 Pencarian','👤 Profil'],
+            ['📲 Langganan','📡 Feedback','🎁 Informasi'],
+            ['❌ Selesai']
+        ];
+        $this->keyboard_utama_admin = [
+            ['🔰 Konsultasi','🔎 Pencarian','👤 Profil'],
+            ['📲 Langganan','📡 Feedback','🎁 Informasi'],
+            ['⚙️ Menu Admin','❌ Selesai']
+        ];
+        $this->keyboard_utama_sinkron = [
+            ['🔰 Konsultasi','🔎 Pencarian','👤 Profil'],
+            ['📲 Langganan','📡 Feedback','🎁 Informasi'],
+            ['✴️ Admin Sinkronisasi','❌ Selesai']
+        ];
+        $this->keyboard_konsultasi = [
+            ['🔙 Kembali']
+        ];
+        $this->keyboard_menucari = [
+            ['📚 Publikasi','📊 Subyek Statistik'],
+            ['📋 Berita Resmi Statistik','📌 Lainnya'],
+            ['🔙 Kembali']
+        ];
+        $this->keyboard_menuprofil = [
+            ['👤 Edit Nama','📨 Edit Email'],
+            ['📞 Edit No HP','📭 Ubah Langganan'],
+            ['🔙 Kembali']
+        ];
+        $this->keyboard_menuprofil_admin = [
+            ['👤 Edit Nama','📨 Edit Email'],
+            ['📞 Edit No HP','📭 Ubah Langganan'],
+            ['🔙 Kembali']
+        ];
+        $this->keyboard_langganan = [
+            ['✅ Menerima Info','📵 Tidak Menerima Info'],
+            ['🔙 Menu Profil']
+        ];
+        $this->keyboard_profil = [
+            ['🔙 Menu Profil']
+        ];
+        $this->keyboard_cari = [
+            ['🔙 🔎 Pencarian']
+        ];
+        $this->keyboard_level1 = [
+            ['🔙 Kembali']
+        ];
+        $this->keyboard_menuadmin = [
+            ['💡 Ubah Status Online'],
+            ['📂 List Pengunjung','🏷 Log Pencarian'],
+            ['📜 List Operator','🧲 List Feedback'],
+            ['🔙 Kembali']
+        ];
+        $this->keyboard_menufeedback = [
+            ['⭐️ Beri Feedback','Beri Masukan'],
+            ['🔙 Kembali']
+        ];
+
     }
 
     public function getMe()
@@ -285,146 +138,9 @@ class TelegramController extends Controller
         $update = $this->telegram->getWebhookUpdate();
         if ($update->isType('callback_query'))
         {
-
-            /*
-            menu ini kalo tombol inline keyboard ditekan
-            */
-            $this->text = $update->callbackQuery->data;
-            $this->chat_id = $update->callbackQuery->from->id;
-            $this->nama = $update->callbackQuery->from->first_name;
-            $this->message_id = $update->callbackQuery->message->message_id;
-            $this->waktu_kirim = $update->callbackQuery->message->date;
-
-            if (array_key_exists("username",$update['callback_query']['from']))
-            {
-                $this->username =  $update->callbackQuery->from->username;
-            }
-            else
-            {
-                $this->username=  $update->callbackQuery->from->first_name;
-            }
-
-            switch ($this->text) {
-                case 'menucari':
-                    $this->MenuCari();
-                    break;
-                case 'konsultasi':
-                    $this->MenuKonsultasi();
-                    break;
-                case 'tentangbot':
-                    $this->TentangBot();
-                    break;
-                case 'caripublikasi':
-                    $this->CariPublikasi();
-                    break;
-                case 'caristatistik':
-                    $this->CariStatistik();
-                    break;
-                case 'carilainnnya':
-                    $this->CariLainnya();
-                    break;
-                case 'caribrs':
-                    $this->CariBrs();
-                    break;
-                case 'myprofil':
-                    $this->MyProfil();
-                    break;
-                case 'editnama':
-                    $this->EditNama();
-                    break;
-                case 'editemail':
-                    $this->EditEmail();
-                    break;
-                case 'editnohp':
-                    $this->EditNoHp();
-                    break;
-                case 'editprofil':
-                    $this->InputNama();
-                    break;
-                case 'selesai':
-                    $this->Selesai();
-                    break;
-                case 'logpengunjung':
-                    $this->LogDataPengunjung();
-                    break;
-                case 'logpencarian':
-                    $this->LogDataPencarian();
-                    break;
-                case 'updateidtg':
-                    $this->UpdateIdTele();
-                    break;
-                case 'menuadmin':
-                    $this->MenuAdmin();
-                    break;
-                case 'flagstatusonline':
-                    $this->FlagKonsultasi();
-                    break;
-                case 'listoperator':
-                    $this->ListOperator();
-                    break;
-                case 'gantipasswd':
-                    $this->GantiPasswd();
-                    break;
-                case 'myfeedback':
-                    $this->MyFeedBack();
-                    break;
-                case 'feedbacksistem':
-                    $this->FeedBackSistem();
-                    break;
-                case 'feedback1':
-                    $this->ProsesFeedBack();
-                    break;
-                case 'feedback2':
-                    $this->ProsesFeedBack();
-                    break;
-                case 'feedback3':
-                    $this->ProsesFeedBack();
-                    break;
-                case 'feedback4':
-                    $this->ProsesFeedBack();
-                    break;
-                case 'feedback5':
-                    $this->ProsesFeedBack();
-                    break;
-                case 'listfeedback':
-                    $this->ListFeedBack();
-                    break;
-                case 'back_konsul':
-                    $this->BackUtama();
-                    break;
-                case 'back_menuutama':
-                    $this->BackUtama();
-                    break;
-                case 'ubahlangganan':
-                    $this->UbahLanggananBerita();
-                    break;
-                default:
-                $this->showMenu();
-                    break;
-            }
-
-        }
-        elseif (isset($request['channel_post']))
-        {
-            // !pin pesan yang di pinned
-            $chan_id = $update->channel_post->sender_chat->id;
-            if (strpos($update->channel_post->text,'!pin') !== false)
-            {
-                if (isset($request['channel_post']['reply_to_message']))
-                {
-                    $msg_id = $update->channel_post->reply_to_message->message_id;
-                }
-                else
-                {
-                    $msg_id = $update->channel_post->message_id;
-                }
-                $data = [
-                    'chat_id' => $chan_id,
-                    'message_id' => $msg_id,
-                    'disable_notification' => true,
-                ];
-                $this->telegram->pinChatMessage($data);
-            }
+            //callback_query
+            //bila ada ini langsung ke menu awal
+            $this->AwalStart();
         }
         else
         {
@@ -488,8 +204,71 @@ class TelegramController extends Controller
                 case '/start':
                     $this->AwalStart();
                     break;
-                case '/tambahadmin':
-                    $this->TambahAdmin();
+                case '🔎 Pencarian':
+                    $this->MenuCari();
+                    break;
+                case '📚 Publikasi':
+                    $this->CariPublikasi();
+                    break;
+                case '📊 Subyek Statistik':
+                    $this->CariStatistik();
+                    break;
+                case '📋 Berita Resmi Statistik':
+                    $this->CariBrs();
+                    break;
+                case '📌 Lainnya':
+                    $this->CariLainnya();
+                    break;
+                case '🔙 🔎 Pencarian':
+                    $this->MenuCari();
+                    break;
+                case '🔙 Kembali':
+                    $this->AwalStart();
+                    break;
+                case '🎁 Informasi':
+                    $this->TentangBot();
+                    break;
+                case '👤 Profil':
+                    $this->MenuProfil();
+                    break;
+                case '📭 Ubah Langganan':
+                    $this->MenuUbahLangganan();
+                    break;
+                case '✅ Menerima Info':
+                    $this->MenerimaInfo();
+                    break;
+                case '📵 Tidak Menerima Info':
+                    $this->TidakMenerimaInfo();
+                    break;
+                case '🔙 Menu Profil':
+                    $this->MenuProfil();
+                    break;
+                case '👤 Edit Nama':
+                    $this->EditNama();
+                    break;
+                case '📨 Edit Email':
+                    $this->EditEmail();
+                    break;
+                case '🔰 Konsultasi':
+                    $this->MenuKonsultasi();
+                    break;
+                case '📞 Edit No HP':
+                    $this->EditNoHp();
+                    break;
+                case '✴️ Admin Sinkronisasi':
+                    $this->AdminSinkronisasi();
+                    break;
+                case '⚙️ Menu Admin':
+                    $this->MenuAdmin();
+                    break;
+                case '💡 Ubah Status Online':
+                    $this->UbahStatusOnline();
+                    break;
+                case '📡 Feedback':
+                    $this->MenuFeedback();
+                    break;
+                case '❌ Selesai':
+                    $this->Selesai();
                     break;
                 default:
                     $this->CheckInputan();
@@ -520,29 +299,54 @@ class TelegramController extends Controller
             }
             else
             {
-                if ($data->flag_berita == 1)
+                LogPengunjung::create([
+                    'username' => $this->username,
+                    'chatid' => $this->chat_id,
+                    'command' => __FUNCTION__,
+                    'msg_id' => $this->message_id
+                ]);
+                $message = 'Selamat datang <b>'.$data->nama.'</b> di <b>TeleDATA (Telegram Data BPSNTB) BPS Provinsi Nusa Tenggara Barat</b>. Bot Telegram ini akan membantu anda untuk konsultasi langsung atau melakukan pencarian data publikasi, statistik dan berita resmi statistik. '.chr(10).chr(10).'<i>Silakan menggunakan menu dibawah ini</i>.'.chr(10);
+                $cek_admin = User::where('chatid_tg','=',$this->chat_id)->orWhere('user_tg','=',$this->username)->count();
+                if ($cek_admin > 0)
                 {
-                    $langganan = 'Menerima';
+                    //admin dan tampilkan keyboard
+                    $data_admin = User::where('chatid_tg','=',$this->chat_id)->orWhere('user_tg','=',$this->username)->first();
+                    if ($data_admin->chatid_tg == '')
+                    {
+                        //admin belum sinkronisasi
+                        $reply_markup = Keyboard::make([
+                            'keyboard' => $this->keyboard_utama_sinkron,
+                            'resize_keyboard' => true,
+                            'one_time_keyboard' => true
+                        ]);
+                    }
+                    else
+                    {
+                        //langsung tampilkan menuadmin
+                        $reply_markup = Keyboard::make([
+                            'keyboard' => $this->keyboard_utama_admin,
+                            'resize_keyboard' => true,
+                            'one_time_keyboard' => true
+                        ]);
+                    }
                 }
                 else
                 {
-                    $langganan = 'Tidak Menerima';
+                    //keyboard biasa
+                    $reply_markup = Keyboard::make([
+                        'keyboard' => $this->keyboard_utama,
+                        'resize_keyboard' => true,
+                        'one_time_keyboard' => true
+                    ]);
                 }
-                $message = 'Anda terdaftar sebagai : ' .chr(10);
-                $message .= 'Nama : <b>'.$data->nama.'</b>' .chr(10);
-                $message .= 'Email : <b>'.$data->email.'</b>' .chr(10);
-                $message .= 'No HP : <b>'.$data->nohp.'</b>' .chr(10);
-                $message .= 'Langganan Informasi Terkini : <b>'.$langganan.'</b>' .chr(10);
-                //$this->keyboard = $this->keyboard_bawah;
-                /*
-                $reply_markup = $telegram->replyKeyboardMarkup([
-                    'keyboard' => $this->keyboard_bawah,
-                    'resize_keyboard' => true,
-                    'one_time_keyboard' => true
-                ]); */
-                //$this->keyboard = json_encode($this->keyboard_bawah);
-                $this->KirimPesan($message, true);
-                $this->showMenu();
+
+                $response = Telegram::sendMessage([
+                    'chat_id' => $this->chat_id,
+                    'text' => $message,
+                    'parse_mode'=> 'HTML',
+                    'reply_markup' => $reply_markup
+                ]);
+                $messageId = $response->getMessageId();
             }
 
         }
@@ -564,7 +368,8 @@ class TelegramController extends Controller
         }
 
     }
-    public function UbahLanggananBerita($hapus=false)
+
+    public function MenuCari()
     {
         LogPengunjung::create([
             'username' => $this->username,
@@ -572,352 +377,70 @@ class TelegramController extends Controller
             'command' => __FUNCTION__,
             'msg_id' => $this->message_id
         ]);
-        $count = DataPengunjung::where('chatid','=',$this->chat_id)->count();
-        if ($count > 0)
-        {
-            $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
-            $flag_lama = $data->flag_berita;
-            if ($flag_lama == 1)
-            {
-                $flag_baru = 0;
-                $langganan = 'Tidak Menerima';
-                $text_tambahan = 'Anda <b>tidak</b> akan menerima Informasi Terkini dari BPS Provinsi NTB';
-            }
-            else
-            {
-                $flag_baru = 1;
-                $langganan = 'Menerima';
-                $text_tambahan = 'Anda akan menerima Informasi Terkini dari BPS Provinsi NTB'.chr(10);
-                $text_tambahan .= 'harap tetap untuk membuka chat bot ini.'.chr(10);
-            }
-            $data->flag_berita = $flag_baru;
-            $data->update();
-
-            $message = 'Status Langganan Informasi Terkini diubah ke <b>'.$langganan.'</b>'.chr(10);
-            $message .= $text_tambahan .chr(10);
-
-
-        }
-        else
-        {
-            $message = 'ERROR. silakan ulangi lagi'.chr(10);
-        }
-            //$this->keyboard = json_encode($this->keyboard_edit_profil);
-            $this->KirimPesan($message,true);
-            $this->MyProfil();
-    }
-    public function TambahAdmin()
-    {
-        $cek_admin = User::where('chatid_tg','=',$this->chat_id)->orWhere('user_tg','=',$this->username)->count();
-        if ($cek_admin > 0)
-        {
-            //bisa akses menu ini
-            $message = "Masukkan tambah admin sesuai format berikut : ";
-            $message = "perintah : <b>/tambahadmin<spasi>namalengkap-username_telegram-email-password</b>";
-
-            LogPengunjung::create([
-                'username' => $this->username,
-                'chatid' => $this->chat_id,
-                'command' => __FUNCTION__,
-                'msg_id' => $this->message_id
-            ]);
-            $this->keyboard = json_encode($this->keyboard_edit_profil);
-
-        }
-        else
-        {
-            //tidak bisa akses menu ini
-            $message = "Anda tidak dapat mengakses menu ini: ";
-            $this->keyboard = json_encode($this->keyboard_edit_profil);
-        }
-
-        $this->KirimPesan($message,true,true);
-
-    }
-    public function BackKonsul()
-    {
-        $this->showMenu();
-        $this->HapusKeyboard($this->chat_id);
-        //$this->message_id = $this->message_id - 1;
-        //$this->HapusKeyboard($this->chat_id);
-    }
-    public function BackUtama()
-    {
-        $this->showMenu();
-        $this->HapusKeyboard($this->chat_id);
-        //$this->message_id = $this->message_id - 1;
-        //$this->HapusKeyboard($this->chat_id);
-    }
-    public function ListFeedBack()
-    {
-        $data = LogFeedback::orderBY('created_at','desc')->take(30)->get();
-        $message = 'Data 30 Feedback Pengunjung <b>TeleDATA</b> terakhir' .chr(10);
-        $i=1;
-        foreach ($data as $item) {
-            if ($item->nilai_feedback == '5')
-            {
-                $nilai = '⭐️⭐️⭐️⭐️⭐️';
-            }
-            elseif ($item->nilai_feedback == '4')
-            {
-                $nilai = '⭐️⭐️⭐️⭐️';
-            }
-            elseif ($item->nilai_feedback == '3')
-            {
-                $nilai = '⭐️⭐️⭐️';
-            }
-            elseif ($item->nilai_feedback == '2')
-            {
-                $nilai = '⭐️⭐️';
-            }
-            else
-            {
-                $nilai = '⭐️';
-            }
-            $message .= $i.'. Nama: <b>'.$item->Pengunjung->nama .'</b> | chat_id: <b>'.$item->chatid.'</b> | username: <b>'.$item->username.'</b>'.chr(10). $nilai .' <i>'.Carbon::parse($item->created_at)->format('d M Y H:i').'</i>'. chr(10) .'<i>'.$item->isi_feedback.'</i> ' .chr(10) .chr(10);
-            $i++;
-            if ($i==11 or $i==21)
-            {
-                $this->KirimPesan($message,true);
-                $message = '';
-            }
-        }
-        $this->keyboard = json_encode($this->keyboard_admin);
-        $this->KirimPesan($message,true,true);
-       //$this->MenuAdmin();
-    }
-    public function MyFeedBack($hapus=false)
-    {
-        //cek dulu feedbacknya
-        LogPengunjung::create([
-            'username' => $this->username,
-            'chatid' => $this->chat_id,
-            'command' => 'FeedBackSistem',
-            'msg_id' => $this->message_id
+        $message = '🎯 Silakan pilih menu <b>Pencarian Data</b> dibawah ini ' .chr(10);
+        $reply_markup = Keyboard::make([
+            'keyboard' => $this->keyboard_menucari,
+            'resize_keyboard' => true,
+            'one_time_keyboard' => true
         ]);
-        $message = 'Penilaian terhadap <b>TeleDATA</b>' .chr(10) .chr(10);
-        $cek_fb = LogFeedback::where('chatid',$this->chat_id)->count();
-        if ($cek_fb > 0)
-        {
-            //sudah ada ngisi
-            $data = LogFeedback::where('chatid',$this->chat_id)->first();
-            if ($data->nilai_feedback == '5')
-            {
-                $nilai = '⭐️⭐️⭐️⭐️⭐️';
-            }
-            elseif ($data->nilai_feedback == '4')
-            {
-                $nilai = '⭐️⭐️⭐️⭐️';
-            }
-            elseif ($data->nilai_feedback == '3')
-            {
-                $nilai = '⭐️⭐️⭐️';
-            }
-            elseif ($data->nilai_feedback == '2')
-            {
-                $nilai = '⭐️⭐️';
-            }
-            else
-            {
-                $nilai = '⭐️';
-            }
-
-            $message .= '<b>Nilai</b> : '. $nilai .chr(10);
-            $message .= '<b>Komentar</b> : <i>'.$data->isi_feedback.'</i>' .chr(10);
-            $message .= '<b>Tanggal</b> : '.\Carbon\Carbon::parse($data->updated_at)->format('j F Y H:i') .chr(10);
-        }
-        else
-        {
-
-            $message .= '<i>Belum ada feedback dari Bapak/Ibu</i>' .chr(10);
-        }
-
-        $this->keyboard = json_encode($this->keyboard_myfeedback);
-        $this->KirimPesan($message,true,true);
-        if (!$hapus)
-        {
-            $this->HapusKeyboard($this->chat_id);
-        }
+        $response = Telegram::sendMessage([
+            'chat_id' => $this->chat_id,
+            'text' => $message,
+            'parse_mode'=> 'HTML',
+            'reply_markup' => $reply_markup
+        ]);
+        $messageId = $response->getMessageId();
 
     }
-    public function FeedBackSistem($hapus=false)
+    public function CariPublikasi($hapus = false)
     {
+        $message = "📚 Masukkan <b>Kata Kunci </b>untuk <b>Pencarian Publikasi</b> : ";
         LogPengunjung::create([
             'username' => $this->username,
             'chatid' => $this->chat_id,
             'command' => __FUNCTION__,
             'msg_id' => $this->message_id
         ]);
-        $message ='';
-        $message .= 'Bagaimana penilaian Bapak/Ibu untuk TeleData' .chr(10);
-        $message .= 'Silakan pilih nilai dibawah ini : ' .chr(10);
-        $this->keyboard = json_encode($this->keyboard_feedback);
-        $this->KirimPesan($message,true,true);
-        if (!$hapus)
-        {
-            $this->HapusKeyboard($this->chat_id);
-        }
-    }
-    public function ProsesFeedBack($hapus=false)
-    {
-        LogPengunjung::create([
-            'username' => $this->username,
-            'chatid' => $this->chat_id,
-            'command' => 'FeedBackSistem',
-            'msg_id' => $this->message_id
+        $reply_markup = Keyboard::make([
+            'keyboard' => $this->keyboard_cari,
+            'resize_keyboard' => true,
+            'one_time_keyboard' => true
         ]);
-        //input nilai sesuai pilihan
-        //cek dulu apakah sudah pernah ngisi
-        //kalo sudah pernah mengisi langsung update saja
-        if ($this->text == 'feedback1')
-        {
-            $nilai = 1;
-        }
-        elseif ($this->text == 'feedback2')
-        {
-            $nilai = 2;
-        }
-        elseif ($this->text == 'feedback3')
-        {
-            $nilai = 3;
-        }
-        elseif ($this->text == 'feedback4')
-        {
-            $nilai = 4;
-        }
-        else
-        {
-            $nilai = 5;
-        }
-
-        $cek_fb = LogFeedback::where('chatid',$this->chat_id)->count();
-        if ($cek_fb > 0)
-        {
-            //sudah pernah mengisi feedback
-            $data = LogFeedback::where('chatid',$this->chat_id)->first();
-            $data->username = $this->username;
-            $data->nilai_feedback = $nilai;
-            $data->msg_id = $this->message_id;
-            $data->waktu_kirim = $this->waktu_kirim;
-            $data->update();
-        }
-        else
-        {
-            //baru ngisi feedback
-            $data = new LogFeedback();
-            $data->username = $this->username;
-            $data->chatid = $this->chat_id;;
-            $data->nilai_feedback = $nilai;
-            $data->msg_id = $this->message_id;
-            $data->waktu_kirim = $this->waktu_kirim;
-            $data->save();
-        }
-        $message ='';
-        $message .= 'Terimakasih atas penilaian Bapak/Ibu untuk perbaikan <b>Teledata</b> Kedepan' .chr(10) .chr(10);
-        $message .= 'Silakan masukkan komentar Bapak/Ibu tentang <b>TeleDATA</b> : '.chr(10) .chr(10);
-        $this->KirimPesan($message,true);
-        if (!$hapus)
-        {
-            $this->HapusKeyboard($this->chat_id);
-        }
-    }
-
-    public function showMenu($info = false)
-    {
-
-        $message = 'Selamat datang di' .chr(10);
-        $message .= '<b>TeleDATA (Telegram Data BPSNTB)</b>' .chr(10);
-        $message .= '<b>BPS Provinsi Nusa Tenggara Barat</b>' .chr(10) .chr(10);
-        $message .= 'Silakan <b>Pilih Layanan</b> yang tersedia : ' .chr(10);
-        $cek_admin = User::where('chatid_tg','=',$this->chat_id)->orWhere('user_tg','=',$this->username)->count();
-        if ($cek_admin > 0)
-        {
-            //admin dan tampilkan keyboard
-            $data_admin = User::where('chatid_tg','=',$this->chat_id)->orWhere('user_tg','=',$this->username)->first();
-            $message .= chr(10).'Role : Admin Sistem <b>TeleData</b> ('.$this->username.')' .chr(10);
-            if ($data_admin->chatid_tg == '')
-            {
-                //update chatid_tg dulu
-                $this->keyboard = json_encode($this->keyboard_default_admin_belumtg);
-            }
-            else
-            {
-                //langsung tampilkan menuadmin
-                $this->keyboard = json_encode($this->keyboard_default_admin);
-            }
-            //jika chatid_tg belum ada isinya di menu admin
-            //update keyboard  $this->keyboard_default_admin_belumtg
-
-        }
-        else
-        {
-            //keyboard biasa
-            $this->keyboard = json_encode($this->keyboard_default);
-
-        }
-        $this->KirimPesan($message,true,true);
-
-        LogPengunjung::create([
-            'username' => $this->username,
-            'chatid' => $this->chat_id,
-            'command' => 'showMenu',
-            'msg_id'=> $this->message_id
+        $response = Telegram::sendMessage([
+            'chat_id' => $this->chat_id,
+            'text' => $message,
+            'parse_mode'=> 'HTML',
+            'reply_markup' => $reply_markup
         ]);
+        $messageId = $response->getMessageId();
+    }
 
-    }
-    //nama lengkap, email, nomor hp
-    public function InputEmail()
+    public function CariBrs()
     {
-        $message = "<i>Silakan masukkan alamat email anda : </i>";
-        $this->KirimPesan($message,true);
-    }
-    public function EditEmail()
-    {
+        $message = "📋 Masukkan <b>Kata Kunci</b> untuk <b>Pencarian Berita Resmi Statistik</b> : ";
         LogPengunjung::create([
             'username' => $this->username,
             'chatid' => $this->chat_id,
             'command' => __FUNCTION__,
             'msg_id' => $this->message_id
         ]);
-        $message = "<i>Silakan masukkan alamat <b>email baru</b> anda : </i>";
-        $this->KirimPesan($message,true);
-    }
-    public function InputHP()
-    {
-        $message = "<i>Silakan Masukkan Nomor HP anda</i> : ";
-        $this->KirimPesan($message,true);
-    }
-    public function Selesai()
-    {
-        LogPengunjung::create([
-            'username' => $this->username,
-            'chatid' => $this->chat_id,
-            'command' => __FUNCTION__,
-            'msg_id' => $this->message_id
+        $reply_markup = Keyboard::make([
+            'keyboard' => $this->keyboard_cari,
+            'resize_keyboard' => true,
+            'one_time_keyboard' => true
         ]);
-        $message = "<b>Terimakasih Telah Menggunakan Layanan Kami</b>" .chr(10);
-        $this->KirimPesan($message,true);
-        $this->HapusKeyboard($this->chat_id);
-        $count = LogPengunjung::where('chatid', $this->chat_id)->count();
-        if ($count > 0)
-        {
-            LogPengunjung::where('chatid', $this->chat_id)->delete();
-        }
-    }
-    public function EditNoHp()
-    {
-        LogPengunjung::create([
-            'username' => $this->username,
-            'chatid' => $this->chat_id,
-            'command' => __FUNCTION__,
-            'msg_id' => $this->message_id
+        $response = Telegram::sendMessage([
+            'chat_id' => $this->chat_id,
+            'text' => $message,
+            'parse_mode'=> 'HTML',
+            'reply_markup' => $reply_markup
         ]);
-        $message = "<i>Silakan masukkan Nomor HP baru anda</i> : ";
-        $this->KirimPesan($message,true);
+        $messageId = $response->getMessageId();
+
     }
-    public function InputNama()
+    public function CariStatistik()
     {
-        $message = "<i>Silakan Masukkan Nama Lengkap</i> :";
+        $message = "📊 Masukkan <b>Kata Kunci</b> untuk <b>Pencarian Statistik</b> : ";
 
         LogPengunjung::create([
             'username' => $this->username,
@@ -925,12 +448,23 @@ class TelegramController extends Controller
             'command' => __FUNCTION__,
             'msg_id' => $this->message_id
         ]);
-
-        $this->KirimPesan($message,true);
+        $reply_markup = Keyboard::make([
+            'keyboard' => $this->keyboard_cari,
+            'resize_keyboard' => true,
+            'one_time_keyboard' => true
+        ]);
+        $response = Telegram::sendMessage([
+            'chat_id' => $this->chat_id,
+            'text' => $message,
+            'parse_mode'=> 'HTML',
+            'reply_markup' => $reply_markup
+        ]);
+        $messageId = $response->getMessageId();
     }
-    public function EditNama()
+
+    public function CariLainnya()
     {
-        $message = "<i>Silakan masukkan Nama Lengkap Anda</i> :";
+        $message = "📌 Masukkan <b>Kata Kunci</b> untuk <b>Pencarian Lainnya</b> : ";
 
         LogPengunjung::create([
             'username' => $this->username,
@@ -938,10 +472,20 @@ class TelegramController extends Controller
             'command' => __FUNCTION__,
             'msg_id' => $this->message_id
         ]);
-
-        $this->KirimPesan($message,true);
+        $reply_markup = Keyboard::make([
+            'keyboard' => $this->keyboard_cari,
+            'resize_keyboard' => true,
+            'one_time_keyboard' => true
+        ]);
+        $response = Telegram::sendMessage([
+            'chat_id' => $this->chat_id,
+            'text' => $message,
+            'parse_mode'=> 'HTML',
+            'reply_markup' => $reply_markup
+        ]);
+        $messageId = $response->getMessageId();
     }
-    public function MyProfil()
+    public function MenuProfil()
     {
         $count = DataPengunjung::where('chatid','=',$this->chat_id)->count();
         if ($count > 0)
@@ -977,19 +521,36 @@ class TelegramController extends Controller
                     $langganan = 'Tidak Menerima';
                 }
                 $message = 'Anda terdaftar sebagai : ' .chr(10);
-                $message .= 'Nama : <b>'.$data->nama.'</b>' .chr(10);
-                $message .= 'Email : <b>'.$data->email.'</b>' .chr(10);
-                $message .= 'No HP : <b>'.$data->nohp.'</b>' .chr(10);
-                $message .= 'Langganan Informasi Terkini : <b>'.$langganan.'</b>' .chr(10);
+                $message .= '✳️ ID : <b>'.$data->chatid.'</b>' .chr(10);
+                $message .= '✳️ Username : <b>'.$data->username.'</b>' .chr(10);
+                $message .= '-----------------------------------------------------' .chr(10);
+                $message .= '♻️ Nama : <b>'.$data->nama.'</b>' .chr(10);
+                $message .= '✉️ Email : <b>'.$data->email.'</b>' .chr(10);
+                $message .= '📱 No HP : <b>'.$data->nohp.'</b>' .chr(10);
+                $message .= '♻️ Langganan Informasi Terkini : <b>'.$langganan.'</b>' .chr(10);
+                $message .= '-----------------------------------------------------' .chr(10);
+                $message .= '⏰ Register : <b>'.Carbon::parse($data->created_at)->isoFormat('D MMMM Y H:mm:ss').'</b>' .chr(10);
+                $message .= '⏱ Update : <b>'.Carbon::parse($data->updated_at)->isoFormat('D MMMM Y H:mm:ss').'</b>' .chr(10);
+                $message .= '-----------------------------------------------------' .chr(10);
                 $cek_admin = User::where('chatid_tg','=',$this->chat_id)->orWhere('user_tg','=',$this->username)->count();
                 if ($cek_admin > 0)
                 {
                     //admin
-                    $message .= chr(10).'Role : Admin Sistem <b>TeleData</b> ('.$this->username.')' .chr(10);
+                    $message .= '♻️ Role : Admin Sistem <b>TeleData</b> ('.$this->username.')' .chr(10);
                 }
-                $this->keyboard = json_encode($this->keyboard_edit_profil);
-                $this->KirimPesan($message,true,true);
-                $this->HapusKeyboard($this->chat_id);
+
+                $reply_markup = Keyboard::make([
+                    'keyboard' => $this->keyboard_menuprofil,
+                    'resize_keyboard' => true,
+                    'one_time_keyboard' => true
+                ]);
+                $response = Telegram::sendMessage([
+                    'chat_id' => $this->chat_id,
+                    'text' => $message,
+                    'parse_mode'=> 'HTML',
+                    'reply_markup' => $reply_markup
+                ]);
+                $messageId = $response->getMessageId();
             }
         }
         else
@@ -997,159 +558,9 @@ class TelegramController extends Controller
             $this->AwalStart();
         }
     }
-    public function MenuCari()
+    public function EditNama()
     {
-        LogPengunjung::create([
-            'username' => $this->username,
-            'chatid' => $this->chat_id,
-            'command' => __FUNCTION__,
-            'msg_id' => $this->message_id
-        ]);
-        $message = 'Silakan pilih menu <b>Pencarian Data</b> dibawah ini ' .chr(10);
-        $this->keyboard = json_encode($this->keyboard_cari);
-        $this->KirimPesan($message,true,true);
-        $this->HapusKeyboard($this->chat_id);
-    }
-    public function CariPublikasi($hapus = false)
-    {
-        $message = "Masukkan <b>Kata Kunci </b>untuk <b>Pencarian Publikasi</b> : ";
-        LogPengunjung::create([
-            'username' => $this->username,
-            'chatid' => $this->chat_id,
-            'command' => __FUNCTION__,
-            'msg_id' => $this->message_id
-        ]);
-        $this->keyboard = json_encode($this->keyboard_cari_kembali);
-        $this->KirimPesan($message,true,true);
-        if ($hapus == false)
-        {
-            $this->HapusKeyboard($this->chat_id);
-        }
-    }
-
-    public function CariBrs($hapus = false)
-    {
-        $message = "Masukkan <b>Kata Kunci</b> untuk <b>Pencarian Berita Resmi Statistik</b> : ";
-        LogPengunjung::create([
-            'username' => $this->username,
-            'chatid' => $this->chat_id,
-            'command' => __FUNCTION__,
-            'msg_id' => $this->message_id
-        ]);
-        $this->keyboard = json_encode($this->keyboard_cari_kembali);
-        $this->KirimPesan($message,true,true);
-        if (!$hapus)
-        {
-            $this->HapusKeyboard($this->chat_id);
-        }
-    }
-
-    public function MenuKonsultasi($reply = false,$hapus=false)
-    {
-        $message = '<b>Layanan Konsultasi Online</b>' .chr(10);
-        $message .= 'Hari Layanan :  Senin - Jumat (Kecuali hari libur)' .chr(10);
-        $message .= 'Jam Layanan : 08.00 - 15.00 WITA' .chr(10) .chr(10);
-
-        //$this->KirimPesan($message,true);
-        //cek dulu hari apa
-        if (Carbon::now()->format('w') > 0 and Carbon::now()->format('w') < 6)
-        {
-            //hari kerja
-            //cek jam
-            //cek dulu hari libur apa ngga
-            $cek_libur = isset($this->hari_libur[Carbon::now()->format("Ymd")])?true:false;
-            if ($cek_libur == true)
-            {
-                //diluar jam layanan
-                $message .= '<b>Hari Libur : '.$this->hari_libur[Carbon::now()->format("Ymd")]['deskripsi'].'</b>' .chr(10).chr(10);
-                $message .= '<b>Silakan tinggalkan pesan</b>' .chr(10);
-                $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
-                $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
-            }
-            else
-            {
-                //tidak libur
-                //hari kerja
-                if (Carbon::now()->format('H') > 7 and Carbon::now()->format('H') < 16 )
-                {
-                    //cek operator ada online ngga
-                    if (Carbon::now()->format('H') < 15)
-                    {
-                        $cek_admin = User::where([['status_online','1'],['aktif','1']])->count();
-                        if ($cek_admin > 0)
-                        {
-                            //operator ada online
-                            $message .= '<b>Operator Online</b>' .chr(10) .chr(10);
-                            $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
-                        }
-                        else
-                        {
-                            $message .= '<b>Belum ada Operator Online</b>' .chr(10).chr(10);
-                            $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
-                            $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
-                        }
-                    }
-                    else
-                    {
-                        //sudah jam 3 sore dan tutup
-                        $message .= '<b>DILUAR JAM LAYANAN</b>'.chr(10).chr(10);
-                        $message .= '<b>Silakan tinggalkan pesan</b>' .chr(10);
-                        $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
-                        $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
-                    }
-
-                }
-                else
-                {
-                    //diluar jam layanan
-                    $message .= '<b>DILUAR JAM LAYANAN</b>' .chr(10).chr(10);
-                    $message .= '<b>Silakan tinggalkan pesan</b>' .chr(10);
-                    $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
-                    $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
-                }
-            }
-        }
-        else
-        {
-            //hari sabtu dan minggu
-            $message .= '<b>DILUAR HARI dan JAM LAYANAN</b>' .chr(10).chr(10);
-            $message .= '<b>Silakan tinggalkan pesan</b>' .chr(10);
-            $message .= 'Pesan anda akan terbaca saat operator Online ' .chr(10) .chr(10);
-            $message .= '<i>Masukkan pertanyaan untuk operator</i> : ' .chr(10);
-
-        }
-
-        if ($reply)
-        {
-            //ReplyByAdmin
-            LogPengunjung::create([
-                'username' => $this->username,
-                'chatid' => $this->chat_id,
-                'command' => 'ReplyByAdmin',
-                'msg_id' => $this->message_id
-            ]);
-        }
-        else
-        {
-            LogPengunjung::create([
-                'username' => $this->username,
-                'chatid' => $this->chat_id,
-                'command' => __FUNCTION__,
-                'msg_id' => $this->message_id
-            ]);
-        }
-        $this->keyboard = json_encode($this->keyboard_konsul_kembali);
-        $this->KirimPesan($message,true,true);
-
-        if (!$hapus)
-        {
-            $this->HapusKeyboard($this->chat_id);
-        }
-
-    }
-    public function CariStatistik($hapus=false)
-    {
-        $message = "Masukkan <b>Kata Kunci</b> untuk <b>Pencarian Statistik</b> : ";
+        $message = "<i>Silakan masukkan Nama Lengkap Anda</i> :";
 
         LogPengunjung::create([
             'username' => $this->username,
@@ -1157,17 +568,22 @@ class TelegramController extends Controller
             'command' => __FUNCTION__,
             'msg_id' => $this->message_id
         ]);
-        $this->keyboard = json_encode($this->keyboard_cari_kembali);
-        $this->KirimPesan($message,true,true);
-        if ($hapus == false)
-        {
-            $this->HapusKeyboard($this->chat_id);
-        }
+        $reply_markup = Keyboard::make([
+            'keyboard' => $this->keyboard_profil,
+            'resize_keyboard' => true,
+            'one_time_keyboard' => true
+        ]);
+        $response = Telegram::sendMessage([
+            'chat_id' => $this->chat_id,
+            'text' => $message,
+            'parse_mode'=> 'HTML',
+            'reply_markup' => $reply_markup
+        ]);
+        $messageId = $response->getMessageId();
     }
-
-    public function CariLainnya($hapus=false)
+    public function EditEmail()
     {
-        $message = "Masukkan <b>Kata Kunci</b> untuk <b>Pencarian Lainnya</b> : ";
+        $message = "<i>Silakan masukkan alamat <b>email baru</b> anda : </i>";
 
         LogPengunjung::create([
             'username' => $this->username,
@@ -1175,14 +591,41 @@ class TelegramController extends Controller
             'command' => __FUNCTION__,
             'msg_id' => $this->message_id
         ]);
-        $this->keyboard = json_encode($this->keyboard_cari_kembali);
-        $this->KirimPesan($message,true,true);
-        if ($hapus == false)
-        {
-            $this->HapusKeyboard($this->chat_id);
-        }
+        $reply_markup = Keyboard::make([
+            'keyboard' => $this->keyboard_profil,
+            'resize_keyboard' => true,
+            'one_time_keyboard' => true
+        ]);
+        $response = Telegram::sendMessage([
+            'chat_id' => $this->chat_id,
+            'text' => $message,
+            'parse_mode'=> 'HTML',
+            'reply_markup' => $reply_markup
+        ]);
+        $messageId = $response->getMessageId();
     }
-
+    public function EditNoHp()
+    {
+        LogPengunjung::create([
+            'username' => $this->username,
+            'chatid' => $this->chat_id,
+            'command' => __FUNCTION__,
+            'msg_id' => $this->message_id
+        ]);
+        $message = "<i>Silakan masukkan <b>Nomor HP baru</b> anda</i> : ";
+        $reply_markup = Keyboard::make([
+            'keyboard' => $this->keyboard_profil,
+            'resize_keyboard' => true,
+            'one_time_keyboard' => true
+        ]);
+        $response = Telegram::sendMessage([
+            'chat_id' => $this->chat_id,
+            'text' => $message,
+            'parse_mode'=> 'HTML',
+            'reply_markup' => $reply_markup
+        ]);
+        $messageId = $response->getMessageId();
+    }
     public function TentangBot()
     {
         /*
@@ -1198,18 +641,33 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             'msg_id' => $this->message_id
         ]);
         $message ='';
-        $message = '<b>TENTANG BOT TeleDATA (Telegram Data BPSNTB)</b>' .chr(10) .chr(10);
-        $message .= 'Bot TeleData ini merupakan invoasi dari BPS Provinsi Nusa Tenggara Barat.' .chr(10);
-        $message .= 'Aplikasi ini dibuat untuk memudahkan pengguna data dalam melakukan pencarian data yang ada di website BPS Prov. NTB melalui Telegram.' .chr(10);
-        $message .= 'Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB' .chr(10);
-        //$this->KirimPesan($message,true);
-        $this->keyboard = json_encode($this->keyboard_tentang_kembali);
-        //KirimPhoto($url,false,true);
-        $this->KirimPhoto('kirimphoto',false,true);
-        $this->HapusKeyboard($this->chat_id);
-        //$this->showMenu();
+        $message = '✅ <b>TENTANG BOT TeleDATA (Telegram Data BPSNTB)</b>' .chr(10);
+        $message .= '✅ Bot Telegram versi 2.' .chr(10);
+        $message .= '✅ Dibuat oleh blimika' .chr(10);
+
+        $photo = asset('img/tentangbot.jpg');
+        $filename = 'tentang.jpg';
+        $reply_markup = Keyboard::make([
+            'keyboard' => $this->keyboard_level1,
+            'resize_keyboard' => true,
+            'one_time_keyboard' => true
+        ]);
+        $respon = Telegram::sendPhoto([
+            'chat_id' => $this->chat_id,
+            'photo' => InputFile::create($photo, $filename),
+            'caption' => 'Tentang TeleData BPS Prov. NTB',
+            'reply_markup' => $reply_markup
+        ]);
+        $messageId = $respon->getMessageId();
+        $response = Telegram::sendMessage([
+            'chat_id' => $this->chat_id,
+            'text' => $message,
+            'parse_mode'=> 'HTML',
+            'reply_markup' => $reply_markup
+        ]);
+        $messageId = $response->getMessageId();
     }
-    public function LogDataPencarian($hapus=false)
+    public function MenuUbahLangganan()
     {
         LogPengunjung::create([
             'username' => $this->username,
@@ -1217,59 +675,178 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             'command' => __FUNCTION__,
             'msg_id' => $this->message_id
         ]);
-        $cek = LogCari::count();
-        if ($cek > 0)
+        $message = "<i>Silakan pilih menu dibawah</i> : ";
+        $reply_markup = Keyboard::make([
+            'keyboard' => $this->keyboard_langganan,
+            'resize_keyboard' => true,
+            'one_time_keyboard' => true
+        ]);
+        $response = Telegram::sendMessage([
+            'chat_id' => $this->chat_id,
+            'text' => $message,
+            'parse_mode'=> 'HTML',
+            'reply_markup' => $reply_markup
+        ]);
+        $messageId = $response->getMessageId();
+    }
+    public function MenerimaInfo()
+    {
+        LogPengunjung::create([
+            'username' => $this->username,
+            'chatid' => $this->chat_id,
+            'command' => __FUNCTION__,
+            'msg_id' => $this->message_id
+        ]);
+        $count = DataPengunjung::where('chatid','=',$this->chat_id)->count();
+        if ($count > 0)
         {
-            $data = LogCari::orderBy('created_at','desc')->take(30)->get();
-            $message = 'Data 30 Keyword Pencarian terakhir di TeleData' .chr(10);
-            $i=1;
-            foreach ($data as $item) {
-                $message .= $i.'. Nama: <b>'.$item->username .'</b> | Keyword: ('.$item->command.') <b>'. $item->keyword .'</b> | tanggal: '. Carbon::parse($item->created_at)->format('d M Y H:i') .chr(10);
-                $i++;
-            }
-            if (strlen($message) > 4096)
+            $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
+            $data->flag_berita = 1;
+            $data->update();
+            $message = '🖥 Status Langganan Informasi Terkini diubah ke <b>MENERIMA</b>'.chr(10);
+            $message .= '-------------------------------------------------------'.chr(10);
+            $message .= '🟢 Anda akan menerima Informasi Terkini dari BPS Provinsi NTB'.chr(10);
+            $message .= '🟢 harap tetap membuka chat bot ini'.chr(10);
+        }
+        else
+        {
+            $message = '🔴 ERROR. silakan ulangi lagi'.chr(10);
+        }
+        $response = Telegram::sendMessage([
+            'chat_id' => $this->chat_id,
+            'text' => $message,
+            'parse_mode'=> 'HTML'
+        ]);
+        $messageId = $response->getMessageId();
+        $this->MenuProfil();
+    }
+    public function TidakMenerimaInfo()
+    {
+        LogPengunjung::create([
+            'username' => $this->username,
+            'chatid' => $this->chat_id,
+            'command' => __FUNCTION__,
+            'msg_id' => $this->message_id
+        ]);
+        $count = DataPengunjung::where('chatid','=',$this->chat_id)->count();
+        if ($count > 0)
+        {
+            $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
+            $data->flag_berita = 0;
+            $data->update();
+            $message = '🖥 Status Langganan Informasi Terkini diubah ke <b>TIDAK MENERIMA</b>'.chr(10);
+            $message .= '-------------------------------------------------------'.chr(10);
+            $message .= '🔴 Anda <b>tidak</b> akan menerima Informasi Terkini dari BPS Provinsi NTB'.chr(10);
+        }
+        else
+        {
+            $message = '🔴 ERROR. silakan ulangi lagi'.chr(10);
+        }
+        $response = Telegram::sendMessage([
+            'chat_id' => $this->chat_id,
+            'text' => $message,
+            'parse_mode'=> 'HTML'
+        ]);
+        $messageId = $response->getMessageId();
+        $this->MenuProfil();
+    }
+    public function MenuKonsultasi()
+    {
+        $message = '🔰 <b>LAYANAN KONSULTASI ONLINE</b> 🔰' .chr(10);
+        $message .= '------------------------------------------' .chr(10);
+        $message .= '🟢 Hari Layanan :  <b>Senin - Jumat (Kecuali hari libur)</b>' .chr(10);
+        $message .= '🟢 Jam Layanan : <b>08.00 - 15.00 WITA</b>' .chr(10);
+        $message .= '------------------------------------------' .chr(10);
+
+        //$this->KirimPesan($message,true);
+        //cek dulu hari apa
+        if (Carbon::now()->format('w') > 0 and Carbon::now()->format('w') < 6)
+        {
+            //hari kerja
+            //cek jam
+            //cek dulu hari libur apa ngga
+            $cek_libur = isset($this->hari_libur[Carbon::now()->format("Ymd")])?true:false;
+            if ($cek_libur == true)
             {
-                $message .= 'Pesan terlalu panjang' .chr(10);
+                //diluar jam layanan
+                $message .= '🚫 <b>Hari Libur : '.$this->hari_libur[Carbon::now()->format("Ymd")]['deskripsi'].'</b>' .chr(10);
+                $message .= '------------------------------------------' .chr(10);
+                $message .= '🔅 <b>Silakan tinggalkan pesan</b>'.chr(10);
+                $message .= '🔅 Pesan anda akan terbaca saat operator Online' .chr(10);
+            }
+            else
+            {
+                //tidak libur
+                //hari kerja
+                if (Carbon::now()->format('H') > 7 and Carbon::now()->format('H') < 16 )
+                {
+                    //cek operator ada online ngga
+                    if (Carbon::now()->format('H') < 15)
+                    {
+                        $cek_admin = User::where([['status_online','1'],['aktif','1']])->count();
+                        if ($cek_admin > 0)
+                        {
+                            //operator ada online
+                            $message .= '🟢🟢 <b>OPERATOR ONLINE</b> 🟢🟢' .chr(10);
+                            $message .= '------------------------------------------' .chr(10);
+                        }
+                        else
+                        {
+                            $message .= '🔴🔴 <b>BELUM ADA OPERATOR ONLINE</b> 🔴🔴' .chr(10);
+                            $message .= '------------------------------------------' .chr(10);
+                            $message .= '🔅 Pesan anda akan terbaca saat operator Online ' .chr(10);
+                        }
+                    }
+                    else
+                    {
+                        //sudah jam 3 sore dan tutup
+                        $message .= '🚫 <b>DILUAR JAM LAYANAN</b> 🚫'.chr(10);
+                        $message .= '------------------------------------------' .chr(10);
+                        $message .= '🔅 <b>Silakan tinggalkan pesan</b>' .chr(10);
+                        $message .= '🔅 Pesan anda akan terbaca saat operator Online '.chr(10);
+                    }
+
+                }
+                else
+                {
+                    //diluar jam layanan
+                    $message .= '🚫 <b>DILUAR JAM LAYANAN</b> 🚫' .chr(10);
+                    $message .= '------------------------------------------' .chr(10);
+                    $message .= '🔅 <b>Silakan tinggalkan pesan</b>' .chr(10);
+                    $message .= '🔅 Pesan anda akan terbaca saat operator Online '.chr(10);
+                }
             }
         }
         else
         {
-            $message = 'Data Log Pencarian masih kosong' .chr(10);
-        }
+            //hari sabtu dan minggu
+            $message .= '🚫 <b>DILUAR HARI dan JAM LAYANAN</b> 🚫' .chr(10);
+            $message .= '🔅 <b>Silakan tinggalkan pesan</b>' .chr(10);
+            $message .= '🔅 Pesan anda akan terbaca saat operator Online'.chr(10);
 
-        $this->keyboard = json_encode($this->keyboard_admin);
-        $this->KirimPesan($message,true,true);
-       //$this->MenuAdmin();
-       if (!$hapus)
-       {
-           $this->HapusKeyboard($this->chat_id);
-       }
-    }
-    public function LogDataPengunjung()
-    {
+        }
+        $message .= '------------------------------------------' .chr(10);
+        $message .= '❓ <i>Masukkan pertanyaan untuk operator</i> :' .chr(10);
+        $reply_markup = Keyboard::make([
+            'keyboard' => $this->keyboard_konsultasi,
+            'resize_keyboard' => true,
+            'one_time_keyboard' => true
+        ]);
+        $response = Telegram::sendMessage([
+            'chat_id' => $this->chat_id,
+            'text' => $message,
+            'parse_mode'=> 'HTML',
+            'reply_markup' => $reply_markup
+        ]);
+        $messageId = $response->getMessageId();
         LogPengunjung::create([
             'username' => $this->username,
             'chatid' => $this->chat_id,
             'command' => __FUNCTION__,
-            'msg_id' => $this->message_id
+            'msg_id' => $messageId
         ]);
-        $data = DataPengunjung::orderBY('created_at','desc')->take(30)->get();
-        $message = 'Data 30 Pengunjung TeleData terakhir' .chr(10);
-        $i=1;
-        foreach ($data as $item) {
-            $message .= $i.'. Nama: <b>'.$item->nama .'</b> | Email: <b>'. $item->email .'</b> | No HP: <b>'.$item->nohp.'</b> | chat_id: <b>'.$item->chatid.'</b> | username: <b>'.$item->username.'</b> | Daftar: <b>'. Carbon::parse($item->created_at)->format('d M Y H:i') .'</b>' .chr(10) .chr(10);
-            $i++;
-            if ($i==11 or $i==21)
-            {
-                $this->KirimPesan($message,true);
-                $message = '';
-            }
-        }
-        $this->keyboard = json_encode($this->keyboard_admin);
-        $this->KirimPesan($message,true,true);
-       //$this->MenuAdmin();
     }
-    public function UpdateIdTele()
+    public function AdminSinkronisasi()
     {
         LogPengunjung::create([
             'username' => $this->username,
@@ -1285,17 +862,99 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             $data->chatid_tg = $this->chat_id;
             $data->update();
 
-            $message ='Data ID Telegram admin <b>'.$this->username.'</b> sudah di update'.chr(10);
+            $message ='✅ Data admin <b>'.$this->username.'</b> sudah disinkron'.chr(10);
         }
         else
         {
             //bukan admin
-            $message ='Anda bukan admin sistem'.chr(10);
+            $message ='❌ Anda bukan admin sistem'.chr(10);
         }
-        $this->KirimPesan($message,true);
-        $this->MenuAdmin();
+        $response = Telegram::sendMessage([
+            'chat_id' => $this->chat_id,
+            'text' => $message,
+            'parse_mode'=> 'HTML'
+        ]);
+        $messageId = $response->getMessageId();
+        $this->AwalStart();
+        //$this->MenuAdmin();
     }
-    public function FlagKonsultasi()
+    public function MenuAdmin()
+    {
+        LogPengunjung::create([
+            'username' => $this->username,
+            'chatid' => $this->chat_id,
+            'command' => __FUNCTION__,
+            'msg_id' => $this->message_id
+        ]);
+        $cek_dulu = User::where('chatid_tg','=',$this->chat_id)->count();
+        if ($cek_dulu > 0)
+        {
+            $data_admin = User::where('chatid_tg','=',$this->chat_id)->first();
+            if ($data_admin->status_online == 1)
+            {
+                $flag_statusonline = '🟢 ONLINE';
+            }
+            else
+            {
+                $flag_statusonline = '🔴 OFFLINE';
+            }
+            if ($data_admin->aktif == 1)
+            {
+                $flag_aktif = '🟢 AKTIF';
+            }
+            else
+            {
+                $flag_aktif = '🔴 NONAKTIF';
+            }
+            if ($data_admin->lastip != '')
+            {
+                $lastlogin = $data_admin->lastip .' ('. Carbon::parse($data_admin->lastlogin)->format('d M Y H:i') .')';
+            }
+            else
+            {
+                $lastlogin ='';
+            }
+            $message = '⚙️<b>Menu Admin TeleData</b>' .chr(10);
+            $message .= '--------------------------------------------' .chr(10);
+            $message .= '🌀 Nama : <b>'.$data_admin->nama.'</b>' .chr(10);
+            $message .= '🌀 Username (Web) : <b>'.$data_admin->username.'</b>' .chr(10);
+            $message .= '🌀 Username (TG) : <b>'.$data_admin->user_tg.'</b>' .chr(10);
+            $message .= '🌀 Chat ID (TG) : <b>'.$data_admin->chatid_tg.'</b>' .chr(10);
+            $message .= '--------------------------------------------' .chr(10);
+            $message .= '🌀 Email : <b>'.$data_admin->email.'</b>' .chr(10);
+            $message .= '🌀 Lastlogin : <b>'.$lastlogin.'</b>' .chr(10);
+            $message .= '--------------------------------------------' .chr(10);
+            $message .= '🌀 Status Akun : <b>'.$flag_aktif.'</b>' .chr(10);
+            $message .= '🌀 Status Online : <b>'.$flag_statusonline.'</b>' .chr(10);
+
+            $reply_markup = Keyboard::make([
+                'keyboard' => $this->keyboard_menuadmin,
+                'resize_keyboard' => true,
+                'one_time_keyboard' => true
+            ]);
+            $response = Telegram::sendMessage([
+                'chat_id' => $this->chat_id,
+                'text' => $message,
+                'parse_mode'=> 'HTML',
+                'reply_markup' => $reply_markup
+            ]);
+            $messageId = $response->getMessageId();
+        }
+        else
+        {
+            //bukan admin
+            $message ='❌ Anda bukan admin sistem'.chr(10);
+            $response = Telegram::sendMessage([
+                'chat_id' => $this->chat_id,
+                'text' => $message,
+                'parse_mode'=> 'HTML'
+            ]);
+            $messageId = $response->getMessageId();
+            $this->AwalStart();
+        }
+
+    }
+    public function UbahStatusOnline()
     {
         LogPengunjung::create([
             'username' => $this->username,
@@ -1310,166 +969,97 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             if ($data_admin->status_online == 1)
             {
                 $flag_konsultasi = 0;
+                $flag_statusonline = '🔴 OFFLINE';
             }
             else
             {
                 $flag_konsultasi = 1;
+                $flag_statusonline = '🟢 ONLINE';
             }
             $data_admin->status_online = $flag_konsultasi;
             $data_admin->update();
-            $message = 'Status Online berhasil diubah' .chr(10) .chr(10);
-            $this->KirimPesan($message,true);
-            $this->MenuAdmin();
+            $message = '🌀 Status Online berhasil diubah ke '.$flag_statusonline .chr(10);
 
+            $response = Telegram::sendMessage([
+                'chat_id' => $this->chat_id,
+                'text' => $message,
+                'parse_mode'=> 'HTML',
+            ]);
+            $messageId = $response->getMessageId();
+            $this->MenuAdmin();
         }
         else
         {
-           //bukan admin
-           $message ='Anda bukan admin sistem'.chr(10);
-           $this->KirimPesan($message,true);
-           $this->MenuAwal();
+          //bukan admin
+          $message ='❌ Anda bukan admin sistem'.chr(10);
+          $response = Telegram::sendMessage([
+              'chat_id' => $this->chat_id,
+              'text' => $message,
+              'parse_mode'=> 'HTML'
+          ]);
+          $messageId = $response->getMessageId();
+          $this->AwalStart();
         }
     }
-
-    public function ListOperator($hapus=false)
+    public function MenuFeedback()
     {
+        //cek dulu feedbacknya
         LogPengunjung::create([
             'username' => $this->username,
             'chatid' => $this->chat_id,
             'command' => __FUNCTION__,
             'msg_id' => $this->message_id
         ]);
-        $cek_dulu = User::where('chatid_tg','=',$this->chat_id)->count();
-        if ($cek_dulu > 0)
+        $message = '🏆 Feedback Bapak/Ibu terhadap <b>TeleDATA</b>'.chr(10);
+        $cek_fb = LogFeedback::where('chatid',$this->chat_id)->count();
+        if ($cek_fb > 0)
         {
-            $data = User::orderBY('created_at','desc')->take(30)->get();
-            $message = 'Data 30 Operator TeleData terakhir' .chr(10);
-            $i=1;
-            foreach ($data as $item) {
-                if ($item->lastip != '')
-                {
-                    $lastlogin = $item->lastip .' ('. Carbon::parse($item->lastlogin)->format('d M Y H:i') .')';
-                }
-                else
-                {
-                    $lastlogin ='';
-                }
-                $message .= $i.'. Nama: <b>'.$item->nama .'</b> | Email: <b>'. $item->email .'</b> | user_tg: <b>'.$item->user_tg.'</b> | chat_id: <b>'.$item->chatid_tg.'</b> | username: <b>'.$item->username.'</b> | status_online: '.$item->status_online.' | lastlogin: <b>'. $lastlogin .'</b>' .chr(10) .chr(10);
-                $i++;
-                if ($i==10 or $i==20)
-                {
-                    $this->KirimPesan($message,true);
-                    $message = '';
-                }
+            //sudah ada ngisi
+            $data = LogFeedback::where('chatid',$this->chat_id)->first();
+            if ($data->nilai_feedback == '5')
+            {
+                $nilai = '⭐️⭐️⭐️⭐️⭐️';
             }
-            $this->keyboard = json_encode($this->keyboard_admin);
-            $this->KirimPesan($message,true,true);
-
+            elseif ($data->nilai_feedback == '4')
+            {
+                $nilai = '⭐️⭐️⭐️⭐️';
+            }
+            elseif ($data->nilai_feedback == '3')
+            {
+                $nilai = '⭐️⭐️⭐️';
+            }
+            elseif ($data->nilai_feedback == '2')
+            {
+                $nilai = '⭐️⭐️';
+            }
+            else
+            {
+                $nilai = '⭐️';
+            }
+            $message .= '-----------------------------------'.chr(10);
+            $message .= '🟢 <b>Nilai</b> : '. $nilai .chr(10);
+            $message .= '-----------------------------------'.chr(10);
+            $message .= '🔋 <b>Komentar</b> : <i>'.$data->isi_feedback.'</i>' .chr(10);
+            $message .= '-----------------------------------'.chr(10);
+            $message .= '🕰 <b>Tanggal</b> : '.\Carbon\Carbon::parse($data->updated_at)->format('j F Y H:i:s') .chr(10);
         }
         else
         {
-           //bukan admin
-           $message ='Anda bukan admin sistem'.chr(10);
-           $this->KirimPesan($message,true);
-           $this->MenuAwal();
-           if (!$hapus)
-           {
-               $this->HapusKeyboard($this->chat_id);
-           }
-        }
-    }
-    public function GantiPasswd()
-    {
-        $cek_dulu = User::where('chatid_tg','=',$this->chat_id)->count();
-        if ($cek_dulu > 0)
-        {
 
-            $message = 'Masih dalam pengembangan' .chr(10);
-
-            //$this->keyboard = json_encode($this->keyboard_admin);
-            $this->KirimPesan($message,true);
-            $this->MenuAdmin();
+            $message .= '<i>Belum ada feedback dari Bapak/Ibu</i>' .chr(10);
         }
-        else
-        {
-           //bukan admin
-           $message ='Anda bukan admin sistem'.chr(10);
-           $this->KirimPesan($message,true);
-           $this->MenuAwal();
-        }
-    }
-    public function MenuAdmin($hapus=false)
-    {
-        LogPengunjung::create([
-            'username' => $this->username,
-            'chatid' => $this->chat_id,
-            'command' => __FUNCTION__,
-            'msg_id' => $this->message_id
+        $reply_markup = Keyboard::make([
+            'keyboard' => $this->keyboard_menufeedback,
+            'resize_keyboard' => true,
+            'one_time_keyboard' => true
         ]);
-        $cek_dulu = User::where('chatid_tg','=',$this->chat_id)->count();
-        if ($cek_dulu > 0)
-        {
-            $data_admin = User::where('chatid_tg','=',$this->chat_id)->first();
-            if ($data_admin->status_online == 1)
-            {
-                $flag_statusonline = 'ONLINE';
-            }
-            else
-            {
-                $flag_statusonline = 'OFFLINE';
-            }
-            if ($data_admin->aktif == 1)
-            {
-                $flag_aktif = 'AKTIF';
-            }
-            else
-            {
-                $flag_aktif = 'NONAKTIF';
-            }
-            if ($data_admin->lastip != '')
-            {
-                $lastlogin = $data_admin->lastip .' ('. Carbon::parse($data_admin->lastlogin)->format('d M Y H:i') .')';
-            }
-            else
-            {
-                $lastlogin ='';
-            }
-            $message = '<b>Menu Admin TeleData</b>' .chr(10) .chr(10);
-            $message .= 'Nama : <b>'.$data_admin->nama.'</b>' .chr(10);
-            $message .= 'Username (Web) : <b>'.$data_admin->username.'</b>' .chr(10);
-            $message .= 'Username (TG) : <b>'.$data_admin->user_tg.'</b>' .chr(10);
-            $message .= 'chatid (TG) : <b>'.$data_admin->chatid_tg.'</b>' .chr(10);
-            $message .= 'Email : <b>'.$data_admin->email.'</b>' .chr(10);
-            $message .= 'Lastlogin : <b>'.$lastlogin.'</b>' .chr(10);
-            $message .= 'Status Akun : <b>'.$flag_aktif.'</b>' .chr(10);
-            $message .= 'Status Online : <b>'.$flag_statusonline.'</b>' .chr(10);
-            if ($data_admin->status_online == 1)
-            {
-                $flag_konsultasi = 'Flag Konsultasi ONLINE';
-            }
-            else
-            {
-                $flag_konsultasi = 'Flag Konsultasi OFFLINE';
-            }
-
-            $this->keyboard = json_encode($this->keyboard_admin);
-            $this->KirimPesan($message,true,true);
-            if (!$hapus)
-            {
-                $this->HapusKeyboard($this->chat_id);
-            }
-        }
-        else
-        {
-            //bukan admin
-            $message ='Anda bukan admin sistem'.chr(10);
-            $this->KirimPesan($message,true);
-            if (!$hapus)
-            {
-                $this->HapusKeyboard($this->chat_id);
-            }
-            $this->MenuAwal();
-        }
+        $response = Telegram::sendMessage([
+            'chat_id' => $this->chat_id,
+            'text' => $message,
+            'parse_mode'=> 'HTML',
+            'reply_markup' => $reply_markup
+        ]);
+        $messageId = $response->getMessageId();
     }
     public function CheckInputan()
     {
@@ -1513,11 +1103,11 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                 }
                 elseif ($tg->command == 'EditNama') {
                     $pesan_error = [
-                        'required' => ':attribute wajib terisi!!!',
-                        'string'=> ':attribute harus berupa karakter',
-                        'regex'=> ':attribute harus berupa karakter',
-                        'min' => ':attribute harus diisi minimal :min karakter!!!',
-                        'max' => ':attribute harus diisi maksimal :max karakter!!!',
+                        'required' => '⚠️ :attribute wajib terisi!!!',
+                        'string'=> '⚠️ :attribute harus berupa karakter',
+                        'regex'=> '⚠️ :attribute harus berupa karakter',
+                        'min' => '⚠️ :attribute harus diisi minimal :min karakter!!!',
+                        'max' => '⚠️ :attribute harus diisi maksimal :max karakter!!!',
                     ];
                     $validator = Validator::make(['Nama' => $this->text],
                             ['Nama' => 'string|min:3|max:50|regex:/^([a-zA-Z]+\s)*[a-zA-Z]+$/'],$pesan_error
@@ -1525,13 +1115,24 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                     if ($validator->fails()) {
                         // your code
                         $message = $validator->errors()->first() .chr(10);
-                        $this->KirimPesan($message,true);
+                        $reply_markup = Keyboard::make([
+                            'keyboard' => $this->keyboard_profil,
+                            'resize_keyboard' => true,
+                            'one_time_keyboard' => true
+                        ]);
+                        $response = Telegram::sendMessage([
+                            'chat_id' => $this->chat_id,
+                            'text' => $message,
+                            'parse_mode'=> 'HTML',
+                            'reply_markup' => $reply_markup
+                        ]);
+                        $messageId = $response->getMessageId();
                         $this->EditNama();
                     }
                     else
                     {
                         $message ='';
-                        $message .='Nama <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
+                        $message .='🆗 Nama <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
                         $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
                         $data->nama = $this->text;
                         $data->update();
@@ -1539,8 +1140,18 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         $tg->command = 'showMenu';
                         $tg->update();
 
-                        $this->KirimPesan($message,true);
-                        $this->MyProfil();
+                        $reply_markup = Keyboard::make([
+                            'keyboard' => $this->keyboard_profil,
+                            'resize_keyboard' => true,
+                            'one_time_keyboard' => true
+                        ]);
+                        $response = Telegram::sendMessage([
+                            'chat_id' => $this->chat_id,
+                            'text' => $message,
+                            'parse_mode'=> 'HTML',
+                            'reply_markup' => $reply_markup
+                        ]);
+                        $this->MenuProfil();
                     }
                 }
                 elseif ($tg->command == 'InputEmail')
@@ -1580,11 +1191,11 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                 elseif ($tg->command == 'EditEmail')
                 {
                     $pesan_error = [
-                        'required' => ':attribute wajib terisi!!!',
-                        'email'=> ':attribute harus alamat lengkap',
-                        'regex'=> ':attribute harus berupa alamat yang valid',
-                        'min' => ':attribute harus diisi minimal :min karakter!!!',
-                        'max' => ':attribute harus diisi maksimal :max karakter!!!',
+                        'required' => '⚠️ :attribute wajib terisi!!!',
+                        'email'=> '⚠️ :attribute harus alamat lengkap',
+                        'regex'=> '⚠️ :attribute harus berupa alamat yang valid',
+                        'min' => '⚠️ :attribute harus diisi minimal :min karakter!!!',
+                        'max' => '⚠️ :attribute harus diisi maksimal :max karakter!!!',
                     ];
                     $validator = Validator::make(['Email' => $this->text],
                             ['Email' => 'required|email|regex:/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/'],$pesan_error
@@ -1592,32 +1203,52 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                     if ($validator->fails()) {
                         // your code
                         $message = $validator->errors()->first() .chr(10);
-                        $this->KirimPesan($message,true);
+                        $reply_markup = Keyboard::make([
+                            'keyboard' => $this->keyboard_profil,
+                            'resize_keyboard' => true,
+                            'one_time_keyboard' => true
+                        ]);
+                        $response = Telegram::sendMessage([
+                            'chat_id' => $this->chat_id,
+                            'text' => $message,
+                            'parse_mode'=> 'HTML',
+                            'reply_markup' => $reply_markup
+                        ]);
+                        $messageId = $response->getMessageId();
                         $this->EditEmail();
                     }
                     else
                     {
                         $message ='';
-                        $message .='Email <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
+                        $message .='✅ Email <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
                         $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
                         $data->email = $this->text;
                         $data->update();
 
                         $tg->command = 'showMenu';
                         $tg->update();
-
-                        $this->KirimPesan($message,true);
-                        $this->MyProfil();
+                        $reply_markup = Keyboard::make([
+                            'keyboard' => $this->keyboard_profil,
+                            'resize_keyboard' => true,
+                            'one_time_keyboard' => true
+                        ]);
+                        $response = Telegram::sendMessage([
+                            'chat_id' => $this->chat_id,
+                            'text' => $message,
+                            'parse_mode'=> 'HTML',
+                            'reply_markup' => $reply_markup
+                        ]);
+                        $this->MenuProfil();
                     }
 
                 }
                 elseif ($tg->command == 'EditNoHp')
                 {
                     $pesan_error = [
-                        'required' => ':attribute wajib terisi!!!',
-                        'regex'=> ':attribute harus berupa angka',
-                        'min' => ':attribute harus diisi minimal :min angka!!!',
-                        'max' => ':attribute harus diisi maksimal :max angka!!!',
+                        'required' => '⚠️ :attribute wajib terisi!!!',
+                        'regex'=> '⚠️ :attribute harus berupa angka',
+                        'min' => '⚠️ :attribute harus diisi minimal :min angka!!!',
+                        'max' => '⚠️ :attribute harus diisi maksimal :max angka!!!',
                     ];
                     $validator = Validator::make(['Nohp' => $this->text],
                             ['Nohp' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:13'],$pesan_error
@@ -1625,13 +1256,24 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                     if ($validator->fails()) {
                         // your code
                         $message = $validator->errors()->first() .chr(10);
-                        $this->KirimPesan($message,true);
+                        $reply_markup = Keyboard::make([
+                            'keyboard' => $this->keyboard_profil,
+                            'resize_keyboard' => true,
+                            'one_time_keyboard' => true
+                        ]);
+                        $response = Telegram::sendMessage([
+                            'chat_id' => $this->chat_id,
+                            'text' => $message,
+                            'parse_mode'=> 'HTML',
+                            'reply_markup' => $reply_markup
+                        ]);
+                        $messageId = $response->getMessageId();
                         $this->EditNoHp();
                     }
                     else
                     {
                         $message ='';
-                        $message .='Nomor HP <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
+                        $message .='✅ Nomor HP <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
                         $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
                         $data->nohp = $this->text;
                         $data->update();
@@ -1639,8 +1281,18 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         $tg->command = 'showMenu';
                         $tg->update();
 
-                        $this->KirimPesan($message,true);
-                        $this->MyProfil();
+                        $reply_markup = Keyboard::make([
+                            'keyboard' => $this->keyboard_profil,
+                            'resize_keyboard' => true,
+                            'one_time_keyboard' => true
+                        ]);
+                        $response = Telegram::sendMessage([
+                            'chat_id' => $this->chat_id,
+                            'text' => $message,
+                            'parse_mode'=> 'HTML',
+                            'reply_markup' => $reply_markup
+                        ]);
+                        $this->MenuProfil();
                     }
                 }
                 elseif ($tg->command == 'InputHP')
@@ -1694,52 +1346,74 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         {
                             //ada lebih 1 pages
                             $total_tabel = $response['data'][0]['pages'];
-                            if ($total_tabel > 3)
+
+                            if ($total_tabel > 10)
                             {
-                                $total_tabel = 3;
+                                $total_tabel = 10;
                             }
-                            $message ='Hasil Pencarian Publikasi dengan kata kunci <b>'.$this->text.'</b> :  ' . chr(10) .chr(10);
                             for ($i = 1; $i <= $total_tabel; $i++)
                             {
+                                $message =''; //kosongin message;
+                                $message ='📚 Hasil Pencarian Publikasi 📚' . chr(10);
+                                $message .='🔐 Kata kunci : <b>'.$this->text.'</b>' . chr(10);
+                                $message .= '📘 Halaman : '. $i .chr(10);
+                                $message .='--------------------------------------------'.chr(10);
                                 $respon = $h->caripublikasi($keyword,$i);
                                 foreach ($respon['data'][1] as $item)
                                 {
-                                    $message .= 'Judul Publikasi : <b>'.$item['title'].'</b>' .chr(10);
-                                    $message .= 'Rilis : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> | <a href="'.$item['pdf'].'">Download PDF</a> ('.$item['size'].')' .chr(10) .chr(10);
+                                    $message .= '🟢 Judul : <b>'.$item['title'].'</b>' .chr(10);
+                                    $message .= '🟢 Rilis : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> 🔹 <a href="'.$item['pdf'].'">Download PDF</a> ('.$item['size'].')'.chr(10);
+                                    $message .='--------------------------------------------'.chr(10);
                                 }
+                                $response = Telegram::sendMessage([
+                                    'chat_id' => $this->chat_id,
+                                    'text' => $message,
+                                    'parse_mode'=> 'HTML',
+                                    'disable_web_page_preview'=> true,
+                                ]);
+                                $messageId = $response->getMessageId();
 
                             }
-                            $this->keyboard = json_encode($this->keyboard_cari_kembali);
-                            $this->KirimPesan($message,true);
                         }
                         else
                         {
                             $message ='';
-                            $message ='Hasil Pencarian Publikasi dengan kata kunci <b>'.$this->text.'</b> :  ' . chr(10) .chr(10);
+                            $message ='📚 Hasil Pencarian Publikasi 📚' . chr(10);
+                            $message .='🔐 Kata kunci : <b>'.$this->text.'</b>' . chr(10);
+                            $message .='--------------------------------------------'.chr(10);
 
                             foreach ($response['data'][1] as $item)
                             {
-
-                                $message .= 'Judul Publikasi : <b>'.$item['title'].'</b>' .chr(10);
-                                $message .= 'Rilis : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> | <a href="'.$item['pdf'].'">Download PDF</a> ('.$item['size'].')' .chr(10) .chr(10);
+                                $message .= '🟢 Judul: <b>'.$item['title'].'</b>' .chr(10);
+                                $message .= '🟢 Rilis: <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> 🔹 <a href="'.$item['pdf'].'">Download PDF</a> ('.$item['size'].')'.chr(10);
+                                $message .='--------------------------------------------'.chr(10);
                             }
-                            $this->keyboard = json_encode($this->keyboard_cari_kembali);
-                            $this->KirimPesan($message,true);
+                            $response = Telegram::sendMessage([
+                                'chat_id' => $this->chat_id,
+                                'text' => $message,
+                                'parse_mode'=> 'HTML',
+                                'disable_web_page_preview'=> true,
+                            ]);
+                            $messageId = $response->getMessageId();
                         }
 
                     }
                     else
                     {
-                        $message ='Publikasi yang anda cari tidak tersedia' .chr(10);
-                        $message .= 'Ulangi pencarian publikasi' .chr(10);
-                        $this->keyboard = json_encode($this->keyboard_cari_kembali);
-                        //$this->KirimPesan($message,true,true);
-                        $this->KirimPesan($message,true);
+                        $message ='📚 Publikasi yang anda cari tidak tersedia' .chr(10);
+                        $message .= '<i>Ulangi pencarian publikasi</i>' .chr(10);
+                        $response = Telegram::sendMessage([
+                            'chat_id' => $this->chat_id,
+                            'text' => $message,
+                            'parse_mode'=> 'HTML',
+                            'disable_web_page_preview'=> true,
+                        ]);
+                        $messageId = $response->getMessageId();
                     }
 
                     //$tg->command = 'showMenu';
                     //$tg->update();
-                    $this->CariPublikasi(true);
+                    $this->CariPublikasi();
 
                 }
                 elseif ($tg->command == 'CariStatistik')
@@ -1762,49 +1436,70 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         {
                             //ada lebih 1 pages
                             $total_tabel = $response['data'][0]['pages'];
-                            if ($total_tabel > 3)
+                            if ($total_tabel > 10)
                             {
-                                $total_tabel = 3;
+                                $total_tabel = 10;
                             }
-                            $message ='';
-                            $message ='Hasil Pencarian <b>Tabel Statistik</b> : ' . chr(10) .chr(10);
+
                             for ($i = 1; $i <= $total_tabel; $i++)
                             {
+                                $message ='';
+                                $message ='📊 Hasil Pencarian <b>Tabel Statistik</b> : ' . chr(10);
+                                $message .='🔐 Kata kunci : <b>'.$this->text.'</b>' . chr(10);
+                                $message .= '📘 Halaman : '. $i .chr(10);
+                                $message .='--------------------------------------------'.chr(10);
                                 $respon = $h->caristatistik($keyword,$i);
                                 foreach ($respon['data'][1] as $item)
                                 {
-                                    $message .= 'Judul Tabel : <b>'.$item['title'].'</b>' .chr(10);
-                                    $message .= 'Update : <b>'.\Carbon\Carbon::parse($item['updt_date'])->format('d M Y').'</b> | <a href="'.$item['excel'].'">Download Tabel</a> ('.$item['size'].')' .chr(10) .chr(10);
+                                    $message .= '🔵 Judul Tabel : <b>'.$item['title'].'</b>' .chr(10);
+                                    $message .= '🔵 Update : <b>'.\Carbon\Carbon::parse($item['updt_date'])->format('d M Y').'</b> 🔸 <a href="'.$item['excel'].'">Download Tabel</a> ('.$item['size'].')' .chr(10);
+                                    $message .='--------------------------------------------'.chr(10);
                                 }
-
+                                $respon = Telegram::sendMessage([
+                                    'chat_id' => $this->chat_id,
+                                    'text' => $message,
+                                    'parse_mode'=> 'HTML',
+                                    'disable_web_page_preview'=> true,
+                                ]);
+                                $messageId = $respon->getMessageId();
                             }
-                            $this->keyboard = json_encode($this->keyboard_cari_kembali);
-                            $this->KirimPesan($message,true);
+
                         }
                         else
                         {
-                            $message ='Hasil Pencarian <b>Tabel Statistik</b> : ' . chr(10) .chr(10);
+                            $message ='📊 Hasil Pencarian <b>Tabel Statistik</b> : ' . chr(10);
 
                             foreach ($response['data'][1] as $item)
                             {
 
-                                $message .= 'Judul Tabel : <b>'.$item['title'].'</b>' .chr(10);
-                                $message .= 'Update : <b>'.\Carbon\Carbon::parse($item['updt_date'])->format('d M Y').'</b> | <a href="'.$item['excel'].'">Download Tabel</a> ('.$item['size'].')' .chr(10) .chr(10);
+                                $message .= '🔵 Judul Tabel : <b>'.$item['title'].'</b>' .chr(10);
+                                $message .= '🔵 Update : <b>'.\Carbon\Carbon::parse($item['updt_date'])->format('d M Y').'</b> 🔸 <a href="'.$item['excel'].'">Download Tabel</a> ('.$item['size'].')' .chr(10);
+                                $message .='--------------------------------------------'.chr(10);
                             }
-                            $this->keyboard = json_encode($this->keyboard_cari_kembali);
-                            $this->KirimPesan($message,true);
+                            $respon = Telegram::sendMessage([
+                                'chat_id' => $this->chat_id,
+                                'text' => $message,
+                                'parse_mode'=> 'HTML',
+                                'disable_web_page_preview'=> true,
+                            ]);
+                            $messageId = $respon->getMessageId();
                         }
 
                     }
                     else
                     {
-                        $message ='<b>Tabel Statistik</b> yang anda cari tidak tersedia' .chr(10);
-                        $message .= 'Ulangi pencarian tabel statistik' .chr(10);
-                        $this->keyboard = json_encode($this->keyboard_cari_kembali);
-                        $this->KirimPesan($message,true);
+                        $message ='📊 <b>Tabel Statistik</b> yang anda cari tidak tersedia' .chr(10);
+                        $message .= '<i>Ulangi pencarian tabel statistik</i>' .chr(10);
+                        $respon = Telegram::sendMessage([
+                            'chat_id' => $this->chat_id,
+                            'text' => $message,
+                            'parse_mode'=> 'HTML',
+                            'disable_web_page_preview'=> true,
+                        ]);
+                        $messageId = $respon->getMessageId();
                     }
 
-                    $this->CariStatistik(true);
+                    $this->CariStatistik();
                 }
                 elseif ($tg->command == 'CariBrs')
                 {
@@ -1826,48 +1521,71 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         {
                             //ada lebih 1 pages
                             $total_tabel = $response['data'][0]['pages'];
-                            if ($total_tabel > 3)
+                            if ($total_tabel > 10)
                             {
-                                $total_tabel = 3;
+                                $total_tabel = 10;
                             }
-                            $message ='';
-                            $message ='Hasil Pencarian <b>Berita Resmi Statistik</b> : ' . chr(10) .chr(10);
                             for ($i = 1; $i <= $total_tabel; $i++)
                             {
+                                $message =''; //kosongin message;
+                                $message ='📋 Hasil Pencarian <b>Berita Resmi Statistik</b> 📋' . chr(10);
+                                $message .='🔐 Kata kunci : <b>'.$this->text.'</b>' . chr(10);
+                                $message .= '📘 Halaman : '. $i .chr(10);
+                                $message .='--------------------------------------------'.chr(10);
                                 $respon = $h->caribrs($keyword,$i);
                                 foreach ($respon['data'][1] as $item)
                                 {
-                                    $message .= 'Judul : <b>'.$item['title'].'</b>' .chr(10);
-                                    $message .= 'Rilis : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> | <a href="'.$item['pdf'].'">Download</a> ('.$item['size'].')' .chr(10) .chr(10);
+                                    $message .= '🟢 Judul : <b>'.$item['title'].'</b>' .chr(10);
+                                    $message .= '🟢 Rilis : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> 🔹 <a href="'.$item['pdf'].'">Download PDF</a> ('.$item['size'].')'.chr(10);
+                                    $message .='--------------------------------------------'.chr(10);
                                 }
+                                $respon = Telegram::sendMessage([
+                                    'chat_id' => $this->chat_id,
+                                    'text' => $message,
+                                    'parse_mode'=> 'HTML',
+                                    'disable_web_page_preview'=> true,
+                                ]);
+                                $messageId = $respon->getMessageId();
 
                             }
-                            $this->keyboard = json_encode($this->keyboard_cari_kembali);
-                            $this->KirimPesan($message,true);
                         }
                         else
                         {
-                            $message ='Hasil Pencarian <b>Berita Resmi Statistik</b> : ' . chr(10) .chr(10);
+                            $message =''; //kosongin message;
+                            $message ='📋 Hasil Pencarian <b>Berita Resmi Statistik</b> 📋' . chr(10);
+                            $message .='🔐 Kata kunci : <b>'.$this->text.'</b>' . chr(10);
+                            $message .='--------------------------------------------'.chr(10);
 
                             foreach ($response['data'][1] as $item)
                             {
 
-                                $message .= 'Judul : <b>'.$item['title'].'</b>' .chr(10);
-                                $message .= 'Rilis : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> | <a href="'.$item['pdf'].'">Download</a> ('.$item['size'].')' .chr(10) .chr(10);
+                                $message .= '🟢 Judul : <b>'.$item['title'].'</b>' .chr(10);
+                                $message .= '🟢 Rilis : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> 🔹 <a href="'.$item['pdf'].'">Download PDF</a> ('.$item['size'].')'.chr(10);
+                                $message .='--------------------------------------------'.chr(10);
                             }
-                            $this->keyboard = json_encode($this->keyboard_cari_kembali);
-                            $this->KirimPesan($message,true);
+                            $respon = Telegram::sendMessage([
+                                'chat_id' => $this->chat_id,
+                                'text' => $message,
+                                'parse_mode'=> 'HTML',
+                                'disable_web_page_preview'=> true,
+                            ]);
+                            $messageId = $respon->getMessageId();
                         }
 
                     }
                     else
                     {
-                        $message ='<b>Pencarian Berita Resmi Statistik</b> yang anda cari tidak tersedia' .chr(10);
-                        $message .= 'Ulangi pencarian lainnya' .chr(10);
-                        $this->keyboard = json_encode($this->keyboard_cari_kembali);
-                        $this->KirimPesan($message,true);
+                        $message ='📋 <b>Pencarian Berita Resmi Statistik</b> yang anda cari tidak tersedia' .chr(10);
+                        $message .= '<i>Ulangi pencarian lainnya</i>' .chr(10);
+                        $respon = Telegram::sendMessage([
+                            'chat_id' => $this->chat_id,
+                            'text' => $message,
+                            'parse_mode'=> 'HTML',
+                            'disable_web_page_preview'=> true,
+                        ]);
+                        $messageId = $respon->getMessageId();
                     }
-                    $this->CariBrs(true);
+                    $this->CariBrs();
                 }
                 elseif ($tg->command == 'CariLainnya')
                 {
@@ -1889,49 +1607,72 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         {
                             //ada lebih 1 pages
                             $total_tabel = $response['data'][0]['pages'];
-                            if ($total_tabel > 3)
+                            if ($total_tabel > 10)
                             {
-                                $total_tabel = 3;
+                                $total_tabel = 10;
                             }
-                            $message ='';
-                            $message ='Hasil Pencarian <b>Lainnya</b> : ' . chr(10) .chr(10);
                             for ($i = 1; $i <= $total_tabel; $i++)
                             {
+                                $message ='';
+                                $message ='📌 Hasil Pencarian <b>Lainnya</b> : '.chr(10);
+                                $message .='🔐 Kata kunci : <b>'.$this->text.'</b>' . chr(10);
+                                $message .= '📘 Halaman : '. $i .chr(10);
+                                $message .='--------------------------------------------'.chr(10);
                                 $respon = $h->carilain($keyword,$i);
                                 foreach ($respon['data'][1] as $item)
                                 {
-                                    $message .= 'Judul : <b>'.$item['title'].'</b>' .chr(10);
-                                    $message .= 'Tanggal : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b>' .chr(10) .chr(10);
+                                    $url_link = explode("-",$item['rl_date']);
+                                    $link = 'https://ntb.bps.go.id/news/'.$url_link[0].'/'.$url_link[1].'/'.$url_link[2].'/'.$item['news_id'].'/bpsntb.html';
+                                    $message .= '🟤 Judul : <b>'.$item['title'].'</b>' .chr(10);
+                                    $message .= '🟤 Tanggal : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> 🔺 <a href="'.$link.'">Link</a>' .chr(10);
+                                    $message .='--------------------------------------------'.chr(10);
                                 }
-
+                                $respon = Telegram::sendMessage([
+                                    'chat_id' => $this->chat_id,
+                                    'text' => $message,
+                                    'parse_mode'=> 'HTML',
+                                    'disable_web_page_preview'=> true,
+                                ]);
+                                $messageId = $respon->getMessageId();
                             }
-                            $this->keyboard = json_encode($this->keyboard_cari_kembali);
-                            $this->KirimPesan($message,true);
+
                         }
                         else
                         {
-                            $message ='Hasil Pencarian <b>Lainnya</b> : ' . chr(10) .chr(10);
+                            $message ='📌 Hasil Pencarian <b>Lainnya</b> : ' . chr(10) .chr(10);
 
                             foreach ($response['data'][1] as $item)
                             {
                                 $url_link = explode("-",$item['rl_date']);
                                 $link = 'https://ntb.bps.go.id/news/'.$url_link[0].'/'.$url_link[1].'/'.$url_link[2].'/'.$item['news_id'].'/bpsntb.html';
-                                $message .= 'Judul : <b>'.$item['title'].'</b>' .chr(10);
-                                $message .= 'Tanggal : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> | <a href="'.$link.'">Link</a>' .chr(10) .chr(10);
+                                $message .= '🟤 Judul : <b>'.$item['title'].'</b>' .chr(10);
+                                $message .= '🟤 Tanggal : <b>'.\Carbon\Carbon::parse($item['rl_date'])->format('d M Y').'</b> 🔺 <a href="'.$link.'">Link</a>' .chr(10);
+                                $message .='--------------------------------------------'.chr(10);
                             }
-                            $this->keyboard = json_encode($this->keyboard_cari_kembali);
-                            $this->KirimPesan($message,true);
-                        }
+                            $respon = Telegram::sendMessage([
+                                'chat_id' => $this->chat_id,
+                                'text' => $message,
+                                'parse_mode'=> 'HTML',
+                                'disable_web_page_preview'=> true,
+                            ]);
+                            $messageId = $respon->getMessageId();
 
+                        }
                     }
                     else
                     {
-                        $message ='<b>Pencarian Lainnya</b> yang anda cari tidak tersedia' .chr(10);
-                        $message .= 'Ulangi pencarian lainnya' .chr(10);
-                        $this->keyboard = json_encode($this->keyboard_cari_kembali);
-                        $this->KirimPesan($message,true);
+                        $message ='📌 <b>Pencarian Lainnya</b> yang anda cari tidak tersedia' .chr(10);
+                        $message .= '<i>Ulangi pencarian lainnya</i>' .chr(10);
+                        $respon = Telegram::sendMessage([
+                            'chat_id' => $this->chat_id,
+                            'text' => $message,
+                            'parse_mode'=> 'HTML',
+                            'disable_web_page_preview'=> true,
+                        ]);
+                        $messageId = $respon->getMessageId();
+
                     }
-                    $this->CariLainnya(true);
+                    $this->CariLainnya();
                 }
                 elseif ($tg->command == 'ReplyByAdmin')
                 {
@@ -1968,20 +1709,57 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         $data_baru->chat_admin = '1';
                         $data_baru->save();
 
-                        $this->KirimByAdmin($pesan,$dt->chatid, true);
+                        $message ='🟢 Pesan : <b>'.$dt->isi_pesan.'</b>'.chr(10);
+                        $message .='⏱ Tanggal : '.Carbon::parse($dt->created_at)->isoFormat('D MMMM Y H:mm:ss').chr(10);
+                        $message .='--------------------------'.chr(10);
+                        $message .='🔹 Balasan : <b>'.$pesan.'</b>'.chr(10);
+                        //kirim ke pengunjung yg kirim pesan
+                        $reply_markup = Keyboard::make([
+                            'keyboard' => $this->keyboard_konsultasi,
+                            'resize_keyboard' => true,
+                            'one_time_keyboard' => true
+                        ]);
+                        $response = Telegram::sendMessage([
+                            'chat_id' => $dt->chatid,
+                            'text' => $message,
+                            'parse_mode'=> 'HTML',
+                            'reply_markup' => $reply_markup
+                        ]);
+                        $messageId = $response->getMessageId();
+                        //batas kirimnya
+                        //$this->KirimByAdmin($pesan,$dt->chatid, true);
                         //$this->MenuKonsultasi(true,true);
                         //pesan diterukan ke admin yg balas
 
                         $message ='';
-                        $message .='Pesan anda <b>'.$pesan.'</b> sudah terkirim ke <b>'.$d_pengunjung->nama.' ('.$d_pengunjung->username.')</b>' .chr(10) .chr(10);
-
-                        $this->KirimPesan($message,true);
+                        $message .='🟢 Pesan anda' .chr(10);
+                        $message .='-------------------------------------------' .chr(10);
+                        $message .='<b>'.$pesan.'</b>' .chr(10);
+                        $message .='-------------------------------------------' .chr(10);
+                        $message .='🟢 sudah terkirim ke <b>'.$d_pengunjung->nama.' ('.$d_pengunjung->username.')</b>' .chr(10);
+                        //kirimi notifikasi ke admin yg balas pesan
+                        $reply_markup = Keyboard::make([
+                            'keyboard' => $this->keyboard_konsultasi,
+                            'resize_keyboard' => true,
+                            'one_time_keyboard' => true
+                        ]);
+                        $response = Telegram::sendMessage([
+                            'chat_id' => $this->chat_id,
+                            'text' => $message,
+                            'parse_mode'=> 'HTML',
+                            'reply_markup' => $reply_markup
+                        ]);
+                        $messageId = $response->getMessageId();
+                        //batas kirim
+                        //$this->KirimPesan($message,true);
                         //forward ke admin yg lain jg
                         //pilih forward ke admin lain
                         $message_ke_admin_lain ='';
-                        $message_ke_admin_lain .='Pesan dari admin ('.$data_admin->nama.'):' .chr(10);
+                        $message_ke_admin_lain .='🟢 Pesan dari admin ('.$data_admin->nama.'):' .chr(10);
+                        $message_ke_admin_lain .='-------------------------------------------' .chr(10);
                         $message_ke_admin_lain .='<b>'.$pesan.'</b>' .chr(10);
-                        $message_ke_admin_lain .='sudah terkirim ke <b> '.$d_pengunjung->nama.' ('.$d_pengunjung->username.')</b>' .chr(10) .chr(10);
+                        $message_ke_admin_lain .='-------------------------------------------' .chr(10);
+                        $message_ke_admin_lain .='🟢 sudah terkirim ke <b> '.$d_pengunjung->nama.' ('.$d_pengunjung->username.')</b>' .chr(10) .chr(10);
 
                         $cek_admin_online = User::where([['chatid_tg','<>',''],['status_online','=','1']])->count();
                         if ($cek_admin_online > 0)
@@ -1992,7 +1770,21 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                                 $this->chat_id = $item->chatid_tg;
                                 if ($item->chatid_tg != $data_admin->chatid_tg)
                                 {
-                                    $this->KirimPesan($message_ke_admin_lain,true);
+                                    //$this->KirimPesan($message_ke_admin_lain,true);
+                                    //kirirm ke admin lagin
+                                    $reply_markup = Keyboard::make([
+                                        'keyboard' => $this->keyboard_konsultasi,
+                                        'resize_keyboard' => true,
+                                        'one_time_keyboard' => true
+                                    ]);
+                                    $response = Telegram::sendMessage([
+                                        'chat_id' => $item->chatid_tg,
+                                        'text' => $message_ke_admin_lain,
+                                        'parse_mode'=> 'HTML',
+                                        'reply_markup' => $reply_markup
+                                    ]);
+                                    $messageId = $response->getMessageId();
+                                    //batasannya
                                 }
 
                                 //$this->TeruskanPesan($item->chatid_tg);
@@ -2017,8 +1809,15 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         $message .='Pesan anda <b>'.$this->text.'</b> belum terkirim' . chr(10) .chr(10);
                         $message .= 'Gunakan fitur reply untuk membalas pesan ke pengunjung' .chr(10).chr(10);
 
-                        $this->KirimPesan($message,true);
-                        //$this->MenuKonsultasi(true,true);
+                        //$this->KirimPesan($message,true);
+                        $respon = Telegram::sendMessage([
+                            'chat_id' => $this->chat_id,
+                            'text' => $message,
+                            'parse_mode'=> 'HTML',
+                            'disable_web_page_preview'=> true,
+                        ]);
+                        $messageId = $respon->getMessageId();
+                        //$this->MenuKonsultasi();
                     }
                 }
                 elseif ($tg->command == 'FeedBackSistem')
@@ -2069,7 +1868,11 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         //kirim forward pesan
                         $data_admin = User::where([['chatid_tg','<>',''],['status_online','=','1']])->get();
                         foreach ($data_admin as $item) {
-                            $this->TeruskanPesan($item->chatid_tg);
+                            $respon = Telegram::forwardMessage([
+                                'chat_id' => $item->chatid_tg,
+                                'from_chat_id' => $this->chat_id,
+                                'message_id' => $this->message_id
+                            ]);
                             LogPengunjung::create([
                                 'username' => $item->user_tg,
                                 'chatid' => $item->chatid_tg,
@@ -2080,87 +1883,64 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
 
                     }
                         $message ='';
-                        $message .='Pesan anda <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
+                        $message .='📦 Pesan anda' .chr(10);
+                        $message .='-------------------------------------'.chr(10);
+                        $message .='<b>'.$this->text.'</b>'.chr(10);
+                        $message .='-------------------------------------'.chr(10);
+                        $message .='🟢 berhasil disimpan'.chr(10);
 
                         /*
                         $tg->command = 'showMenu';
                         $tg->update();
                         */
-                        $this->KirimPesan($message,true);
-                        $this->MenuKonsultasi(false,true);
+                        $respon = Telegram::sendMessage([
+                            'chat_id' => $this->chat_id,
+                            'text' => $message,
+                            'parse_mode'=> 'HTML'
+                        ]);
+                        $this->MenuKonsultasi();
                 }
                 else
                 {
                     $message ='';
-                    $message .='Perintah tidak dikenali. <b>Silakan pilih menu dibawah ini</b>' . chr(10) .chr(10);
+                    $message .='⚠️ Perintah tidak dikenali. ⚠️ <b>Silakan pilih menu dibawah ini</b>' . chr(10) .chr(10);
                     $tg->command = 'showMenu';
                     $tg->update();
-                    $this->KirimPesan($message,true);
+                    $reply_markup = Keyboard::make([
+                        'keyboard' => $this->keyboard_utama,
+                        'resize_keyboard' => true,
+                        'one_time_keyboard' => true
+                    ]);
+                    $respon = Telegram::sendMessage([
+                        'chat_id' => $this->chat_id,
+                        'text' => $message,
+                        'parse_mode'=> 'HTML',
+                        'reply_markup' => $reply_markup
+                    ]);
+                    $messageId = $respon->getMessageId();
                     $this->AwalStart();
                 }
             }
             else
             {
                 //sama sekali belum ada di log / pengunjung sudah selesai
+                $message ='';
+                $message .='⚠️ Perintah tidak dikenali. ⚠️ <b>Silakan pilih menu dibawah ini</b>' . chr(10);
                 LogPengunjung::create([
                     'username' => $this->username,
                     'chatid' => $this->chat_id,
                     'command' => 'showMenu',
                     'msg_id'=> $this->message_id
                 ]);
+                $respon = Telegram::sendMessage([
+                    'chat_id' => $this->chat_id,
+                    'text' => $message,
+                    'parse_mode'=> 'HTML',
+                    'disable_web_page_preview'=> true,
+                ]);
+                $messageId = $respon->getMessageId();
                 $this->AwalStart();
             }
-    }
-    protected function HapusKeyboard($chat_id)
-    {
-        $cek = LogPengunjung::where('chatid','=',$chat_id)->count();
-        if ($cek > 0 )
-        {
-            $tg = LogPengunjung::where('chatid','=',$chat_id)->latest("updated_at")->first();
-            $data = [
-                'chat_id' => $chat_id,
-                'message_id' => $tg->msg_id,
-            ];
-            $this->telegram->deleteMessage($data);
-        }
-
-    }
-    protected function KirimPesan($message, $parse_html = false, $keyboard = false)
-    {
-        $data = [
-            'chat_id' => $this->chat_id,
-            'text' => $message,
-        ];
-        if ($parse_html) $data['parse_mode'] = 'HTML';
-        if ($keyboard) $data['reply_markup'] = $this->keyboard;
-
-        $this->telegram->sendMessage($data);
-    }
-    protected function ReplyPesan($message, $parse_html = false, $keyboard = false)
-    {
-        $data = [
-            'chat_id' => $this->chat_id,
-            'text' => $message,
-            'disable_web_page_preview'=> true,
-            'reply_to_message_id' => $this->msg_id
-        ];
-        if ($parse_html) $data['parse_mode'] = 'HTML';
-        if ($keyboard) $data['reply_markup'] = $this->keyboard;
-
-        $this->telegram->sendMessage($data);
-    }
-    protected function KirimByAdmin($message,$chatid, $parse_html = false, $keyboard = false)
-    {
-        $data = [
-            'chat_id' => $chatid,
-            'text' => $message,
-            'disable_web_page_preview'=> true,
-            'reply_to_message_id' => $this->msg_id
-        ];
-        if ($parse_html) $data['parse_mode'] = 'HTML';
-        if ($keyboard) $data['reply_markup'] = $this->keyboard;
-
-        $this->telegram->sendMessage($data);
     }
     protected function TeruskanPesan($kirim_chat_id)
     {
@@ -2191,93 +1971,30 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
         if ($keyboard) $data['reply_markup'] = $this->keyboard;
         $this->telegram->sendPhoto($data);
     }
-    public function CariPub($keyword)
+    public function Selesai()
     {
-        $h = new WebApiBps();
-        $keyword = rawurlencode($keyword);
-        $response = $h->caripublikasi($keyword,1);
-
-
-        if ($response['data-availability']=='available')
+        LogPengunjung::create([
+            'username' => $this->username,
+            'chatid' => $this->chat_id,
+            'command' => __FUNCTION__,
+            'msg_id' => $this->message_id
+        ]);
+        $message = "🙏 <b>Terimakasih Telah Menggunakan Layanan Kami</b>" .chr(10);
+        $count = LogPengunjung::where('chatid', $this->chat_id)->count();
+        if ($count > 0)
         {
-            dd($response['data'][0]);
-            $hasil = array();
-            foreach ($response['data'][1] as $item)
-            {
-                $hasil[]=array(
-                    'pub_id' => $item["pub_id"],
-                    'judul' => $item["title"],
-                    'cover_url' => $item["cover"],
-                    'pdf' => $item["pdf"]
-                );
-            }
-            //$dd($response['data']);
+            LogPengunjung::where('chatid', $this->chat_id)->delete();
         }
-        else
-        {
-            $hasil ='ERROR';
-        }
-
-        return $response;
-    }
-    public function cariLain($keyword)
-    {
-        $h = new WebApiBps();
-        $keyword = rawurlencode($keyword);
-        $response = $h->carilain($keyword,1);
-
-        dd($response);
-        if ($response['data-availability']=='available')
-        {
-            dd($response['data'][0]);
-            $hasil = array();
-            foreach ($response['data'][1] as $item)
-            {
-                $hasil[]=array(
-                    'pub_id' => $item["pub_id"],
-                    'judul' => $item["title"],
-                    'cover_url' => $item["cover"],
-                    'pdf' => $item["pdf"]
-                );
-            }
-            //$dd($response['data']);
-        }
-        else
-        {
-            $hasil ='ERROR';
-        }
-
-        return $response;
-    }
-
-    public function cariBrsSaja($keyword)
-    {
-        $h = new WebApiBps();
-        $keyword = rawurlencode($keyword);
-        $response = $h->caribrs($keyword,1);
-
-        dd($response);
-        if ($response['data-availability']=='available')
-        {
-            dd($response['data'][0]);
-            $hasil = array();
-            foreach ($response['data'][1] as $item)
-            {
-                $hasil[]=array(
-                    'pub_id' => $item["pub_id"],
-                    'judul' => $item["title"],
-                    'cover_url' => $item["cover"],
-                    'pdf' => $item["pdf"]
-                );
-            }
-            //$dd($response['data']);
-        }
-        else
-        {
-            $hasil ='ERROR';
-        }
-
-        return $response;
+        $reply_markup = Keyboard::make([
+            'remove_keyboard' => true,
+        ]);
+        $response = Telegram::sendMessage([
+            'chat_id' => $this->chat_id,
+            'text' => $message,
+            'parse_mode'=> 'HTML',
+            'reply_markup' => $reply_markup
+        ]);
+        $messageId = $response->getMessageId();
     }
 
 }
