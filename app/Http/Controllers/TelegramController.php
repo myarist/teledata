@@ -147,6 +147,23 @@ class TelegramController extends Controller
         if ($update->isType('callback_query'))
         {
             //callback_query
+            /*
+            menu ini kalo tombol inline keyboard ditekan
+            */
+            $this->text = $update->callbackQuery->data;
+            $this->chat_id = $update->callbackQuery->from->id;
+            $this->nama = $update->callbackQuery->from->first_name;
+            $this->message_id = $update->callbackQuery->message->message_id;
+            $this->waktu_kirim = $update->callbackQuery->message->date;
+
+            if (array_key_exists("username",$update['callback_query']['from']))
+            {
+                $this->username =  $update->callbackQuery->from->username;
+            }
+            else
+            {
+                $this->username=  $update->callbackQuery->from->first_name;
+            }
             //bila ada ini langsung ke menu awal
             $this->AwalStart();
         }
