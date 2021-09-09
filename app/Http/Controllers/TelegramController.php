@@ -47,17 +47,17 @@ class TelegramController extends Controller
         //keyboard
         $this->keyboard_utama = [
             ['🔰 Konsultasi','🔎 Pencarian','👤 Profil'],
-            ['📡 Feedback','🎁 Informasi'],
+            ['📡 Feedback','🎁 Informasi', '📦 Channel Berlangganan'],
             ['❌ Selesai']
         ];
         $this->keyboard_utama_admin = [
             ['🔰 Konsultasi','🔎 Pencarian','👤 Profil'],
-            ['⚙️ Menu Admin','📡 Feedback','🎁 Informasi'],
+            ['⚙️ Menu Admin','📡 Feedback','🎁 Informasi', '📦 Channel Berlangganan'],
             ['❌ Selesai']
         ];
         $this->keyboard_utama_sinkron = [
             ['🔰 Konsultasi','🔎 Pencarian','👤 Profil'],
-            ['✴️ Admin Sinkronisasi','📡 Feedback','🎁 Informasi'],
+            ['✴️ Admin Sinkronisasi','📡 Feedback','🎁 Informasi', '📦 Channel Berlangganan'],
             ['❌ Selesai']
         ];
         $this->keyboard_konsultasi = [
@@ -306,6 +306,9 @@ class TelegramController extends Controller
                     break;
                 case '🏷 Log Pencarian':
                     $this->ListLogPencarian();
+                    break;
+                case '📦 Channel Berlangganan':
+                    $this->ChannelBerlangganan();
                     break;
                 case '❌ Selesai':
                     $this->Selesai();
@@ -740,6 +743,35 @@ class TelegramController extends Controller
             'reply_markup' => $reply_markup
         ]);
         $messageId = $response->getMessageId();
+    }
+    public function ChannelBerlangganan()
+    {
+        LogPengunjung::create([
+            'username' => $this->username,
+            'chatid' => $this->chat_id,
+            'command' => __FUNCTION__,
+            'msg_id' => $this->message_id
+        ]);
+        $message ='';
+        $message = '✅ <b>TeleDATA (Telegram Data BPSNTB)</b>' .chr(10);
+        $message .= '✅ <b>BPS Provinsi Nusa Tenggara Barat</b>' .chr(10);
+        $message .= '✅ untuk mendapatkan informasi terkini silakan mengikuti channel berlangganan.' .chr(10);
+        $message .= '✅ silakan klik link ini @bpsntb' .chr(10);
+        $message .= '✅ berita/informasi setiap rilis dan publikasi yang terbit akan tersedia di channel tersebut' .chr(10);
+        $message .= '-------------------------------------------' .chr(10);
+        $reply_markup = Keyboard::make([
+            'keyboard' => $this->keyboard_level1,
+            'resize_keyboard' => true,
+            'one_time_keyboard' => true
+        ]);
+        $respon = Telegram::sendMessage([
+            'chat_id' => $this->chat_id,
+            'text' => $message,
+            'parse_mode'=> 'HTML',
+            'reply_markup' => $reply_markup
+        ]);
+        $messageId = $respon->getMessageId();
+
     }
     public function TentangBot()
     {
