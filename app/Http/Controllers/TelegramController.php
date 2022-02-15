@@ -195,7 +195,7 @@ class TelegramController extends Controller
                 }
                 else
                 {
-                    $this->username= $this->first_name;
+                    $this->username = $this->first_name;
                 }
             }
             else
@@ -220,7 +220,7 @@ class TelegramController extends Controller
                 }
                 else
                 {
-                    $this->username= $this->first_name;
+                    $this->username = $this->first_name;
                 }
             }
 
@@ -1484,7 +1484,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             //apabila lebih dari 30 record bagi per 30 record dikirimkan
             //cek jumlah total dulu
                 $jumlah_total = LogFeedback::orderBY('created_at','desc')->count();;
-                $item_per_hal = 15;
+                $item_per_hal = 10;
                 $i=1;
                 //cek dulu apakah lebih dari 15
                 //bila lebih 15 langsung kirim
@@ -1719,10 +1719,10 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
     }
     public function CheckInputan()
     {
-            $cek = LogPengunjung::where('chatid','=',$this->chat_id)->count();
+            $cek = LogPengunjung::where('chatid',$this->chat_id)->count();
             if ($cek > 0 )
             {
-                $tg = LogPengunjung::where('chatid','=',$this->chat_id)->latest("updated_at")->first();
+                $tg = LogPengunjung::where('chatid',$this->chat_id)->latest("updated_at")->first();
                 if ($tg->command == 'InputNama') {
 
                     $pesan_error = [
@@ -1808,7 +1808,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                     {
                         $message ='';
                         $message .='🆗 Nama <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
-                        $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
+                        $data = DataPengunjung::where('chatid',$this->chat_id)->first();
                         $data->nama = $this->text;
                         $data->update();
 
@@ -1861,7 +1861,7 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
                         $message ='';
                         $message .='✅ Email <b>'.$this->text.'</b> berhasil disimpan' . chr(10) .chr(10);
                         $message .='<i>Silakan Masukkan nomor HP anda</i> :' . chr(10);
-                        $data = DataPengunjung::where('chatid','=',$this->chat_id)->first();
+                        $data = DataPengunjung::where('chatid',$this->chat_id)->first();
                         $data->email = $this->text;
                         $data->update();
 
