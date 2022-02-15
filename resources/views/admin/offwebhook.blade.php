@@ -28,10 +28,10 @@
         <div class="card">
             <div class="card-body">
                 @if ($respon['ok'] == 'true')
-                <h3>{{$respon['description']}}</h3>
-            @else
-                Set webhook ERROR
-            @endif
+                    <h3>{{$respon['description']}}</h3>
+                @else
+                    Off webhook ERROR
+                @endif
 
             </div>
         </div>

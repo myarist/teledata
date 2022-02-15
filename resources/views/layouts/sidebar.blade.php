@@ -36,6 +36,8 @@
             @if (Auth::user()->username=='admin')
                 <li> <a class="waves-effect waves-dark" href="{{route('set.webhook')}}" aria-expanded="false"><i class="ti-layout-grid2"></i><span class="hide-menu">SET WEBHOOK</span></a>
                 </li>
+                <li> <a class="waves-effect waves-dark" href="{{route('off.webhook')}}" aria-expanded="false"><i class="ti-layout-grid2"></i><span class="hide-menu">OFF WEBHOOK</span></a>
+                </li>
                 <li> <a class="waves-effect waves-dark" href="{{route('bot.status')}}" aria-expanded="false"><i class="ti-layout-grid2"></i><span class="hide-menu">BOT STATUS</span></a>
                 </li>
                 <li> <a class="waves-effect waves-dark" href="{{route('get.me')}}" aria-expanded="false"><i class="ti-layout-grid2"></i><span class="hide-menu">GET ME</span></a>

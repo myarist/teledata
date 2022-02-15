@@ -28,22 +28,22 @@
         <div class="card">
             <div class="card-body">
                 @if ($respon)
-                    <dl>
-                        <dt>id:</dt>
-                        <dd>{{$respon->id}}</dd>
-                        <dt>is_bot</dt>
-                        <dd>{{$respon->is_bot}}</dd>
-                        <dt>first_name</dt>
-                        <dd>{{$respon->first_name}}</dd>
-                        <dt>username</dt>
-                        <dd>{{$respon->username}}</dd>
-                        <dt>can_join_groups</dt>
-                        <dd>{{$respon->can_join_groups}}</dd>
-                        <dt>can_read_all_group_messages</dt>
-                        <dd>{{$respon->can_read_all_group_messages}}</dd>
-                        <dt>supports_inline_queries</dt>
-                        <dd>{{$respon->supports_inline_queries}}</dd>
-                    </dl>
+                <dl>
+                    <dt>#ID</dt>
+                    <dd>{{$respon['id']}}</dd>
+                    <dt>is_bot</dt>
+                    <dd>{{$respon['is_bot']}}</dd>
+                    <dt>first_name</dt>
+                    <dd>{{$respon['first_name']}}</dd>
+                    <dt>username</dt>
+                    <dd>{{$respon['username']}}</dd>
+                    <dt>can_join_groups</dt>
+                    <dd>{{$respon['can_join_groups']}}</dd>
+                    <dt>can_read_all_group_messages</dt>
+                    <dd>{{$respon['can_read_all_group_messages']}}</dd>
+                    <dt>supports_inline_queries</dt>
+                    <dd>{{$respon['supports_inline_queries']}}</dd>
+                </dl>
                 @else
                     ERROR
                 @endif

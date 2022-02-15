@@ -37,6 +37,8 @@
                         <dd>{{$respon['result']['pending_update_count']}}</dd>
                         <dt>max_connections</dt>
                         <dd>{{$respon['result']['max_connections']}}</dd>
+                        <dt>ip_address</dt>
+                        <dd>{{$respon['result']['ip_address']}}</dd>
                     </dl>
                 @else
                     ERROR

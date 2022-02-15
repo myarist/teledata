@@ -129,7 +129,9 @@ class TelegramController extends Controller
     public function setWebHook()
     {
         $url = env('TELEGRAM_WEBHOOK_URL') . '/' . env('TELEGRAM_HASH_URL') . '/webhook';
-        $response = $this->telegram->setWebhook(['url' => $url]);
+        $h = new WebApiBps();
+        $response = $h->setwebhook($url);
+        //$response = $this->telegram->setWebhook(['url' => $url]);
         //dd($response);
         return view('admin.setwebhook',['respon'=>$response]);
     }
@@ -139,7 +141,7 @@ class TelegramController extends Controller
         $response = $h->resetwebhook();
 
         //return $response;
-        return view('admin.setwebhook',['respon'=>$response]);
+        return view('admin.offwebhook',['respon'=>$response]);
     }
     public function WebHook(Request $request)
     {

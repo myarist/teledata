@@ -107,6 +107,14 @@ class WebApiBps
         $result = json_decode($result, TRUE);
 		return $result;
     }
+    public function setwebhook($alamat_url)
+    {
+        $url = 'https://api.telegram.org/bot'.$this->tgapi.'/setWebhook?url='.$alamat_url;
+        $ch = $this->connectcurl($this->ch, $url);
+        $result = curl_exec ($ch);
+        $result = json_decode($result, TRUE);
+		return $result;
+    }
     public function resetwebhook()
     {
         $url = 'https://api.telegram.org/bot'.$this->tgapi.'/deleteWebhook?drop_pending_updates=true';
