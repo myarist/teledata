@@ -25,7 +25,7 @@ class CariController extends Controller
     //
     public function list()
     {
-        $data = LogCari::orderBy('created_at','desc')->get();
+        $data = LogCari::orderBy('created_at','desc')->take(5000)->get();
         return view('cari.index',['dataCari'=>$data]);
     }
 }

@@ -35,17 +35,17 @@
             <div class="card-body">
                 <div class="row float-right">
                     <div class="col-lg-12 ">
-                        Status : 
+                        Status :
                         @if (Auth::user()->status_online == '1')
                         <button class="btn btn-sm btn-success statusonline" data-id="{{Auth::user()->id}}" data-flag="{{Auth::user()->status_online}}">ONLINE</button>
                         @else
                         <button class="btn btn-sm btn-danger statusonline" data-id="{{Auth::user()->id}}" data-flag="{{Auth::user()->status_online}}">OFFLINE</button>
                         @endif
-                        
+
                     </div>
                 </div>
                 <div class="table-responsive">
-                   
+
                     <table id="pengunjung" class="table table-bordered table-hover table-striped" cellspacing="0" width="100%">
                         <thead>
                             <tr>
@@ -55,7 +55,6 @@
                                 <th>UserID TG</th>
                                 <th>Pesan</th>
                                 <th>Waktu</th>
-                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -67,7 +66,6 @@
                                    <td>{{$item->username}}</td>
                                    <td>{{$item->isi_pesan}} <span class="badge badge-success ml-auto">{{$item->jumlah_pesan}}</span></td>
                                    <td>{{$item->created_at}}</td>
-                                   <td></td>
                                </tr>
                            @endforeach
                         </tbody>
@@ -111,7 +109,7 @@
                     'copy', 'excel', 'pdf', 'print'
                 ],
                 "displayLength": 30,
-                
+
             });
             $('.buttons-copy, .buttons-csv, .buttons-print, .buttons-pdf, .buttons-excel').addClass('btn btn-primary mr-1');
         });

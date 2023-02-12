@@ -36,22 +36,65 @@ class KonsultasiController extends Controller
     {
         /*
         select data_pengunjung.username, data_pengunjung.chatid, nama, email, nohp, flag_berita,isi_pesan, jumlah_pesan, chat.created_at, chat.updated_at from data_pengunjung left join (select *, count(*) as jumlah_pesan from log_pesan GROUP by username order by created_at DESC) as chat on chat.chatid = data_pengunjung.chatid
-        */
+
+        SELECT *
+            FROM log_pesan
+            WHERE id IN (
+                SELECT MAX(id)
+                FROM log_pesan where chat_admin=0
+                GROUP BY chatid
+            ) ORDER BY updated_at DESC;
+
+            select chatid, count(*) as jumlah_pesan from log_pesan where chat_admin=0 GROUP by username;
+        SELECT *
+            FROM log_pesan
+            LEFT JOIN (select chatid, count(*) as jumlah_pesan from log_pesan where chat_admin=0 GROUP by username) as chat on chat.chatid=log_pesan.chatid WHERE id IN (
+                SELECT MAX(id)
+                FROM log_pesan where chat_admin=0
+                GROUP BY chatid
+            ) order by created_at desc;
+
+        SELECT *
+            FROM log_pesan
+            LEFT JOIN (select chatid, count(*) as jumlah_pesan from log_pesan where chat_admin=0 GROUP by username) as chat on chat.chatid=log_pesan.chatid
+
+            left join (select chatid, nama, email, nohp, flag_berita from data_pengunjung) as pengunjung on pengunjung.chatid=log_pesan.chatid
+            WHERE id IN (
+                SELECT MAX(id)
+                FROM log_pesan where chat_admin=0
+                GROUP BY chatid
+            ) order by created_at desc;
+
         $data = DB::table('data_pengunjung')
-            ->Join(\DB::Raw("(select *, count(*) as jumlah_pesan from log_pesan GROUP by username order by created_at DESC) as chat"),'data_pengunjung.chatid','=','chat.chatid')
+            ->Join(\DB::Raw("(select *, count(*) as jumlah_pesan from log_pesan GROUP by username asc order by updated_at DESC) as chat"),'data_pengunjung.chatid','=','chat.chatid')
             ->select(\DB::Raw("data_pengunjung.username, data_pengunjung.chatid, nama, email, nohp, flag_berita,isi_pesan, jumlah_pesan, chat.created_at, chat.updated_at"))
-            ->orderBy('created_at','desc')
-            ->get();
+            ->orderBy('chat.updated_at','desc')
+            ->get(); */
+        $idchat = DB::table('log_pesan')->select(\DB::raw('max(id)'))->where('chat_admin','0')->groupBy('chatid');
+        $data = DB::table('log_pesan')
+                ->leftJoin(\DB::Raw("(select chatid, count(*) as jumlah_pesan from log_pesan where chat_admin=0 GROUP by username) as chat"),'log_pesan.chatid','=','chat.chatid')
+                ->leftJoin(\DB::Raw("(select chatid, nama, email, nohp, flag_berita from data_pengunjung) as pengunjung"),'log_pesan.chatid','=','pengunjung.chatid')
+                ->whereIn('id',$idchat)
+                ->orderBy('updated_at','desc')
+                ->get();
         //dd($data);
         return view('konsultasi.index',['dataChat'=>$data]);
     }
     public function Chat($chatid)
     {
+        /*
         $data_chat = DB::table('log_pesan')
                 ->Join('data_pengunjung','log_pesan.chatid','=','data_pengunjung.chatid')
                 ->select('data_pengunjung.username','data_pengunjung.chatid','nama')
-                ->groupBy('log_pesan.chatid')->get();
+                ->groupBy('log_pesan.chatid')->get(); */
         //dd($data_chat);
+        $idchat = DB::table('log_pesan')->select(\DB::raw('max(id)'))->where('chat_admin','0')->groupBy('chatid');
+        $data_chat = DB::table('log_pesan')
+                ->leftJoin(\DB::Raw("(select chatid, count(*) as jumlah_pesan from log_pesan where chat_admin=0 GROUP by username) as chat"),'log_pesan.chatid','=','chat.chatid')
+                ->leftJoin(\DB::Raw("(select chatid, nama, email, nohp, flag_berita from data_pengunjung) as pengunjung"),'log_pesan.chatid','=','pengunjung.chatid')
+                ->whereIn('id',$idchat)
+                ->orderBy('updated_at','desc')
+                ->get();
         $data = DB::table('log_pesan')
         ->leftJoin(\DB::Raw("(select username as dp_username, chatid as dp_chatid, nama as dp_nama, email as dp_email, nohp as dp_nohp from data_pengunjung) as dp"),'log_pesan.chatid','=','dp.dp_chatid')
         ->where('log_pesan.chatid','=',$chatid)->orWhere('log_pesan.chatid_penerima','=',$chatid)
@@ -85,17 +128,17 @@ class KonsultasiController extends Controller
             'command' => 'MenuKonsultasi'
         ]);
         if ($result)
-        {   
+        {
 
             $pesan_error = 'Pesan sudah dikirim ke '. $data_reply->nama ;
             $pesan_warna = 'success';
         }
-        else 
+        else
         {
             $pesan_error = '(ERROR) Pesan tidak dikirim';
             $pesan_warna = 'danger';
         }
-        
+
         Session::flash('message', $pesan_error);
         Session::flash('message_type', $pesan_warna);
         return redirect()->route('konsultasi.chat',$request->chatid);

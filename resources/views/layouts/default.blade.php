@@ -157,7 +157,7 @@
                 2020 - {{date('Y')}}
             @endif Bidang IPDS BPS Provinsi NTB
 
-            <span class="float-right"><a href="https://ig.dyatmika.com" target="_blank">Created by Blimika</a></span>
+            <span class="float-right">Created by <a href="https://ig.dyatmika.com" target="_blank">Blimika</a></span>
         </footer>
         <!-- ============================================================== -->
         <!-- End footer -->
