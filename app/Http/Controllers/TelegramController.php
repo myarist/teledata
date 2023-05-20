@@ -42,7 +42,8 @@ class TelegramController extends Controller
     public function __construct()
     {
         $this->telegram = new Api(env('TELEGRAM_BOT_TOKEN'));
-        $r = file_get_contents("https://github.com/guangrei/Json-Indonesia-holidays/raw/master/calendar.json");
+        //$r = file_get_contents("https://github.com/guangrei/Json-Indonesia-holidays/raw/master/calendar.json");
+        $r = file_get_contents("https://raw.githubusercontent.com/guangrei/Json-Indonesia-holidays/master/api.json");
         $this->hari_libur = json_decode($r, true);
         //keyboard
         $this->keyboard_utama = [
@@ -917,11 +918,15 @@ Aplikasi ini dikembangkan oleh Bidang IPDS BPS Prov. NTB.
             //hari kerja
             //cek jam
             //cek dulu hari libur apa ngga
-            $cek_libur = isset($this->hari_libur[Carbon::now()->format("Ymd")])?true:false;
-            if ($cek_libur == true)
+            //cek libur format lama
+            //$cek_libur = isset($this->hari_libur[Carbon::now()->format("Ymd")])?true:false;
+            $cek_libur = isset($this->hari_libur[Carbon::now()->format("Y-m-d")])?true:false;
+            if ($cek_libur == true and $this->hari_libur[Carbon::now()->format("Y-m-d")]['libur'] == true)
             {
                 //diluar jam layanan
-                $message .= '🚫 <b>Hari Libur : '.$this->hari_libur[Carbon::now()->format("Ymd")]['deskripsi'].'</b>' .chr(10);
+                //$message .= '🚫 <b>Hari Libur : '.$this->hari_libur[Carbon::now()->format("Ymd")]['deskripsi'].'</b>' .chr(10);
+                $message .= '🚫 <b>Tanggal : '.Carbon::now()->format("d-m-Y").'</b>' .chr(10);
+                $message .= '🚫 <b>Hari Libur : '.$this->hari_libur[Carbon::now()->format("Y-m-d")]['nama'].'</b>' .chr(10);
                 $message .= '------------------------------------------' .chr(10);
                 $message .= '🔅 <b>Silakan tinggalkan pesan</b>'.chr(10);
                 $message .= '🔅 Pesan anda akan terbaca saat operator Online' .chr(10);
